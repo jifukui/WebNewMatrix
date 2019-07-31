@@ -167,7 +167,8 @@ export default {
       trueEdid: true,
       type: "",
       indexNumber: 0,
-      selecting: false
+      selecting: false,
+      outputindex:null
     };
   },
   watch: {
@@ -215,12 +216,23 @@ export default {
       {
         this.type = 1;
       }
-      // console.log(this.outputdata[this.isActive])
-      // this.style_bg = true;
-      // this.$refs.clearUploads.clearFiles();
-      this.$state.state.EDIDIndex=index;
-      this.$state.state.EDIDPortType=1;
-      this.getEdidInfo(this.type, index);
+      
+      this.$store.state.EDIDIndex=index;
+      this.$store.state.EDIDPortType=1;
+      console.log("The index is "+this.outputindex);
+      if(this.outputindex!=null&&this.outputdata[this.outputindex].status=="Off")
+      {
+        console.log("The Outport no load");
+        this.ModuleName="The OutPort"+this.$store.state.EDIDIndex+" no load";
+        this.size = "";
+        this.audio = "";
+        this.Model = "";
+        this.selecting=false;
+      }
+      else
+      {
+        this.getEdidInfo(this.type, index);
+      }
     },
     // IN选择按钮
     inClcick(index, output) 
@@ -240,8 +252,8 @@ export default {
       }
       // this.style_bg = true;
       // this.$refs.clearUploads.clearFiles();
-      this.$state.state.EDIDIndex=index;
-      this.$state.state.EDIDPortType=0;
+      this.$store.state.EDIDIndex=index;
+      this.$store.state.EDIDPortType=0;
       this.getEdidInfo(this.type, index);
     },
     // DEFAULT默认按钮
@@ -324,6 +336,7 @@ export default {
             }
             that.EDIDinfo = edidText;
             that.EDIDHandle(edidText);
+            that.$store.state.EDIDIndex=null;
           };
           reader.onerror = function() {
             if (evt.target.error.name == "NotReadableError") {
@@ -456,26 +469,36 @@ export default {
         title: item.PHYName,
         index: item.index
       };
-      if (typeof item.checked == "undefined") {
+      if (typeof item.checked == "undefined") 
+      {
         this.$set(item, "checked", true);
         this.selectMsg.push(ht);
         this.copyIndex.push(item.index);
         this.selectMsg.sort(this.compare("index"));
-      } else {
+      } 
+      else 
+      {
         this.$delete(item, "checked");
         this.ischecked = false;
-        for (var i = 0; i < this.selectMsg.length; i++) {
-          if (this.selectMsg[i].index == item.index) {
+        for (var i = 0; i < this.selectMsg.length; i++) 
+        {
+          if (this.selectMsg[i].index == item.index) 
+          {
             this.selectMsg.splice(i, 1);
             break;
-          } else {
+          } 
+          else {
           }
         }
-        for (var i = 0; i < this.copyIndex.length; i++) {
-          if (this.copyIndex[i] == item.index) {
+        for (var i = 0; i < this.copyIndex.length; i++) 
+        {
+          if (this.copyIndex[i] == item.index) 
+          {
             this.copyIndex.splice(i, 1);
             break;
-          } else {
+          } 
+          else 
+          {
           }
         }
       }
@@ -529,7 +552,8 @@ export default {
             that.$store.state.portInfo = proVInfo;
             that.outputdata = [];
             that.inputdata = [];
-            that.copyInput = [];
+            let flag=that.copyInput.length==0?false:true;
+            //that.copyInput = [];
             for (let j = 0; j < proVInfo.length; j++) 
             {
               if (proVInfo[j].Dir == "Out") 
@@ -537,7 +561,8 @@ export default {
                 proVInfo[j].title = "out" + proVInfo[j].index;
                 that.outputdata.push({
                   index: proVInfo[j].index,
-                  output: proVInfo[j].title
+                  output: proVInfo[j].title,
+                  status:proVInfo[j].status
                 });
               } 
               else 
@@ -547,12 +572,17 @@ export default {
                   index: proVInfo[j].index,
                   input: proVInfo[j].title
                 });
-                that.copyInput.push({
+                if(!flag)
+                {
+                  that.copyInput.push({
                   index: proVInfo[j].index,
                   PHYName: proVInfo[j].title
-                });
+                  });
+                }
               }
             }
+            console.log("EDIDIndex "+that.$store.state.EDIDIndex);
+            console.log("EDIDPortType "+that.$store.state.EDIDPortType);
             if(that.$store.state.EDIDIndex!=null)
             {
               let jiport;
@@ -565,13 +595,31 @@ export default {
                   break;
                 }
               }
+              
               if(i==jiport.length)
               {
                 that.SetPort();
               }
               else
               {
-                
+                console.log("status "+jiport[i].status);
+                if(that.$store.state.EDIDPortType==1&&jiport[i].status=="Off")
+                {
+                  that.outputindex=i;
+                  that.outClcick(that.$store.state.EDIDIndex,"out"+that.$store.state.EDIDIndex);
+                }
+                else
+                {
+                  that.outputindex=null;
+                  if(that.$store.state.EDIDPortType==0)
+                  {
+                    that.inClcick(that.$store.state.EDIDIndex,"in"+that.$store.state.EDIDIndex);
+                  }
+                  else if(that.$store.state.EDIDPortType==1)
+                  {
+                    that.outClcick(that.$store.state.EDIDIndex,"out"+that.$store.state.EDIDIndex);
+                  }
+                }
               }
             }
             else
@@ -581,10 +629,11 @@ export default {
           } 
           else if (response.data.status == "ERROR") 
           {
-
+            that.outputindex=null;
           }          
         })
         .catch(function(error) {
+          that.outputindex=null;
           console.log(error);
         });
     },
@@ -592,6 +641,7 @@ export default {
       let that=this;
       if (that.outputdata.length != 0) 
       {
+        that.outputindex=0;
         that.outClcick(
         that.outputdata[0].index,
         that.outputdata[0].output
@@ -647,7 +697,8 @@ export default {
           proVInfo[j].title = "out" + proVInfo[j].index;
           this.outputdata.push({
             index: proVInfo[j].index,
-            output: proVInfo[j].title
+            output: proVInfo[j].title,
+            status:proVInfo[j].status
           });
         } else {
           proVInfo[j].title = "in" + proVInfo[j].index;
@@ -661,11 +712,7 @@ export default {
           });
         }
       }
-      if (this.outputdata.length != 0) {
-        this.outClcick(this.outputdata[0].index, this.outputdata[0].output);
-      } else if (this.inputdata.length != 0) {
-        this.inClcick(this.inputdata[0].index, this.inputdata[0].input);
-      }
+      this.getProInfo();
     }
   },
   mounted() {
@@ -677,7 +724,7 @@ export default {
     }
     window.EDIDPortStatus = setInterval(function() {
           that.getProInfo();
-        }, 3000);
+        }, 6000);
   }
 };
 </script>
