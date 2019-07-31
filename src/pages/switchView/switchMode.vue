@@ -375,8 +375,8 @@ export default {
       bg_index2: null,
       screenWidth: document.body.clientWidth,
       aoDataSelected: [],
-      ckeckVal: this.$store.state.switchAllA.length==0?false:true,
-      isSelectAll: this.$store.state.switchAllA.length==0?false:true,
+      ckeckVal: this.$store.state.switchAudioAll,
+      isSelectAll: this.$store.state.switchAudioAll,
       setInfo: {},
       lastAoDataOutLength: 0,
       lastaoDataLength: 0,
@@ -471,14 +471,15 @@ export default {
           }
           that.$store.state.switchAllA = ht;
         }
-        
+        that.$store.state.switchAudioAll=that.isSelectAll;
         window.allSwitchASetInterval = setInterval(function() {
           that.getProInfo1();
         }, 3000);
       } 
       else {
         that.isSelectAll = false;
-        //that.$store.state.switchAllA=[];
+        that.$store.state.switchAllA=[];
+        that.$store.state.switchAudioAll=that.isSelectAll;
         for (let i = 0; i < that.aoData.length; i++) {
           that.aoData[i].link_status = "false";
           for (let j = 0; j < that.aoData[i].sourceGroup.length; j++) {

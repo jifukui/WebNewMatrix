@@ -58,6 +58,7 @@ const router = new Router({
   ]
 })
 router.beforeEach((to, from, next) => {
+  console.log("have change"+" to is"+to.path+" from is "+from.path);
   if (window.allSwitchSetInterval) {
     window.clearInterval(window.allSwitchSetInterval);
   }
@@ -78,6 +79,10 @@ router.beforeEach((to, from, next) => {
   }
   if (window.myFanInterval) {
     window.clearInterval(window.myFanInterval);
+  }
+  if(window.EDIDPortStatus)
+  {
+    window.clearInterval(window.EDIDPortStatus);
   }
   next();
 })

@@ -402,9 +402,9 @@ export default {
       bg_index2: null,
       screenWidth: document.body.clientWidth,
       aoDataSelected: [],
-      ckeckVal: this.$store.state.switchAll.length==0?false:true,
+      ckeckVal: this.$store.state.switchVideoALL,
       afvAll: this.$store.state.afvAll,
-      isSelectAll: this.$store.state.switchAll.length==0?false:true,
+      isSelectAll: this.$store.state.switchVideoALL,
       setInfo: {},
       lastAoDataOutLength: 0,
       lastaoDataLength: 0,
@@ -501,6 +501,7 @@ export default {
             //console.log("that.aoDataOut"+that.aoDataOut[i]);
           }
           that.$store.state.switchAll = ht;
+          that.$store.state.switchVideoALL=that.isSelectAll;
         }
        
         window.allSwitchSetInterval = setInterval(function() 
@@ -512,7 +513,8 @@ export default {
       else 
       {
         that.isSelectAll = false;
-        //this.$store.state.switchVideoAll=[];
+        this.$store.state.switchVideoAll=[];
+        that.$store.state.switchVideoALL=that.isSelectAll;
         for (let i = 0; i < that.aoData.length; i++) 
         {
           that.aoData[i].link_status = "false";
@@ -797,8 +799,8 @@ export default {
       this.$axios
         .post("/cgi-bin/ligline.cgi", aoData)
         .then(function(response) {
-          console.log("getProInfo"+that.isSelectAll);
-          console.log("getProInfo"+that.$store.state.switchAll.length);
+          //console.log("getProInfo"+that.isSelectAll);
+          //console.log("getProInfo"+that.$store.state.switchAll.length);
           if (response.data.status == "SUCCESS" && that.isSelectAll == false&&that.isShowV)  
           {
             let proVInfo = response.data.echo.result.Port;
@@ -955,8 +957,8 @@ export default {
       this.$axios
         .post("/cgi-bin/ligline.cgi", aoData)
         .then(function(response) {
-          console.log("getProInfo 1"+that.isSelectAll);
-          console.log("getProInfo 1"+that.$store.state.switchAll.length);
+          //console.log("getProInfo 1"+that.isSelectAll);
+          //console.log("getProInfo 1"+that.$store.state.switchAll.length);
           if (response.data.status == "SUCCESS" && that.isSelectAll == true&&that.isShowV) 
           {
             

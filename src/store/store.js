@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 const state = {
     switchVideo:true,
+    switchVideoALL:false,
+    switchAudioAll:false,
     switchAfv:[],
     switchAll:[],
     switchAllA:[],
@@ -18,7 +20,10 @@ const state = {
     fan:[],
     outRes:7,
     outputs:[0,0,0,0],
-    outputsA:[0,0,0,0]
+    outputsA:[0,0,0,0],
+    EDIDIndex:null,
+    EDIDPortType:1,
+    EDIDDefault:false
 }
 
 

@@ -142,7 +142,7 @@ export default {
       fileList: [],
       uploadsuccess: false,
       // 点击变色
-      style_bg: true, //Default按钮状态
+      style_bg: !this.$store.state.EDIDDefault, //Default按钮状态
       edidFile: false, //上传文件按钮状态
       isActive: -1, //输入输出按钮状态
       // 中间部分
@@ -199,50 +199,70 @@ export default {
 			--- 左侧 --- 
 		*/
     // OUT选择按钮
-    outClcick(index, output) {
+    outClcick(index, output) 
+    {
+      console.log("index is "+index+" output is"+output);
       this.selecting = true;
       this.output = output;
       this.isActive = index;
       this.edidFile = false;
       this.Uploading = "";
-      if (this.style_bg == false) {
+      if (this.style_bg == false) 
+      {
         this.type = 2;
-      } else {
+      } 
+      else 
+      {
         this.type = 1;
       }
       // console.log(this.outputdata[this.isActive])
       // this.style_bg = true;
       // this.$refs.clearUploads.clearFiles();
+      this.$state.state.EDIDIndex=index;
+      this.$state.state.EDIDPortType=1;
       this.getEdidInfo(this.type, index);
     },
     // IN选择按钮
-    inClcick(index, output) {
+    inClcick(index, output) 
+    {
       this.selecting = true;
       this.output = output;
       this.isActive = index;
       this.edidFile = false;
       this.Uploading = "";
-      if (this.style_bg == false) {
+      if (this.style_bg == false) 
+      {
         this.type = 2;
-      } else {
+      } 
+      else 
+      {
         this.type = 0;
       }
       // this.style_bg = true;
       // this.$refs.clearUploads.clearFiles();
+      this.$state.state.EDIDIndex=index;
+      this.$state.state.EDIDPortType=0;
       this.getEdidInfo(this.type, index);
     },
     // DEFAULT默认按钮
-    defaultClick() {
-      if (this.isActive != -1) {
+    defaultClick() 
+    {
+      if (this.isActive != -1) 
+      {
         this.selecting = true;
         let type = 0;
-        if (this.style_bg == true) {
+        if (this.style_bg == true) 
+        {
           type = 2;
           this.DefaultTxt = "Default";
           this.style_bg = false;
-        } else {
-          for (let i = 0; i < this.outputdata.length; i++) {
-            if (this.isActive == this.outputdata[i].index) {
+        } 
+        else 
+        {
+          for (let i = 0; i < this.outputdata.length; i++) 
+          {
+            if (this.isActive == this.outputdata[i].index) 
+            {
               type = 1;
             }
           }
@@ -255,6 +275,7 @@ export default {
         // this.isActive = -1;
         // this.style_bg = false;
         // this.$refs.clearUploads.clearFiles();
+        this.$store.state.EDIDDefault=!this.style_bg;
         this.getEdidInfo(this.type, this.isActive);
       }
     },
@@ -314,15 +335,7 @@ export default {
           confirmButtonText: "OK",
           callback: action => {}
         });
-        // if (failfiel) {
-        //     if (firstflag) {
-        //         that.$alert("File type error", "Prompt information", {
-        //             confirmButtonText: "OK",
-        //             callback: action => {}
-        //         });
-        //     } else {
-        //     }
-        // }
+        
       }
       this.output = "";
       this.DefaultTxt = "";
@@ -339,11 +352,14 @@ export default {
       let that = this;
       that.selecting = true;
       let copyIndexLength = that.copyIndex.length;
-      if (that.indexNumber < copyIndexLength) {
+      if (that.indexNumber < copyIndexLength) 
+      {
         setTimeout(function() {
           that.edidCopy(that.copyIndex[that.indexNumber]);
         }, 2000);
-      } else {
+      } 
+      else 
+      {
         that.indexNumber = 0;
         setTimeout(function() {
           that.selecting = false;
@@ -405,7 +421,8 @@ export default {
         that.ischecked = true;
         that.selectMsg.length = 0;
         that.copyIndex.length = 0;
-        for (var i = 0; i < that.copyInput.length; i++) {
+        for (var i = 0; i < that.copyInput.length; i++) 
+        {
           that.$set(that.copyInput[i], "checked", true);
           let ht = {
             title: that.copyInput[i].PHYName,
@@ -414,7 +431,8 @@ export default {
           that.selectMsg.push(ht);
           that.copyIndex.push(that.copyInput[i].index);
         }
-      } else {
+      } 
+      else {
         that.ischecked = false;
         that.selectInput = false;
         that.showCopy = false;
@@ -496,7 +514,8 @@ export default {
         that.Model = that.$EDID.getLength();
       }
     },
-    getProInfo() {
+    getProInfo() 
+    {
       let that = this;
       let aoData = {
         cmd: "video_info"
@@ -504,20 +523,25 @@ export default {
       this.$axios
         .post("/cgi-bin/ligline.cgi", aoData)
         .then(function(response) {
-          if (response.data.status == "SUCCESS") {
+          if (response.data.status == "SUCCESS") 
+          {
             let proVInfo = response.data.echo.result.Port;
             that.$store.state.portInfo = proVInfo;
             that.outputdata = [];
             that.inputdata = [];
             that.copyInput = [];
-            for (let j = 0; j < proVInfo.length; j++) {
-              if (proVInfo[j].Dir == "Out") {
+            for (let j = 0; j < proVInfo.length; j++) 
+            {
+              if (proVInfo[j].Dir == "Out") 
+              {
                 proVInfo[j].title = "out" + proVInfo[j].index;
                 that.outputdata.push({
                   index: proVInfo[j].index,
                   output: proVInfo[j].title
                 });
-              } else {
+              } 
+              else 
+              {
                 proVInfo[j].title = "in" + proVInfo[j].index;
                 that.inputdata.push({
                   index: proVInfo[j].index,
@@ -529,20 +553,54 @@ export default {
                 });
               }
             }
-            if (that.outputdata.length != 0) {
-              that.outClcick(
-                that.outputdata[0].index,
-                that.outputdata[0].output
-              );
-            } else if (that.inputdata.length != 0) {
-              that.inClcick(that.inputdata[0].index, that.inputdata[0].input);
+            if(that.$store.state.EDIDIndex!=null)
+            {
+              let jiport;
+              let i=0;
+              jiport=that.$store.state.EDIDPortType==0?that.inputdata:that.outputdata;
+              for( i=0;i<jiport.length;i++)
+              {
+                if(that.$store.state.EDIDIndex==jiport[i].index)
+                {
+                  break;
+                }
+              }
+              if(i==jiport.length)
+              {
+                that.SetPort();
+              }
+              else
+              {
+                
+              }
             }
-          } else if (response.data.status == "ERROR") {
-          }
+            else
+            {
+              that.SetPort();
+            }
+          } 
+          else if (response.data.status == "ERROR") 
+          {
+
+          }          
         })
         .catch(function(error) {
           console.log(error);
         });
+    },
+    SetPort(){
+      let that=this;
+      if (that.outputdata.length != 0) 
+      {
+        that.outClcick(
+        that.outputdata[0].index,
+        that.outputdata[0].output
+        );
+      } 
+      else if (that.inputdata.length != 0) 
+      {
+        that.inClcick(that.inputdata[0].index, that.inputdata[0].input);
+      }
     },
     getEdidInfo(type, index) {
       let aoData = {
@@ -611,10 +669,15 @@ export default {
     }
   },
   mounted() {
+    let that = this;
     let proVInfo = this.$store.state.portInfo;
-    if (proVInfo.length == 0) {
-      this.getProInfo();
+    if(proVInfo.length==0)
+    {
+      that.getProInfo();
     }
+    window.EDIDPortStatus = setInterval(function() {
+          that.getProInfo();
+        }, 3000);
   }
 };
 </script>
