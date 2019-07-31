@@ -1,0 +1,1686 @@
+<template>
+<!-- 音频页面 -->
+  <div class="wrapper">
+    <div id="matrix_content">
+      <div class="table">
+        <div class="tableRow">
+          <div class="table_cell">
+            <p style="text-align:left;font-size:22px">Audio</p>
+            <p style="text-align:left">
+              Number of Inputs:{{ this.aoDataLength - 1 }}
+            </p>
+            <p style="text-align:left">
+              Number of Outputs:{{ this.aoDataOut.length }}
+            </p>
+          </div>
+          <div class="table_cell1">
+            <div
+              class="nav_left_content"
+              :class="isleftHidden == true ? 'hide' : ''"
+            >
+              <div
+                class="nav_left_content_in"
+                @click="turnLeft"
+                :class="isleftHidden == true ? 'hide' : ''"
+              ></div>
+            </div>
+          </div>
+          <div class="table_cel3 table_cel4">
+            <div class="output">Outputs</div>
+          </div>
+          <div class="outPutInfo">
+            <div
+              class="tableCell  "
+              v-for="(items, index) in aoDataOut.slice(c, d)"
+              :key="index"
+            >
+              <div class="groupHeader groupHeaderSecound">
+                <span class="signal"></span
+                ><span
+                  class="port_name"
+                  :class="{
+                    selected: index == nowIndex1 || index == bg_index2
+                  }"
+                  @mouseover="showInfo(index, items, 'up')"
+                  @mouseleave="hideInfo()"
+                  @click="selectPortInfo(items.index)"
+                  >{{ items.title }}</span
+                >
+                <!-- @click="openSet(items.index, 'Out', items.title)" -->
+              </div>
+            </div>
+          </div>
+          <div class="table_cel3 table_cel5"></div>
+          <div class="table_cell">
+            <div class="nav_right" :class="isrightHidden == true ? 'hide' : ''">
+              <div
+                class="nav_right_content"
+                @click="turnRight"
+                :class="isrightHidden == true ? 'hide' : ''"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <div class="tableRow1">
+          <div class="table_cell1">
+            <div class="nav_top" :class="istopHidden == true ? 'hide' : ''">
+              <div
+                class="nav_top_content_in"
+                @click="turnTop"
+                :class="istopHidden == true ? 'hide' : ''"
+              ></div>
+            </div>
+          </div>
+          <div class="table_cell1"></div>
+          <div class="table_cel2"></div>
+          <div>
+            <div
+              v-for="(items, index) in aoDataOut.slice(c, d)"
+              :key="index"
+            ></div>
+          </div>
+        </div>
+        <div class="tableRow1">
+          <div class="table_cel6">Inputs</div>
+          <div class="table_cell1"></div>
+          <div class="isAll table_cell1">
+            <el-checkbox v-model="ckeckVal" @change="clickMe">All</el-checkbox>
+          </div>
+          <div class="table_cell1" v-if="isSelectAll">
+            <div
+              v-for="(items, index) in aoDataOut.slice(c, d)"
+              :key="index"
+              class="table_checkbox"
+            >
+              <input
+                type="checkbox"
+                :checked="items.switchSelect == true ? true : false"
+                :value="items.index"
+                @change="clickSelect(items.switchSelect, items.index)"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="groupRow2">
+          <span class="signalClose" ></span><span>CLOSE</span>
+        </div>
+        <div
+          class="tableRow"
+          v-for="(items, index) in aoData.slice(e, f)"
+          :key="index"
+        >
+          <div class="tableCell">
+            <div class="groupRow">
+              <span
+                :class="[
+                  { signalNo: items.status == 'Off' },
+                  { signal: items.status == 'On' },
+                  //{ signalClose: items.status == 'close' }
+                ]"
+              ></span
+              ><span
+                class="port_name"
+                :class="{ selected: index == nowIndex || index == bg_index }"
+                @mouseover="showInfo(index, items)"
+                @mouseleave="hideInfo()"
+                @click="selectPortInfo(items.index)"
+                >{{ items.title }}</span
+              >
+              <!-- @click="openSet(items.index, 'In', items.title)" -->
+            </div>
+          </div>
+          <div class="table_cell1"></div>
+          <div class="table_cell">
+            <div
+              v-if="items.link_status == 'true' && isSelectAll"
+              class="link_status"
+              :class="{ checked: true }"
+              @mouseenter="showPortLink(index)"
+              @mouseleave="hidePortLink(index)"
+            ></div>
+            <div
+              v-else-if="isSelectAll"
+              class="link_status"
+              :class="{ checked: items.checked }"
+              @click="selectedSwitchAll(items, items.index)"
+              @mouseenter="showPortLink(index)"
+              @mouseleave="hidePortLink(index)"
+            ></div>
+          </div>
+          <div v-if="showBtn">
+            <div
+              class="table_cell"
+              v-for="(interitems, interindex) in items.sourceGroup.slice(g, h)"
+              :key="interindex"
+              :class="{
+                table_cell_bg:
+                  (index == bg_index && interindex <= bg_index2) ||
+                  (interindex == bg_index2 && index <= bg_index)
+              }"
+            >
+              <div>
+                <div
+                  v-if="interitems.link_status == 'no'"
+                  class="link_status_no"
+                  @mouseenter="showPortLink(index, interindex)"
+                  @mouseleave="hidePortLink(index, interindex)"
+                ></div>
+                <div
+                  v-else-if="interitems.link_status == 'true'"
+                  class="link_status"
+                  :class="{ checked: true }"
+                  @mouseenter="showPortLink(index, interindex)"
+                  @mouseleave="hidePortLink(index, interindex)"
+                ></div>
+                <div
+                  v-else
+                  class="link_status"
+                  :class="{ checked: interitems.checked }"
+                  @click="
+                    selectedSwitch(interitems, items.index, interitems.index)
+                  "
+                  @mouseenter="showPortLink(index, interindex)"
+                  @mouseleave="hidePortLink(index, interindex)"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tableRow" v-for="i in isEnoughNum" :key="index" v-if="isEnoughIn">
+          <div class="tableCell "></div>
+        </div>
+        <div class="tableRow1">
+          <div class="table_cel7"></div>
+          <div></div>
+          <div></div>
+          <div>
+            <div
+              v-for="(items, index) in aoData.slice(c, d)"
+              :key="index"
+            ></div>
+          </div>
+        </div>
+        <div class="tableRow">
+          <div class="table_cell">
+            <div class="nav_bottom" :class="isdownHidden == true ? 'hide' : ''">
+              <div
+                class="nav_bottom_content"
+                @click="turnDown"
+                :class="isdownHidden == true ? 'hide' : ''"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-if="openSetInfo" class="setInfo">
+        <div class="setInfo_box">
+          <div class="title">Port Information {{title}}</div>
+          <div class="boxContent">
+            <table class="boxC">
+              <tr
+                v-for="(item,index) in staticData"
+                :key="index"
+                class="staticTr">
+                <td width="35%">{{item.id}}:</td>
+                <td width="65%">{{item.value}}</td>
+              </tr>
+              <tr 
+                v-for="(item, index) in setData" 
+                :key="index" 
+                class="staticTr">
+                <td width="35%" v-if="item.type === 'static'">{{ item.id }}:</td>
+                <td width="65%" v-if="item.type === 'static'">
+                  {{ item.value }}<span v-show="item.id == 'Temperature'"> ℃</span
+                  ><span v-show="item.id == 'Voltage'"> V</span>
+                </td>
+                <td width="35%" v-if="item.type === 'staticList'">{{ item.id }}:</td>
+                <td width="65%" v-if="item.type === 'staticList'">
+                  <span
+                    v-for="(items, index) in item.value"
+                    :key="index"
+                    v-show="items.value == item.oldvalue"
+                    >{{ items.name }}</span
+                  >
+                </td>
+                <td width="35%" v-if="item.type === 'list'">{{ item.id }}:</td>
+                <td width="65%" v-if="item.type === 'list'">
+                  <select v-model="item.lastervalue">
+                    <option
+                      v-for="(item, index) in item.value"
+                      :key="index"
+                      :value="item.value"
+                      >{{ item.name }}</option
+                    >
+                  </select>
+                </td>
+                <td width="35%" v-if="item.type === 'slider'">{{ item.id }}:</td>
+                <td width="65%" v-if="item.type === 'slider'">
+                  <div class="block">
+                    <el-slider
+                      :min="item.value.min"
+                      :max="item.value.max"
+                      show-input
+                      :show-input-controls="false"
+                      @change="change(item)"
+                      v-model="item.lastervalue"
+                      input-size="mini"
+                    ></el-slider>
+                  </div>
+                </td>
+                <td width="35%" v-if="item.type === 'switch'">{{ item.id }}:</td>
+                <td width="65%" v-if="item.type === 'switch'">
+                  <el-switch
+                    v-model="item.lastervalue"
+                    active-color="#13ce66"
+                    inactive-color="#ccc"
+                    :active-text="item.value.on_text"
+                    :inactive-text="item.value.off_text"
+                  ></el-switch>
+                </td>
+                <td width="35%" v-if="item.type === 'inputOnlySetNum'">{{ item.id }}:</td>
+                <td width="65%" v-if="item.type === 'inputOnlySetNum'">
+                  <input
+                    type="text"
+                    v-text="item.oldvalue"
+                    v-model="item.lastervalue"
+                    @blur="inpNum(item, item.value.min, item.value.max)"
+                  />
+                </td>
+                <td width="35%" v-if="item.type === 'inputNum'">{{ item.id }}:</td>
+                <td width="65%" v-if="item.type === 'inputNum'">
+                  <input
+                    type="text"
+                    v-text="item.oldvalue"
+                    v-model="item.lastervalue"
+                    @blur="inpNum(item,item.value.min,item.value.max)"
+                  />
+                </td>
+                <td width="35%" v-if="item.type === 'buttonR'">{{ item.id }}:</td>
+                <td width="65%" v-if="item.type === 'buttonR'">
+                  <el-button
+                    class="btn"
+                    type="primary"
+                    @click="clickBtn(isActive, 1)">
+                      Repower
+                  </el-button>
+                  <el-button
+                    class="btn"
+                    type="primary"
+                    @click="clickBtn(isActive, 2)">
+                      Factory
+                  </el-button>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div>
+            <el-button
+              class="isOk"
+              type="primary"
+              value="OK"
+              @click="saveBtn(isActive)">
+              Save
+            </el-button>
+            <!-- @click="OKBtn" -->
+            <el-button
+              class="isCancel"
+              type="primary"
+              value="Cancel"
+              @click="CancelBtn">
+              Exit
+            </el-button>
+          </div>
+          <!-- <h5 class="tc">{{data}}</h5> -->
+        </div>
+        <!-- <SetInfoAudio :portSetInfo="setInfo" @closePage="CancelShow"></SetInfoAudio> -->
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import SetInfoAudio from "./setInfoAudio";
+export default {
+  components: {
+    SetInfoAudio
+  },
+  props: ["isShowA"],
+  data() {
+    return {
+      sourceGroup: "",
+      proAvInfo: "",
+      aoDataLength: 1,
+      aoData: "",
+      aoDataOut: "",
+      nowIndex: "100",
+      nowIndex1: "100",
+      showBtn: true,
+      openSetInfo: false,
+      isrightHidden: false,
+      isleftHidden: true,
+      istopHidden: true,
+      isdownHidden: false,
+      isdown: false,
+      isright: false,
+      isEnoughNum: [],
+      a: 0,
+      b: 16,
+      c: 0,
+      d: 16,
+      e: 0,
+      f: 17,
+      g: 0,
+      h: 16,
+      bg_index: null,
+      bg_index2: null,
+      screenWidth: document.body.clientWidth,
+      aoDataSelected: [],
+      ckeckVal: this.$store.state.switchAllA.length==0?false:true,
+      isSelectAll: this.$store.state.switchAllA.length==0?false:true,
+      setInfo: {},
+      lastAoDataOutLength: 0,
+      lastaoDataLength: 0,
+      // 端口设置后加
+      slider: 50,
+      portList: [],
+      isActive: -1,
+      staticData: [],
+      value: "",
+      setData: "",
+      setData2: "",
+      // loading: true,
+      isNeedSave: true
+      // portInfoLoadding: true,
+      // saveLoading: false,
+    };
+  },
+  watch: {
+    screenWidth(val) {
+      if (!this.timer) {
+        this.screenWidth = val;
+        this.timer = true;
+        let that = this;
+        setTimeout(function() {
+          that.timer = false;
+        }, 400);
+      }
+    },
+    isShowA: {
+      handler(newValue, oldValue) 
+      {
+        //父组件param对象改变会触发此函数
+        if (newValue == true) 
+        {
+          if (window.myInterval1) 
+          {
+            window.clearInterval(window.myInterval1);
+          }
+          if (window.allSwitchASetInterval) 
+          {
+            window.clearInterval(window.allSwitchASetInterval);
+          }
+        } 
+        else 
+        {
+          let that = this;
+          if (that.ckeckVal == false) 
+          {
+            that.getProInfo();
+            window.myInterval1 = setInterval(function() 
+            {
+              that.getProInfo();
+            }, 3000);
+          } 
+          else 
+          {
+            that.getProInfo1();
+            window.allSwitchASetInterval = setInterval(function() {
+              that.getProInfo1();
+            }, 3000);
+          }
+        }
+      },
+      deep: true
+    }
+  },
+  computed: {},
+  methods: {
+    clickMe() {
+      let that = this;
+      if (that.ckeckVal) 
+      {
+        if (window.myInterval1) 
+        {
+          window.clearInterval(window.myInterval1);
+        }
+        that.isSelectAll = true;
+        for (let i = 0; i < that.aoData.length; i++) 
+        {
+          that.aoData[i].link_status = "false";
+          for (let j = 0; j < that.aoData[i].sourceGroup.length; j++) 
+          {
+            that.aoData[i].sourceGroup[j].link_status = "no";
+          }
+        }
+        let ht = [];
+        //if(ht.length==0)
+        {
+          for (let i = 0; i < that.aoDataOut.length; i++) {
+          that.aoDataOut[i].switchSelect = true;
+          ht.push(that.aoDataOut[i].index);
+          }
+          that.$store.state.switchAllA = ht;
+        }
+        
+        window.allSwitchASetInterval = setInterval(function() {
+          that.getProInfo1();
+        }, 3000);
+      } 
+      else {
+        that.isSelectAll = false;
+        //that.$store.state.switchAllA=[];
+        for (let i = 0; i < that.aoData.length; i++) {
+          that.aoData[i].link_status = "false";
+          for (let j = 0; j < that.aoData[i].sourceGroup.length; j++) {
+            that.aoData[i].sourceGroup[j].link_status = "false";
+          }
+        }
+        if (window.allSwitchASetInterval) {
+          window.clearInterval(window.allSwitchASetInterval);
+        }
+        that.getProInfo();
+        window.myInterval1 = setInterval(function() {
+          that.getProInfo();
+        }, 3000);
+      }
+    },
+    clickSelect(ckeckValue, index) {
+      let that = this;
+      // for (let i = 0; i < that.aoData.length; i++) {
+      //   that.aoData[i].link_status = "false";
+      //   for (let j = 0; j < that.aoData[i].sourceGroup.length; j++) {
+      //     that.aoData[i].sourceGroup[j].link_status = "no";
+      //   }
+      // }
+      if (ckeckValue) {
+        for (let i = 0; i < this.aoDataOut.length; i++) {
+          if (this.aoDataOut[i].index == index) {
+            this.aoDataOut[i].switchSelect = false;
+          }
+        }
+        this.$store.state.switchAllA.splice(
+          this.$store.state.switchAllA.indexOf(index),
+          1
+        );
+      } else {
+        for (let i = 0; i < this.aoDataOut.length; i++) {
+          if (this.aoDataOut[i].index == index) {
+            this.aoDataOut[i].switchSelect = true;
+          }
+        }
+        this.$store.state.switchAllA.push(index);
+      }
+    },
+    selectedSwitch(item, c, d) {
+      let aoData = {
+        cmd: "routing",
+        routing: [
+          {
+            type: "a",
+            out: d,
+            in: c
+          }
+        ]
+      };
+      let that = this;
+      this.$axios
+        .post("/cgi-bin/ligline.cgi", aoData)
+        .then(function(response) {
+          if (response.data.status == "SUCCESS") {
+            that.getProInfo();
+          } else if (response.data.status == "ERROR") {
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    //多切功能
+    selectedSwitchAll(items, index) {
+      let aoOut = [];
+      let routingData = [];
+      let that = this;
+      for (let i = 0; i < this.aoDataOut.length; i++) {
+        if (this.aoDataOut[i].switchSelect == true) {
+          aoOut.push(this.aoDataOut[i].index);
+          let ht = {
+            type: "a",
+            out: this.aoDataOut[i].index,
+            in: index
+          };
+          routingData.push(ht);
+        }
+      }
+
+      let aoData = {
+        cmd: "routing",
+        routing: routingData
+      };
+      console.log(aoData);
+
+      this.$axios
+        .post("/cgi-bin/ligline.cgi", aoData)
+        .then(function(response) {
+          if (response.data.status == "SUCCESS") {
+            that.getProInfo1();
+          } else if (response.data.status == "ERROR") {
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    showInfo(index, item, isPosition) {
+      if (this.screenWidth > 1025) {
+        if (isPosition == "up") {
+          this.nowIndex1 = index;
+        } else {
+          this.nowIndex = index;
+        }
+      }
+    },
+    hideInfo(index) {
+      if (this.screenWidth > 1025) {
+        this.nowIndex = "100";
+        this.nowIndex1 = "100";
+      }
+    },
+    // 端口号点击事件（返回数据）
+    openSet(index, dir, title) {
+      console.log(index);
+      if (index != 0) {
+        console.log(dir);
+        if (index != 0) {
+          let that = this;
+          let aoData = {
+            cmd: "SnapshotPort",
+            PortInfo: {
+              index: index,
+              Dir: dir,
+              type: "Audio"
+            }
+          };
+          this.$axios
+            .post("/cgi-bin/ligline.cgi", aoData)
+            .then(function(response) {
+              if (response.data.status == "SUCCESS") {
+                let portInfo = response.data.echo.result;
+                that.setInfo = portInfo;
+                that.setInfo.title = title;
+                that.setInfo.index = index;
+                that.setInfo.dir = dir;
+              } else if (response.data.status == "ERROR") {
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+          this.openSetInfo = true;
+        }
+      }
+    },
+    turnRight() {
+      if (this.b < this.aoDataOut.length) {
+        if (this.b == this.aoDataOut.length - 1) {
+          this.isrightHidden = true;
+          this.isright = true;
+        }
+        this.a += 1;
+        this.b += 1;
+        this.c += 1;
+        this.d += 1;
+        this.g += 1;
+        this.h += 1;
+        this.isleftHidden = false;
+      }
+    },
+    turnLeft() {
+      if (this.a > 0) {
+        if (this.a == 1) {
+          this.isleftHidden = true;
+        }
+        this.a -= 1;
+        this.b -= 1;
+        this.c -= 1;
+        this.d -= 1;
+        this.g -= 1;
+        this.h -= 1;
+        this.isrightHidden = false;
+        this.isright = false;
+      }
+    },
+    turnTop() {
+      if (this.e > 0) {
+        if (this.e == 1) {
+          this.istopHidden = true;
+        }
+        this.e -= 1;
+        this.f -= 1;
+        this.isdownHidden = false;
+        this.isdown = false;
+      }
+    },
+    turnDown() {
+      if (this.f < this.aoDataLength) {
+        if (this.f == this.aoDataLength - 1) {
+          this.isdownHidden = true;
+          this.isdown = true;
+        }
+        this.e += 1;
+        this.f += 1;
+        this.istopHidden = false;
+      }
+    },
+    showPortLink(a, b) {
+      this.bg_index = a;
+      this.bg_index2 = b;
+    },
+    hidePortLink() {
+      this.bg_index = null;
+      this.bg_index2 = null;
+    },
+    CancelShow(value) {
+      this.openSetInfo = false;
+      this.showBtn = true;
+    },
+    //获取端口信息和切换状态
+    getProInfo() {
+      let that = this;
+      let aoData = {
+        cmd: "audio_info"
+      };
+      this.$axios
+        .post("/cgi-bin/ligline.cgi", aoData)
+        .then(function(response) {
+          //console.log("audio getProInfo"+that.isSelectAll);
+          //console.log("audio getProInfo"+ that.$store.state.switchAllA.length);
+          //console.log("audio "+that.$store.state.switchVideo)
+          if (response.data.status == "SUCCESS" && that.isSelectAll == false&&that.isShowA==false) 
+          {
+            let proVInfo = response.data.echo.result.Port;
+            let sourceGroup = [];
+            for (let j = 0; j < proVInfo.length; j++) 
+            {
+              if (proVInfo[j].Dir == "Out") 
+              {
+                proVInfo[j].link_status = "false";
+                proVInfo[j].switchSelect = true;
+                proVInfo[j].title = "out" + proVInfo[j].index;
+                sourceGroup.push(proVInfo[j]);
+              }
+            }
+            let sourceGroup1 = [
+              {
+                index: 0,
+                Dir: "in",
+                type: "a",
+                // title: "CLOSE",
+                status: "close",
+                link_status: "false",
+                sourceGroup: JSON.parse(JSON.stringify(sourceGroup))
+              }
+            ];
+            for (let i = 0; i < proVInfo.length; i++) {
+              if (proVInfo[i].Dir == "In") {
+                proVInfo[i].link_status = "false";
+                proVInfo[i].title = "In" + proVInfo[i].index;
+                proVInfo[i].sourceGroup = sourceGroup;
+                sourceGroup1.push(proVInfo[i]);
+              }
+            }
+            // console.log(sourceGroup1);
+            that.aoDataOut = sourceGroup;
+            // console.log(that.aoDataOut);
+            that.aoData = JSON.parse(JSON.stringify(sourceGroup1));
+            that.aoDataLength = that.aoData.length;
+            if (that.aoDataLength < 17) {
+              that.isEnoughIn = true;
+              that.isEnoughNum = 17 - that.aoDataLength;
+            }
+            // console.log(this.aoDataLength);
+            if (
+              that.aoDataOut.length != that.lastAoDataOutLength ||
+              that.aoDataLength != that.lastaoDataLength
+            ) {
+              that.isrightHidden = false;
+              that.isleftHidden = true;
+              that.istopHidden = true;
+              that.isdownHidden = false;
+              that.a = 0;
+              that.b = 16;
+              that.c = 0;
+              that.d = 16;
+              that.e = 0;
+              that.f = 17;
+              that.g = 0;
+              that.h = 16;
+              if (that.aoDataOut.length <= 16) 
+              {
+                that.isrightHidden = true;
+              } 
+              else 
+              {
+                that.isrightHidden = false;
+              }
+              if (that.aoDataLength <= 17) 
+              {
+                that.isdownHidden = true;
+              } 
+              else {
+                that.isdownHidden = false;
+              }
+            } 
+            else 
+            {
+              if (that.aoDataOut.length <= 16) 
+              {
+                that.isrightHidden = true;
+              } 
+              else if (that.isrightHidden == true) 
+              {
+                that.isrightHidden = true;
+              } 
+              else 
+              {
+                that.isrightHidden = false;
+              }
+              if (that.aoDataLength <= 17) 
+              {
+                that.isdownHidden = true;
+              } else if (that.isdownHidden == true) {
+                that.isdownHidden = true;
+              } else {
+                that.isdownHidden = false;
+              }
+            }
+
+            that.lastAoDataOutLength = JSON.parse(
+              JSON.stringify(sourceGroup.length)
+            );
+            that.lastaoDataLength = JSON.parse(
+              JSON.stringify(that.aoData.length)
+            );
+            for (let i = 0; i < proVInfo.length; i++) 
+            {
+              for (let j = 0; j < that.aoData.length; j++) 
+              {
+                if (
+                  proVInfo[i].Dir == "Out" &&
+                  proVInfo[i].switch == that.aoData[j].index
+                ) 
+                {
+                  for (let k = 0; k < that.aoData[j].sourceGroup.length; k++) 
+                  {
+                    if (
+                      proVInfo[i].index == that.aoData[j].sourceGroup[k].index
+                    ) 
+                    {
+                      that.aoData[j].sourceGroup[k].link_status = "true";
+                    }
+                  }
+                }
+              }
+            }
+            that.$emit("closeLoading", false);
+          } else if (response.data.status == "ERROR") {
+            /*that.isEnoughIn = true;
+            that.isEnoughNum = 18 - that.aoDataLength;
+            that.$alert(response.data.error, "Prompt information", {
+              confirmButtonText: "OK",
+              callback: action => {}
+            });*/
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    //获取端口信息和切换状态
+    getProInfo1() {
+      let that = this;
+      let aoData = {
+        cmd: "audio_info"
+      };
+      this.$axios
+        .post("/cgi-bin/ligline.cgi", aoData)
+        .then(function(response) {
+          //console.log("audio getProInfo 1"+that.isSelectAll);
+          //console.log("audio getProInfo 1"+ that.$store.state.switchAllA.length);
+          if (response.data.status == "SUCCESS" && that.isSelectAll == true&&that.isShowA==false) 
+          {
+            let proVInfo = response.data.echo.result.Port;
+            let switchAllA = that.$store.state.switchAllA;
+            let sourceGroup = [];
+            for (let j = 0; j < proVInfo.length; j++) 
+            {
+              if (proVInfo[j].Dir == "Out") 
+              {
+                proVInfo[j].link_status = "no";
+                proVInfo[j].switchSelect = false;
+                proVInfo[j].title = "out" + proVInfo[j].index;
+                if (switchAllA.length != 0) 
+                {
+                  // console.log(2222);
+                  for (let m = 0; m < switchAllA.length; m++) 
+                  {
+                    if (proVInfo[j].index == switchAllA[m]) 
+                    {
+                      proVInfo[j].switchSelect = true;
+                    }
+                  }
+                }
+                sourceGroup.push(proVInfo[j]);
+              }
+            }
+            let sourceGroup1 = [
+              {
+                index: 0,
+                Dir: "in",
+                type: "a",
+                // title: "CLOSE",
+                status: "close",
+                link_status: "false",
+                sourceGroup: JSON.parse(JSON.stringify(sourceGroup))
+              }
+            ];
+            for (let i = 0; i < proVInfo.length; i++) 
+            {
+              if (proVInfo[i].Dir == "In") 
+              {
+                proVInfo[i].link_status = "false";
+                proVInfo[i].title = "In" + proVInfo[i].index;
+                proVInfo[i].sourceGroup = sourceGroup;
+                sourceGroup1.push(proVInfo[i]);
+              }
+            }
+            //console.log("sourceGroup1"+sourceGroup1);
+            that.aoDataOut = sourceGroup;
+            //console.log("that.aoDataOut"+that.aoDataOut);
+            that.aoData = JSON.parse(JSON.stringify(sourceGroup1));
+            that.aoDataLength = that.aoData.length;
+            if (that.aoDataLength < 17) 
+            {
+              that.isEnoughIn = true;
+              that.isEnoughNum = 17 - that.aoDataLength;
+            }
+            // console.log(this.aoDataLength);
+            if (
+              that.aoDataOut.length != that.lastAoDataOutLength ||
+              that.aoDataLength != that.lastaoDataLength
+            ) {
+              that.isrightHidden = false;
+              that.isleftHidden = true;
+              that.istopHidden = true;
+              that.isdownHidden = false;
+              that.a = 0;
+              that.b = 16;
+              that.c = 0;
+              that.d = 16;
+              that.e = 0;
+              that.f = 17;
+              that.g = 0;
+              that.h = 16;
+              if (that.aoDataOut.length <= 16) {
+                that.isrightHidden = true;
+              } else {
+                that.isrightHidden = false;
+              }
+              if (that.aoDataLength <= 17) {
+                that.isdownHidden = true;
+              } else {
+                that.isdownHidden = false;
+              }
+            } else {
+              if (that.aoDataOut.length <= 16) {
+                that.isrightHidden = true;
+              } else if (that.isrightHidden == true) {
+                that.isrightHidden = true;
+              } else {
+                that.isrightHidden = false;
+              }
+              if (that.aoDataLength <= 17) {
+                that.isdownHidden = true;
+              } else if (that.isdownHidden == true) {
+                that.isdownHidden = true;
+              } else {
+                that.isdownHidden = false;
+              }
+            }
+
+            that.lastAoDataOutLength = JSON.parse(
+              JSON.stringify(sourceGroup.length)
+            );
+            that.lastaoDataLength = JSON.parse(
+              JSON.stringify(that.aoData.length)
+            );
+
+            for (let i = 0; i < proVInfo.length; i++) {
+              for (let j = 0; j < that.aoData.length; j++) {
+                if (
+                  proVInfo[i].Dir == "Out" &&
+                  proVInfo[i].switch == that.aoData[j].index
+                ) {
+                  for (let k = 0; k < that.aoData[j].sourceGroup.length; k++) {
+                    if (
+                      proVInfo[i].index == that.aoData[j].sourceGroup[k].index
+                    ) {
+                      that.aoData[j].sourceGroup[k].link_status = "true";
+                    }
+                  }
+                }
+              }
+            }
+            that.$emit("closeLoading", false);
+          } else if (response.data.status == "ERROR") {
+            /*that.isEnoughIn = true;
+            that.isEnoughNum = 18 - that.aoDataLength;
+            that.$alert(response.data.error, "Prompt information", {
+              confirmButtonText: "OK",
+              callback: action => {}
+            });*/
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    /**
+     * 端口设置方法
+     **/
+    getPortList(index) {
+      let that = this;
+      let aoData = {
+        cmd: "video_info"
+      };
+      this.$axios
+        .post("/cgi-bin/ligline.cgi", aoData)
+        .then(function(response) {
+          if (response.data.status == "SUCCESS") {
+            that.portList = response.data.echo.result.Port;
+            that.$store.state.portInfo = that.portList;
+            for (let j = 0; j < that.portList.length; j++) {
+              if (that.portList[j].Dir == "Out") {
+                that.portList[j].title = "out" + that.portList[j].index;
+              } else {
+                that.portList[j].title = "in" + that.portList[j].index;
+              }
+            }
+            // if (index) {
+            //   that.selectPortInfo(index);
+            // } else {
+            //   that.selectPortInfo(that.portList[0].index);
+            // }
+          } else if (response.data.status == "ERROR") {
+            that.$alert(response.data.error, "Prompt information", {
+              confirmButtonText: "OK",
+              callback: action => {}
+            });
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    selectPortInfo(index) {
+      let that = this;
+      if (window.portSetTimeout) {
+        window.clearInterval(window.portSetTimeout);
+      }
+      // that.loading = true;
+      // that.portInfoLoadding = true;
+      // that.staticData = [];
+      that.isActive = index;
+      let aoData = {
+        cmd: "GetPortInfo",
+        PortInfo: {
+          index: index
+        }
+      };
+      this.$axios
+        .post("/cgi-bin/ligline.cgi", aoData)
+        .then(function(response) {
+          if (response.data.status == "SUCCESS") {
+            // that.staticData = [];
+            let responseInfo = response.data.echo.result.Info;
+            let setInfo = response.data.echo.result.Setting;
+            if (setInfo.length == 0) {
+              that.isNeedSave = false;
+            } else {
+              that.isNeedSave = true;
+            }
+            if (responseInfo["Port Index"] == that.isActive) {
+              let staticAoData = [];
+              for (var i in responseInfo) {
+                let ht = {
+                  id: i,
+                  value: responseInfo[i]
+                };
+                staticAoData.push(ht);
+              }
+              that.staticData = staticAoData;
+              let value = [];
+              let setData = [];
+              value = that.$conf.PortInitAv(setInfo, responseInfo.Direction);
+              setData = that.$conf.PortInfoAv.info;
+              that.value = value;
+              that.setData = setData;
+              // that.loading = false;
+              // that.portInfoLoadding = false;
+            }
+          } else if (response.data.status == "ERROR") {
+            that.$alert(response.data.error, "Prompt information", {
+              confirmButtonText: "OK",
+              callback: action => {
+                // that.loading = false;
+              }
+            });
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+      this.openSetInfo = true;
+    },
+    inpNum(item, min, max) {
+      console.log(item.lastervalue);
+      console.log(min);
+      console.log(max);
+      let r = /^([1-9]\d*|[0]{1,1})$/;
+      if (!r.test(item.lastervalue)) {
+        this.$alert("Data type error", "Prompt information", {
+          confirmButtonText: "OK",
+          callback: action => {}
+        });
+        item.lastervalue = item.oldvalue;
+        return false;
+      }
+      if (item.lastervalue < min || item.lastervalue > max) {
+        this.$alert("Data out of range", "Prompt information", {
+          confirmButtonText: "OK",
+          callback: action => {}
+        });
+        item.lastervalue = item.oldvalue;
+        return false;
+      }
+    },
+    change(item) {
+      console.log("===============", Math.floor(item.lastervalue));
+      return (item.lastervalue = Math.floor(item.lastervalue));
+    },
+    clickBtn(index, info) {
+      let confirmValue = "";
+      if (info == 1) {
+        confirmValue = "RESET port to repower ? <br/>Press OK to confirm";
+      } else if (info == 2) {
+        confirmValue =
+          "RESET port to factory default ? <br/>Press OK to confirm";
+      }
+      let that = this;
+      that
+        .$confirm(confirmValue, "Prompt information", {
+          confirmButtonText: "Ok",
+          cancelButtonText: "Cancel",
+          type: "warning",
+          closeOnClickModal: false,
+          dangerouslyUseHTMLString: true
+        })
+        .then(() => {
+          var data = {
+            cmd: "SetPortInfo",
+            PortInfo: [
+              {
+                index: index,
+                sid: 36,
+                value: info
+              }
+            ]
+          };
+          console.log("The data is " + JSON.stringify(data));
+          this.$axios
+            .post("/cgi-bin/ligline.cgi", data)
+            .then(function(response) {
+              if (response.data.status == "SUCCESS") {
+                that.$alert("Save success", "Prompt information", {
+                  confirmButtonText: "OK",
+                  callback: action => {}
+                });
+              } else if (response.data.status == "ERROR") {
+                that.$alert(response.data.error, "Prompt information", {
+                  confirmButtonText: "OK",
+                  callback: action => {}
+                });
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        })
+        .catch(() => {
+          let sendata = {
+            resetSure: "Cancel Reset Information" //取消重置信息
+          };
+          console.log(sendata);
+        });
+    },
+    // 确定提交按钮
+    saveBtn(index) {
+      var data = {};
+      let that = this;
+      data.cmd = "SetPortInfo";
+      data.PortInfo = [];
+      data.PortInfo = this.$conf.PortAvOK(
+        this.$conf.PortInfoAv.info, 
+        index
+      );
+      if (data.PortInfo.length == 0) {
+        that.$alert(
+          "Please set relevant parameters before saving.",
+          "Prompt information",
+          {
+            confirmButtonText: "OK",
+            callback: action => {}
+          }
+        );
+        return false;
+        that.$emit("closePage", false);
+        that.$conf.PortCancel();
+        this.openSetInfo = false;
+      }
+      console.log("The data is " + JSON.stringify(data));
+      this.$axios
+        .post("/cgi-bin/ligline.cgi", data)
+        .then(function(response) {
+          if (response.data.status == "SUCCESS") {
+            that.$alert("Save success", "Prompt information", {
+              confirmButtonText: "OK",
+              callback: action => {
+                // that.loading = true;
+                window.portSetTimeout = setTimeout(function() {
+                  that.getPortList(that.isActive);
+                }, 2000);
+              }
+            });
+            that.$emit("closePage", false);
+            that.$conf.PortCancel();
+            this.openSetInfo = false;
+          } else if (response.data.status == "ERROR") {
+            that.$alert(response.data.error, "Prompt information", {
+              confirmButtonText: "OK",
+              callback: action => {
+                that.getPortList(that.isActive);
+              }
+            });
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    // 关闭提交按钮
+    CancelBtn() {
+      this.$emit("closePage", false);
+      this.$conf.PortCancel();
+      this.openSetInfo = false;
+    }
+  },
+  created() {
+    this.getProInfo();
+  },
+  mounted() {
+    let that = this;
+    if (that.isShowA == false) 
+    {
+      if (that.ckeckVal) 
+      {
+        that.getProInfo1();
+        window.allSwitchASetInterval = setInterval(function() {
+          that.getProInfo1();
+        }, 3000);
+      } 
+      else 
+      {
+        that.getProInfo();
+        window.myInterval1 = setInterval(function() {
+          that.getProInfo();
+        }, 3000);
+      }
+    }
+    window.onresize = () => {
+      return (() => {
+        window.screenWidth = document.body.clientWidth;
+        that.screenWidth = window.screenWidth;
+      })();
+    };
+  }
+};
+</script>
+<style scoped>
+@import "../../style/common";
+.wrapper {
+}
+.hide {
+  visibility: hidden;
+}
+.groupRow2{
+  height: 25px;
+  line-height: 25px;
+  position: absolute;
+  left: 20px;
+  top: 220px;
+}
+#matrix_content {
+  width: 810px;
+  height: 75px;
+  padding: 10px 10px 0 0;
+  min-height: 750px;
+  margin: 10px auto 0;
+  position: relative;
+}
+.ProTitle {
+  text-align: center;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+.table {
+  display: table;
+  /* border-collapse: collapse; */
+  table-layout: fixed;
+}
+.tableRow {
+  display: table-row;
+  height: 25px;
+}
+.tableRow1 {
+  display: table-row;
+  /* height: 10px; */
+}
+.tableCell,
+.table_cell {
+  width: 30px;
+  height: 30px;
+  display: table-cell;
+  vertical-align: middle;
+  box-sizing: border-box;
+  text-align: center;
+}
+.table_checkbox {
+  display: table-cell;
+  width: 30px;
+  height: 30px;
+  box-sizing: border-box;
+  text-align: center;
+}
+.table_cel2 {
+  width: 50px;
+  /* height: 10px; */
+  display: table-cell;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+.table_cel3 {
+  width: 50px;
+  height: 155px;
+  display: table-cell;
+  vertical-align: middle;
+  box-sizing: border-box;
+  background-color: white;
+}
+.table_cel4 {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-right: 1px solid white;
+}
+.output {
+  text-align: center;
+  transform: translate(0, 100%) rotate(-90deg);
+  transform-origin: 0 0;
+  font-size: 20px;
+  line-height: 50px;
+}
+.table_cel5 {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-left: 1px solid white;
+}
+.table_cel6 {
+  text-align: center;
+  line-height: 50px;
+  font-size: 20px;
+  background-color: white;
+  width: 180px;
+  height: 50px;
+  display: table-cell;
+  vertical-align: middle;
+  box-sizing: border-box;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.table_cel7 {
+  background-color: white;
+  width: 180px;
+  height: 10px;
+  display: table-cell;
+  vertical-align: middle;
+  box-sizing: border-box;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+.table_cell1 {
+  /* width: 10px; */
+  display: table-cell;
+  position: relative;
+}
+.tableCell {
+  background-color: white;
+}
+.selected {
+  color: blue;
+}
+.groupHeader {
+  text-align: center;
+  transform: translate(0, 85%) rotate(-65deg);
+  transform-origin: 0 0;
+  white-space: nowrap;
+  /* // width: 20px; */
+  margin-bottom: 5px;
+  line-height: 30px;
+}
+
+.groupHeaderSecound {
+  width: 29px;
+  height: 150px;
+  box-sizing: border-box;
+}
+
+.groupRow {
+  width: 180px;
+  /* cursor: pointer; */
+  height: 30px;
+  box-sizing: border-box;
+  padding-left: 20px;
+  text-align: left;
+  line-height: 30px;
+}
+.groupRowFirst {
+  width: 75px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 1025px) {
+  .link_status,
+  .link_status_no {
+    width: 29px;
+    height: 29px;
+    cursor: pointer;
+    margin: auto;
+    display: block;
+    /* // box-sizing: border-box; */
+    background: url(../../../static/img/yuan2.png) no-repeat;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    z-index: 99;
+  }
+  .link_status_no {
+    background: url(../../../static/img/yuan3.png) no-repeat;
+    cursor: no-drop;
+  }
+  .checked {
+    background: url(../../../static/img/yuan4.png) no-repeat;
+  }
+}
+
+@media (max-width: 1025px) {
+  .link_status,
+  .link_status_no {
+    width: 29px;
+    height: 29px;
+    cursor: pointer;
+    margin: auto;
+    display: block;
+    box-sizing: border-box;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    box-shadow: 1px 1px 1px 0 #777;
+    -moz-box-shadow: 1px 1px 1px 0 #777;
+    -webkit-box-shadow: 1px 1px 1px 0 #777;
+    -o-box-shadow: 1px 1px 1px 0 #777;
+    background-color: white;
+    z-index: 99;
+  }
+  .link_status_no {
+    background-color: #ccc;
+    cursor: no-drop;
+  }
+  .checked {
+    background-color: #009a61;
+  }
+}
+
+.nav_left_content {
+  display: block;
+  width: 0;
+  height: 0;
+  cursor: pointer;
+  border-top: 60px solid transparent;
+  border-right: 30px solid #4d4d4d;
+  border-bottom: 60px solid transparent;
+  position: absolute;
+  top: 20px;
+  left: -30px;
+}
+.nav_left_content_in {
+  display: block;
+  width: 0;
+  height: 0;
+  cursor: pointer;
+  border-top: 56px solid transparent;
+  border-right: 27px solid white;
+  border-bottom: 56px solid transparent;
+  position: absolute;
+  top: -56px;
+  left: 2px;
+}
+.nav_right {
+  width: 0;
+  height: 0;
+  border-top: 60px solid transparent;
+  border-left: 30px solid #4d4d4d;
+  border-bottom: 60px solid transparent;
+  position: relative;
+}
+.nav_right_content {
+  display: block;
+  width: 0;
+  height: 0;
+  cursor: pointer;
+  border-top: 56px solid transparent;
+  border-left: 27px solid white;
+  border-bottom: 56px solid transparent;
+  position: absolute;
+  top: -56px;
+  left: -29px;
+}
+.nav_top {
+  width: 0;
+  height: 0;
+  border-left: 60px solid transparent;
+  border-right: 60px solid transparent;
+  border-bottom: 30px solid #4d4d4d;
+  position: absolute;
+  top: -30px;
+  left: 30px;
+}
+.nav_top_content_in {
+  display: block;
+  width: 0;
+  height: 0;
+  cursor: pointer;
+  border-left: 56px solid transparent;
+  border-right: 56px solid transparent;
+  border-bottom: 27px solid white;
+  position: absolute;
+  top: 2px;
+  left: -56px;
+}
+.nav_bottom {
+  width: 0;
+  height: 0;
+  border-left: 60px solid transparent;
+  border-right: 60px solid transparent;
+  border-top: 30px solid #4d4d4d;
+  position: relative;
+  left: 30px;
+}
+.nav_bottom_content {
+  display: block;
+  cursor: pointer;
+  width: 0;
+  height: 0;
+  border-left: 56px solid transparent;
+  border-right: 56px solid transparent;
+  border-top: 27px solid white;
+  position: absolute;
+  top: -29px;
+  left: -56px;
+}
+.nav_bottom_content:hover {
+  border-top: 27px solid #ededed;
+}
+.nav_left_content_in:hover {
+  border-right: 27px solid #ededed;
+}
+.nav_top_content_in:hover {
+  border-bottom: 27px solid #ededed;
+}
+.nav_right_content:hover {
+  border-left: 28px solid #ededed;
+}
+
+.port_name {
+  cursor: pointer;
+}
+.setInfo {
+  width: 577px;
+  height: 560px;
+  overflow-y:auto;
+  border: 1px solid #ccc;
+  position: absolute;
+  top: 175px;
+  left: 190px;
+  background-color: white;
+  z-index: 100;
+}
+.bottom_btn {
+  text-align: center;
+  width: 475px;
+  position: absolute;
+  bottom: 20px;
+}
+.btn {
+  width: 100px;
+  height: 30px;
+  line-height: 0;
+}
+.btn:first-child {
+  margin-right: 50px;
+}
+button {
+  cursor: pointer;
+}
+.table_cell_bg {
+  background-color: #909399;
+}
+.signal {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background: #009a61;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  margin-right: 10px;
+  text-align: center;
+}
+.signalNo {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background: #ccc;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  margin-right: 10px;
+  text-align: center;
+}
+.signalClose {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background: black;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  margin-right: 10px;
+  text-align: center;
+}
+.isAll {
+  width: 58px;
+  text-align: center;
+  line-height: 50px;
+}
+.outPutInfo {
+  width: 480px;
+  height: 155px;
+  background-color: white;
+}
+/* 端口设置CSS */
+.setInfo_box {
+  height: 520px;
+  padding: 20px 45px;
+  position: relative;
+  overflow-y:auto;
+}
+.isOk {
+  width: 100px;
+  height: 40px;
+  position: absolute;
+  bottom: 0;
+  left: 40px;
+}
+.isCancel {
+  width: 100px;
+  height: 40px;
+  position: absolute;
+  bottom: 0;
+  right: 40px;
+}
+.slider {
+  width: 300px;
+}
+.staticTr {
+  line-height: 35px;
+}
+.boxC {
+  width: 100%;
+}
+.boxContent {
+  height: 410px;
+  overflow: auto;
+  -webkit-overflow-scrolling: auto;
+}
+</style>
