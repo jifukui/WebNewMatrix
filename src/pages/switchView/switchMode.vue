@@ -102,7 +102,7 @@
           </div>
         </div>
         <div class="groupRow2">
-          <span class="signalClose" ></span><span>CLOSE</span>
+          <!--span class="signalClose" ></span><span>CLOSE</span-->
         </div>
         <div
           class="tableRow"
@@ -115,12 +115,11 @@
                 :class="[
                   { signalNo: items.status == 'Off' },
                   { signal: items.status == 'On' },
-                  //{ signalClose: items.status == 'close' }
+                  { signalClose: items.status == 'close' }
                 ]"
               ></span
               ><span
-                class="port_name"
-                :class="{ selected: index == nowIndex || index == bg_index }"
+                :class="{ selected: index!=0&&index == nowIndex || index == bg_index,port_name:index!=0 }"
                 @mouseover="showInfo(index, items)"
                 @mouseleave="hideInfo()"
                 @click="selectPortInfo(items.index)"
@@ -142,6 +141,7 @@
               v-else-if="isSelectAll"
               class="link_status"
               :class="{ checked: items.checked }"
+              :title="aoData[index].title+'>ALL'"
               @click="selectedSwitchAll(items, items.index)"
               @mouseenter="showPortLink(index)"
               @mouseleave="hidePortLink(index)"
@@ -162,6 +162,7 @@
                 <div
                   v-if="interitems.link_status == 'no'"
                   class="link_status_no"
+                  :title="aoData[index].title+'>'+aoDataOut[interindex].title"
                   @mouseenter="showPortLink(index, interindex)"
                   @mouseleave="hidePortLink(index, interindex)"
                 ></div>
@@ -169,6 +170,7 @@
                   v-else-if="interitems.link_status == 'true'"
                   class="link_status"
                   :class="{ checked: true }"
+                  :title="aoData[index].title+'>'+aoDataOut[interindex].title"
                   @mouseenter="showPortLink(index, interindex)"
                   @mouseleave="hidePortLink(index, interindex)"
                 ></div>
@@ -176,6 +178,7 @@
                   v-else
                   class="link_status"
                   :class="{ checked: interitems.checked }"
+                  :title="aoData[index].title+'>'+aoDataOut[interindex].title"
                   @click="
                     selectedSwitch(interitems, items.index, interitems.index)
                   "
@@ -725,7 +728,7 @@ export default {
                 index: 0,
                 Dir: "in",
                 type: "a",
-                // title: "CLOSE",
+                title: "CLOSE",
                 status: "close",
                 link_status: "false",
                 sourceGroup: JSON.parse(JSON.stringify(sourceGroup))
@@ -888,7 +891,7 @@ export default {
                 index: 0,
                 Dir: "in",
                 type: "a",
-                // title: "CLOSE",
+                title: "CLOSE",
                 status: "close",
                 link_status: "false",
                 sourceGroup: JSON.parse(JSON.stringify(sourceGroup))
@@ -1036,6 +1039,10 @@ export default {
       let that = this;
       if (window.portSetTimeout) {
         window.clearInterval(window.portSetTimeout);
+      }
+      if(index==0)
+      {
+        return ;
       }
       // that.loading = true;
       // that.portInfoLoadding = true;

@@ -130,7 +130,7 @@
           </div>
         </div>
         <div class="groupRow2">
-          <span class="signalClose" ></span><span>CLOSE</span>
+          <!--span class="signalClose" ></span><span>CLOSE</span-->
         </div>
         <div
           class="tableRow"
@@ -143,12 +143,11 @@
                 :class="[
                   { signalNo: items.status == 'Off' },
                   { signal: items.status == 'On' },
-                  //{ signalClose: items.status == 'close' }
+                  { signalClose: items.status == 'close' }
                 ]"
               ></span
               ><span
-                class="port_name"
-                :class="{ selected: index == nowIndex || index == bg_index }"
+                :class="{ selected: index!=0&&index == nowIndex || index == bg_index,port_name:index!=0}"
                 @mouseover="showInfo(index, items)"
                 @mouseleave="hideInfo()"
                 @click="selectPortInfo(items.index)"
@@ -170,6 +169,7 @@
               v-else-if="isSelectAll"
               class="link_status"
               :class="{ checked: items.checked }"
+              :title="aoData[index].title+'>ALL'"
               @click="selectedSwitchAll(items, items.index)"
               @mouseenter="showPortLink(index)"
               @mouseleave="hidePortLink(index)"
@@ -187,9 +187,10 @@
               }"
             >
               <div>
-                <div
+                <div 
                   v-if="interitems.link_status == 'no'"
                   class="link_status_no"
+                  :title="aoData[index].title+'>'+aoDataOut[interindex].title"
                   @mouseenter="showPortLink(index, interindex)"
                   @mouseleave="hidePortLink(index, interindex)"
                 ></div>
@@ -197,6 +198,7 @@
                   v-else-if="interitems.link_status == 'true'"
                   class="link_status"
                   :class="{ checked: true }"
+                  :title="aoData[index].title+'>'+aoDataOut[interindex].title"
                   @mouseenter="showPortLink(index, interindex)"
                   @mouseleave="hidePortLink(index, interindex)"
                 ></div>
@@ -204,6 +206,7 @@
                   v-else
                   class="link_status"
                   :class="{ checked: interitems.checked }"
+                  :title="aoData[index].title+'>'+aoDataOut[interindex].title"
                   @click="
                     selectedSwitch(interitems, items.index, interitems.index)
                   "
@@ -644,25 +647,6 @@ export default {
         .then(function(response) {
           if (response.data.status == "SUCCESS") {
             that.getProInfo1();
-            // for (let i = 0; i < that.aoData.length; i++) {
-            //   that.aoData[i].link_status = "false";
-            //   for (let j = 0; j < that.aoData[i].sourceGroup.length; j++) {
-            //     that.aoData[i].sourceGroup[j].link_status = "no";
-            //   }
-            // }
-            // that.$set(items, "link_status", "true");
-            // for (let j = 0; j < that.aoData.length; j++) {
-            //   if (that.aoData[j].index == index) {
-            //     that.aoData[j].link_status = "true";
-            //     for (let k = 0; k < that.aoData[j].sourceGroup.length; k++) {
-            //       for (let i = 0; i < aoOut.length; i++) {
-            //         if (that.aoData[j].sourceGroup[k].index == aoOut[i]) {
-            //           that.aoData[j].sourceGroup[k].link_status = "true";
-            //         }
-            //       }
-            //     }
-            //   }
-            // }
           } else if (response.data.status == "ERROR") {
           }
         })
@@ -799,8 +783,6 @@ export default {
       this.$axios
         .post("/cgi-bin/ligline.cgi", aoData)
         .then(function(response) {
-          //console.log("getProInfo"+that.isSelectAll);
-          //console.log("getProInfo"+that.$store.state.switchAll.length);
           if (response.data.status == "SUCCESS" && that.isSelectAll == false&&that.isShowV)  
           {
             let proVInfo = response.data.echo.result.Port;
@@ -846,7 +828,7 @@ export default {
                 index: 0,
                 Dir: "in",
                 type: "v",
-                // title: "CLOSE",
+                title: "CLOSE",
                 status: "close",
                 link_status: "false",
                 sourceGroup: JSON.parse(JSON.stringify(sourceGroup))
@@ -860,10 +842,11 @@ export default {
                 sourceGroup1.push(proVInfo[i]);
               }
             }
-            // console.log(sourceGroup1);
+            //console.log(sourceGroup1);
             that.aoDataOut = sourceGroup;
             // console.log(that.aoDataOut);
             that.aoData = JSON.parse(JSON.stringify(sourceGroup1));
+            //console.log("aoData is"+JSON.stringify(that.aoData));
             that.aoDataLength = that.aoData.length;
             if (that.aoDataLength < 17) {
               that.isEnoughIn = true;
@@ -1000,7 +983,7 @@ export default {
                 index: 0,
                 Dir: "in",
                 type: "v",
-                // title: "CLOSE",
+                title: "CLOSE",
                 status: "close",
                 link_status: "false",
                 sourceGroup: JSON.parse(JSON.stringify(sourceGroup))
@@ -1142,6 +1125,10 @@ export default {
     },
     selectPortInfo(index) {
       let that = this;
+      if(index==0)
+      {
+        return ;
+      }
       if (window.portSetTimeout) {
         window.clearInterval(window.portSetTimeout);
       }
@@ -1788,6 +1775,7 @@ button,
   cursor: pointer;
 }
 .signalClose {
+  cursor:default;
   display: inline-block;
   width: 12px;
   height: 12px;
