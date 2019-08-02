@@ -59,7 +59,7 @@
             class="set_content_two_information"
             v-show="!trueEdid"
           >
-            <p class="errorInfo">Error EDID</p>
+            <p class="errorInfo">{{ERRInfo}}</p>
           </div>
           <div class="clear"></div>
           <div class="set_content_one_box2">
@@ -107,6 +107,7 @@
               class="s_c_o_p_input"
               type="checkbox"
               :checked="ischecked==true?'checked':false"
+              :disabled="!trueEdid"
               @click="allSelect($event)"
             >
             <label
@@ -115,13 +116,14 @@
             >All</label>
           </p>
           <div class="set_content_one_box">
-            <div
+            <button
               class="set_content_three_input"
               v-for="(item,index) in copyInput"
               :key="index"
+              :disabled="!trueEdid"
               @click="copyInputClick(item)"
               :class="{s_c_t_input:item.checked}"
-            >{{ item.PHYName }}</div>
+            >{{ item.PHYName }}</button>
           </div>
         </div>
       </div>
@@ -164,11 +166,13 @@ export default {
       showCopy: false, // 提交按钮
       EDIDData: "",
       EDIDinfo: "",
-      trueEdid: true,
+      trueEdid: false,
       type: "",
       indexNumber: 0,
       selecting: false,
-      outputindex:null
+      outputindex:null,
+      EDIDErr:0,
+      ERRInfo:"Error EDID"
     };
   },
   watch: {
@@ -194,7 +198,9 @@ export default {
       // this.portInfo = this.$store.state.portInfo;
     }
   },
-  computed: {},
+  computed: {
+    
+  },
   methods: {
     /*
 			--- 左侧 --- 
@@ -216,17 +222,33 @@ export default {
       {
         this.type = 1;
       }
-      
+      if(this.$store.state.EDIDIndex!=index||this.$store.state.EDIDPortType!=this.type)
+      {
+        console.log("have change ")
+        this.EDIDErr=0;
+      }
       this.$store.state.EDIDIndex=index;
-      this.$store.state.EDIDPortType=1;
+      this.$store.state.EDIDPortType=this.type;
       console.log("The index is "+this.outputindex);
-      if(this.outputindex!=null&&this.outputdata[this.outputindex].status=="Off")
+      if(this.outputindex!=null&&this.outputdata[this.outputindex].status=="Off"&&this.$store.state.EDIDPortType==1)
       {
         console.log("The Outport no load");
-        this.ModuleName="The OutPort"+this.$store.state.EDIDIndex+" no load";
-        this.size = "";
-        this.audio = "";
-        this.Model = "";
+        this.ERRInfo="out"+this.$store.state.EDIDIndex+" no load";
+        this.trueEdid=false;
+        
+
+        this.ischecked = false;
+        this.selectInput = false;
+        this.showCopy = false;
+        for (var i = 0; i < this.copyInput.length; i++) 
+        {
+          this.$delete(this.copyInput[i], "checked");
+        }
+        this.selectMsg.length = 0;
+        this.copyIndex.length = 0;
+
+
+
         this.selecting=false;
       }
       else
@@ -237,6 +259,7 @@ export default {
     // IN选择按钮
     inClcick(index, output) 
     {
+      console.log("Input ");
       this.selecting = true;
       this.output = output;
       this.isActive = index;
@@ -250,10 +273,13 @@ export default {
       {
         this.type = 0;
       }
-      // this.style_bg = true;
-      // this.$refs.clearUploads.clearFiles();
+      if(this.$store.state.EDIDIndex!=index||this.$store.state.EDIDPortType!=this.type)
+      {
+        console.log("have change ")
+        this.EDIDErr=0;
+      }
       this.$store.state.EDIDIndex=index;
-      this.$store.state.EDIDPortType=0;
+      this.$store.state.EDIDPortType=this.type;
       this.getEdidInfo(this.type, index);
     },
     // DEFAULT默认按钮
@@ -261,6 +287,7 @@ export default {
     {
       if (this.isActive != -1) 
       {
+        let that=this;
         this.selecting = true;
         let type = 0;
         if (this.style_bg == true) 
@@ -281,14 +308,18 @@ export default {
           this.DefaultTxt = "";
           this.style_bg = true;
         }
+        if(this.$store.state.EDIDPortType!=type)
+        {
+          console.log("have change ")
+          this.EDIDErr=0;
+        }
         this.edidFile = false;
         this.Uploading = "";
         this.type = type;
-        // this.isActive = -1;
-        // this.style_bg = false;
-        // this.$refs.clearUploads.clearFiles();
         this.$store.state.EDIDDefault=!this.style_bg;
-        this.getEdidInfo(this.type, this.isActive);
+        this.$store.state.EDIDPortType=type;
+        console.log("The default index is "+this.isActive);
+        this.getEdidInfo(this.type, this.$store.state.EDIDIndex);
       }
     },
     // 上传文件
@@ -321,15 +352,17 @@ export default {
         reader.onprogress = function() {
           reader.onload = function() {
             var aByte, byteStr;
-            console.log(reader.result);
+            //console.log(reader.result);
             let result = new Uint8Array(reader.result);
-            console.log(result);
+            //console.log(result);
             var edidText = "";
             let n;
-            for (n = 0; n < result.length; ++n) {
+            for (n = 0; n < result.length; ++n) 
+            {
               aByte = result[n];
               byteStr = aByte.toString(16);
-              if (byteStr.length < 2) {
+              if (byteStr.length < 2) 
+              {
                 byteStr = "0" + byteStr;
               }
               edidText += byteStr;
@@ -337,6 +370,8 @@ export default {
             that.EDIDinfo = edidText;
             that.EDIDHandle(edidText);
             that.$store.state.EDIDIndex=null;
+            that.type = 3;
+            console.log("File type is "+that.type);
           };
           reader.onerror = function() {
             if (evt.target.error.name == "NotReadableError") {
@@ -385,25 +420,28 @@ export default {
         cmd: "SetEDID",
         edid: {
           in: copyIn,
-          type: 0, //0 in,1 out,2default
+          type: 0, //0 in,1 out,2default,3file
           data: this.EDIDinfo //edid字符串以大写的方式传过来
         }
       };
-      console.log(aoData);
+      //console.log(aoData);
       let that = this;
       this.$axios
         .post("/cgi-bin/ligline.cgi", aoData)
         .then(function(response) {
-          if (response.data.status == "SUCCESS") {
+          if (response.data.status == "SUCCESS") 
+          {
             that.$message({
               message: "In" + index + " copy success",
               type: "success"
             });
             that.indexNumber++;
             that.edidCopyClick();
-          } else if (response.data.status == "ERROR") {
-            that
-              .$confirm("In" + index + " copy error", "Prompt information", {
+          } 
+          else if (response.data.status == "ERROR") 
+          {
+            that.$confirm("In" + index + " copy error", "Prompt information", 
+              {
                 confirmButtonText: "Next",
                 cancelButtonText: "Again",
                 type: "warning",
@@ -422,15 +460,11 @@ export default {
           console.log(error);
         });
     },
-
-    /*
-			--- 右侧 --- 
-		*/
-    //
     // 全选按钮
     allSelect(e) {
       let that = this;
-      if (e.target.checked) {
+      if (e.target.checked) 
+      {
         that.ischecked = true;
         that.selectMsg.length = 0;
         that.copyIndex.length = 0;
@@ -445,11 +479,13 @@ export default {
           that.copyIndex.push(that.copyInput[i].index);
         }
       } 
-      else {
+      else 
+      {
         that.ischecked = false;
         that.selectInput = false;
         that.showCopy = false;
-        for (var i = 0; i < that.copyInput.length; i++) {
+        for (var i = 0; i < that.copyInput.length; i++) 
+        {
           that.$delete(that.copyInput[i], "checked");
         }
         that.selectMsg.length = 0;
@@ -522,15 +558,35 @@ export default {
     EDIDHandle(data) {
       let that = this;
       that.trueEdid = true;
-      //that.$EDID.setEdidData(data);
-      if (that.$EDID.setEdidData(data) == "errorEDID") {
-        that.$alert("ERROR EDID", "Prompt information", {
+      console.log("ERR "+that.EDIDErr);
+      if (that.$EDID.setEdidData(data) == "errorEDID") 
+      {
+        that.EDIDErr++;
+        if(that.EDIDErr==1)
+        {
+          that.$alert("ERROR EDID: "+that.$EDID.EDIDERR(), "Prompt information", {
           confirmButtonText: "OK",
           callback: action => {}
-        });
+          });
+        }
+        that.ERRInfo="Edid ERROR";
         that.trueEdid = false;
+
+        that.ischecked = false;
+        that.selectInput = false;
+        that.showCopy = false;
+        for (var i = 0; i < that.copyInput.length; i++) 
+        {
+          that.$delete(that.copyInput[i], "checked");
+        }
+        that.selectMsg.length = 0;
+        that.copyIndex.length = 0;
+
         return false;
-      } else {
+      } 
+      else 
+      {
+        that.EDIDErr=0;
         that.ModuleName = that.$EDID.getName();
         that.size = that.$EDID.getNativeResolution();
         that.audio = that.$EDID.getAudioChannels();
@@ -587,7 +643,7 @@ export default {
             {
               let jiport;
               let i=0;
-              jiport=that.$store.state.EDIDPortType==0?that.inputdata:that.outputdata;
+              jiport=that.$store.state.EDIDPortType%2==0?that.inputdata:that.outputdata;
               for( i=0;i<jiport.length;i++)
               {
                 if(that.$store.state.EDIDIndex==jiport[i].index)
@@ -624,6 +680,11 @@ export default {
             }
             else
             {
+              console.log("type is "+that.type);
+              if(that.type==3)
+              {
+                return ;
+              }
               that.SetPort();
             }
           } 
@@ -660,7 +721,6 @@ export default {
           type: type //0 in,1 out,2default
         }
       };
-      console.log(aoData);
       let that = this;
       this.$axios
         .post("/cgi-bin/ligline.cgi", aoData)
@@ -670,14 +730,22 @@ export default {
             that.trueEdid = true;
             that.EDIDinfo = response.data.echo.result.EDID;
             that.EDIDHandle(that.EDIDinfo);
-          } else if (response.data.status == "ERROR") {
+          } 
+          else if (response.data.status == "ERROR") 
+          {
             that.EDIDinfo = "";
             that.selecting = false;
             that.trueEdid = false;
-            // that.$alert(response.data.error, "Prompt information", {
-            //     confirmButtonText: "OK",
-            //     callback: action => {}
-            // });
+
+            that.ischecked = false;
+            that.selectInput = false;
+            that.showCopy = false;
+            for (var i = 0; i < that.copyInput.length; i++) 
+            {
+              that.$delete(that.copyInput[i], "checked");
+            }
+            that.selectMsg.length = 0;
+            that.copyIndex.length = 0;
           }
         })
         .catch(function(error) {
@@ -693,14 +761,17 @@ export default {
       this.inputdata = [];
       this.copyInput = [];
       for (let j = 0; j < proVInfo.length; j++) {
-        if (proVInfo[j].Dir == "Out") {
+        if (proVInfo[j].Dir == "Out") 
+        {
           proVInfo[j].title = "out" + proVInfo[j].index;
           this.outputdata.push({
             index: proVInfo[j].index,
             output: proVInfo[j].title,
             status:proVInfo[j].status
           });
-        } else {
+        } 
+        else 
+        {
           proVInfo[j].title = "in" + proVInfo[j].index;
           this.inputdata.push({
             index: proVInfo[j].index,
@@ -724,7 +795,7 @@ export default {
     }
     window.EDIDPortStatus = setInterval(function() {
           that.getProInfo();
-        }, 6000);
+        }, 4000);
   }
 };
 </script>
