@@ -23,7 +23,8 @@ const state = {
     outputsA:[0,0,0,0],
     EDIDIndex:null,
     EDIDPortType:1,
-    EDIDDefault:false
+    EDIDDefault:false,
+    SecurityStatus:0,
 }
 
 

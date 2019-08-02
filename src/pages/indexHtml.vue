@@ -196,6 +196,23 @@ export default {
             console.log(error);
           });
       }
+    },
+    Authentication(){
+      let aoData = {
+          cmd: "GetSecurityStat"
+        };
+        let that=this
+        this.$axios.post("/cgi-bin/ligline.cgi", aoData)
+          .then(function(response) 
+          {
+            if (response.data.status == "SUCCESS") 
+            {
+              that.$store.state.SecurityStatus=response.data.echo.result.securityStat;
+            }     
+            console.log("Sect statue is "+that.$store.state.SecurityStatus);
+          }).catch(function(error) {
+            console.log(error);
+          });
     }
   },
   mounted() {
@@ -207,6 +224,7 @@ export default {
         "System Exception！Please check the network connection or restart the matrix.";
     }, 60000);
     that.getMatrixStatus();
+    that.Authentication();
   }
 };
 </script>
