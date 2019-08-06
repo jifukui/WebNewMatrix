@@ -129,9 +129,6 @@
             </div>
           </div>
         </div>
-        <div class="groupRow2">
-          <!--span class="signalClose" ></span><span>CLOSE</span-->
-        </div>
         <div
           class="tableRow"
           v-for="(items, index) in aoData.slice(e, f)"
@@ -187,7 +184,7 @@
               }"
             >
               <div>
-                <div 
+                <div
                   v-if="interitems.link_status == 'no'"
                   class="link_status_no"
                   :title="aoData[index].title+'>'+aoDataOut[interindex].title"
@@ -439,33 +436,23 @@ export default {
     isShowV: {
       handler(newValue, oldValue) {
         //父组件param对象改变会触发此函数
-        if (newValue == false) 
-        {
-          if (window.myInterval) 
-          {
+        if (newValue == false) {
+          if (window.myInterval) {
             window.clearInterval(window.myInterval);
           }
-          if (window.allSwitchSetInterval) 
-          {
+          if (window.allSwitchSetInterval) {
             window.clearInterval(window.allSwitchSetInterval);
           }
-        } 
-        else 
-        {
+        } else {
           let that = this;
-          if (that.ckeckVal == false) 
-          {
+          if (that.ckeckVal == false) {
             that.getProInfo();
-            window.myInterval = setInterval(function() 
-            {
+            window.myInterval = setInterval(function() {
               that.getProInfo();
             }, 3000);
-          } 
-          else 
-          {
+          } else {
             that.getProInfo1();
-            window.allSwitchSetInterval = setInterval(function() 
-            {
+            window.allSwitchSetInterval = setInterval(function() {
               that.getProInfo1();
             }, 3000);
           }
@@ -479,83 +466,66 @@ export default {
     //点击全选按钮
     clickMe() {
       let that = this;
-      if (that.ckeckVal) 
-      {
-        if (window.myInterval) 
-        {
+      if (that.ckeckVal) {
+        if (window.myInterval) {
           window.clearInterval(window.myInterval);
         }
         that.isSelectAll = true;
-        for (let i = 0; i < that.aoData.length; i++) 
-        {
+        for (let i = 0; i < that.aoData.length; i++) {
           that.aoData[i].link_status = "false";
-          for (let j = 0; j < that.aoData[i].sourceGroup.length; j++) 
-          {
+          for (let j = 0; j < that.aoData[i].sourceGroup.length; j++) {
             that.aoData[i].sourceGroup[j].link_status = "no";
           }
         }
         let ht = [];
         //if(ht.length==0)
         {
-          for (let i = 0; i < that.aoDataOut.length; i++) 
-          {
+          for (let i = 0; i < that.aoDataOut.length; i++) {
             that.aoDataOut[i].switchSelect = true;
             ht.push(that.aoDataOut[i].index);
-            //console.log("that.aoDataOut"+that.aoDataOut[i]);
+            // console.log("that.aoDataOut"+that.aoDataOut[i]);
           }
           that.$store.state.switchAll = ht;
           that.$store.state.switchVideoALL=that.isSelectAll;
         }
        
-        window.allSwitchSetInterval = setInterval(function() 
-        {
+        window.allSwitchSetInterval = setInterval(function() {
           that.getProInfo1();
         }, 3000);
         // console.log("all");
-      } 
-      else 
-      {
+      } else {
         that.isSelectAll = false;
         this.$store.state.switchVideoAll=[];
         that.$store.state.switchVideoALL=that.isSelectAll;
-        for (let i = 0; i < that.aoData.length; i++) 
-        {
+        for (let i = 0; i < that.aoData.length; i++) {
           that.aoData[i].link_status = "false";
-          for (let j = 0; j < that.aoData[i].sourceGroup.length; j++) 
-          {
+          for (let j = 0; j < that.aoData[i].sourceGroup.length; j++) {
             that.aoData[i].sourceGroup[j].link_status = "false";
           }
         }
         that.getProInfo();
-        if (window.allSwitchSetInterval) 
-        {
+        if (window.allSwitchSetInterval) {
           window.clearInterval(window.allSwitchSetInterval);
         }
-        window.myInterval = setInterval(function() 
-        {
+        window.myInterval = setInterval(function() {
           that.getProInfo();
         }, 3000);
       }
     },
-    allSelect(e) 
-    {
+    allSelect(e) {
       let that = this;
       if (e.target.checked) {
         that.afvAll = true;
         let ht = [];
-        for (let i = 0; i < that.aoDataOut.length; i++) 
-        {
+        for (let i = 0; i < that.aoDataOut.length; i++) {
           that.aoDataOut[i].switchAfv = true;
           ht.push(that.aoDataOut[i].index);
         }
         that.$store.state.switchAfv = ht;
         that.$store.state.afvAll = true;
-      } 
-      else 
-      {
+      } else {
         that.afvAll = false;
-        for (let i = 0; i < that.aoDataOut.length; i++) 
-        {
+        for (let i = 0; i < that.aoDataOut.length; i++) {
           that.aoDataOut[i].switchAfv = false;
         }
         that.$store.state.switchAfv.length = 0;
@@ -783,38 +753,29 @@ export default {
       this.$axios
         .post("/cgi-bin/ligline.cgi", aoData)
         .then(function(response) {
-          if (response.data.status == "SUCCESS" && that.isSelectAll == false&&that.isShowV)  
-          {
+          if (response.data.status == "SUCCESS" && that.isSelectAll == false&&that.isShowV) {
             let proVInfo = response.data.echo.result.Port;
             that.$store.state.portInfo = proVInfo;
             let sourceGroup = [];
             let switchAfv = that.$store.state.switchAfv;
             let switchAll = that.$store.state.switchAll;
 
-            for (let j = 0; j < proVInfo.length; j++) 
-            {
-              if (proVInfo[j].Dir == "Out") 
-              {
+            for (let j = 0; j < proVInfo.length; j++) {
+              if (proVInfo[j].Dir == "Out") {
                 proVInfo[j].link_status = "false";
                 proVInfo[j].switchSelect = false;
                 proVInfo[j].switchAfv = false;
                 proVInfo[j].title = "out" + proVInfo[j].index;
-                if (switchAfv != "") 
-                {
-                  for (let k = 0; k < switchAfv.length; k++) 
-                  {
-                    if (proVInfo[j].index == switchAfv[k]) 
-                    {
+                if (switchAfv != "") {
+                  for (let k = 0; k < switchAfv.length; k++) {
+                    if (proVInfo[j].index == switchAfv[k]) {
                       proVInfo[j].switchAfv = true;
                     }
                   }
                 }
-                if (switchAll.length != 0) 
-                {
-                  for (let m = 0; m < switchAll.length; m++) 
-                  {
-                    if (proVInfo[j].index == switchAll[m]) 
-                    {
+                if (switchAll.length != 0) {
+                  for (let m = 0; m < switchAll.length; m++) {
+                    if (proVInfo[j].index == switchAll[m]) {
                       proVInfo[j].switchSelect = true;
                     }
                   }
@@ -942,8 +903,7 @@ export default {
         .then(function(response) {
           //console.log("getProInfo 1"+that.isSelectAll);
           //console.log("getProInfo 1"+that.$store.state.switchAll.length);
-          if (response.data.status == "SUCCESS" && that.isSelectAll == true&&that.isShowV) 
-          {
+          if (response.data.status == "SUCCESS" && that.isSelectAll == true&&that.isShowV) {
             
             let proVInfo = response.data.echo.result.Port;
             that.$store.state.portInfo = proVInfo;
@@ -952,15 +912,13 @@ export default {
             let switchAll = that.$store.state.switchAll;
             // console.log("ALL:" + switchAll);
             // console.log("111111");
-            for (let j = 0; j < proVInfo.length; j++) 
-            {
+            for (let j = 0; j < proVInfo.length; j++) {
               if (proVInfo[j].Dir == "Out") {
                 proVInfo[j].link_status = "no";
                 proVInfo[j].switchSelect = false;
                 proVInfo[j].switchAfv = false;
                 proVInfo[j].title = "out" + proVInfo[j].index;
-                if (switchAfv != "") 
-                {
+                if (switchAfv != "") {
                   for (let k = 0; k < switchAfv.length; k++) {
                     if (proVInfo[j].index == switchAfv[k]) {
                       proVInfo[j].switchAfv = true;
@@ -1073,9 +1031,7 @@ export default {
               }
             }
             that.$emit("closeLoading", false);
-          } 
-          else if (response.data.status == "ERROR") 
-          {
+          } else if (response.data.status == "ERROR") {
             /*that.isEnoughIn = true;
             that.isEnoughNum = 18 - that.aoDataLength;
             that.$alert(response.data.error, "Prompt information", {
@@ -1335,16 +1291,12 @@ export default {
   mounted() {
     //获取端口信息
     let that = this;
-    if (that.isShowV == true) 
-    {
-      if (that.ckeckVal) 
-      {
+    if (that.isShowV == true) {
+      if (that.ckeckVal) {
         window.allSwitchSetInterval = setInterval(function() {
           that.getProInfo1();
         }, 3000);
-      } 
-      else 
-      {
+      } else {
         window.myInterval = setInterval(function() {
           that.getProInfo();
         }, 3000);
@@ -1370,15 +1322,6 @@ export default {
 
 <style scoped>
 @import "../../style/common";
-.wrapper {
-}
-.groupRow2{
-  height: 25px;
-  line-height: 25px;
-  position: absolute;
-  left: 20px;
-  top: 230px;
-}
 .hide {
   visibility: hidden;
 }

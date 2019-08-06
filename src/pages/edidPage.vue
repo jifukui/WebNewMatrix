@@ -172,16 +172,21 @@ export default {
       selecting: false,
       outputindex:null,
       EDIDErr:0,
-      ERRInfo:"Error EDID"
+      ERRInfo:"ERROR EDID",
+      IsOutput:true
     };
   },
   watch: {
-    selectMsg(val, oldval) {
+    selectMsg(val, oldval) 
+    {
       // console.log(val, oldval);
-      if (oldval.length == 0) {
+      if (oldval.length == 0) 
+      {
         this.selectInput = false;
         this.showCopy = false;
-      } else {
+      } 
+      else 
+      {
         this.selectInput = true;
         this.showCopy = true;
       }
@@ -198,18 +203,16 @@ export default {
       // this.portInfo = this.$store.state.portInfo;
     }
   },
-  computed: {
-    
-  },
+  computed: {},
   methods: {
     /*
 			--- 左侧 --- 
 		*/
     // OUT选择按钮
-    outClcick(index, output) 
-    {
+    outClcick(index, output) {
+      this.IsOutput=true;
       console.log("index is "+index+" output is"+output);
-      this.selecting = true;
+      //this.selecting = true;
       this.output = output;
       this.isActive = index;
       this.edidFile = false;
@@ -224,11 +227,25 @@ export default {
       }
       if(this.$store.state.EDIDIndex!=index||this.$store.state.EDIDPortType!=this.type)
       {
-        console.log("have change ")
+        console.log("have change ");
+        let i=0;
+        for( i=0;i<this.outputdata.length;i++)
+        {
+          if(this.outputdata[i].index==index)
+          {
+            break;
+          }
+        }
+        this.outputindex=i;
+        if(this.outputindex>=this.outputdata.length)
+        {
+          this.outputindex=0;
+        }
         this.EDIDErr=0;
       }
       this.$store.state.EDIDIndex=index;
       this.$store.state.EDIDPortType=this.type;
+      //this.outputindex=index;
       console.log("The index is "+this.outputindex);
       if(this.outputindex!=null&&this.outputdata[this.outputindex].status=="Off"&&this.$store.state.EDIDPortType==1)
       {
@@ -240,15 +257,12 @@ export default {
         this.ischecked = false;
         this.selectInput = false;
         this.showCopy = false;
-        for (var i = 0; i < this.copyInput.length; i++) 
+        for (var i = 0; i < this.copyInput.length; i++)
         {
           this.$delete(this.copyInput[i], "checked");
         }
         this.selectMsg.length = 0;
         this.copyIndex.length = 0;
-
-
-
         this.selecting=false;
       }
       else
@@ -257,10 +271,10 @@ export default {
       }
     },
     // IN选择按钮
-    inClcick(index, output) 
-    {
+    inClcick(index, output) {
+      this.IsOutput=false;
       console.log("Input ");
-      this.selecting = true;
+      //this.selecting = true;
       this.output = output;
       this.isActive = index;
       this.edidFile = false;
@@ -288,7 +302,7 @@ export default {
       if (this.isActive != -1) 
       {
         let that=this;
-        this.selecting = true;
+        //this.selecting = true;
         let type = 0;
         if (this.style_bg == true) 
         {
@@ -400,6 +414,8 @@ export default {
       let that = this;
       that.selecting = true;
       let copyIndexLength = that.copyIndex.length;
+      console.log("that.copyIndex.length "+that.copyIndex.length);
+      console.log("that.indexNumber "+that.indexNumber)
       if (that.indexNumber < copyIndexLength) 
       {
         setTimeout(function() {
@@ -569,7 +585,7 @@ export default {
           callback: action => {}
           });
         }
-        that.ERRInfo="Edid ERROR";
+        that.ERRInfo="ERROR EDID";
         that.trueEdid = false;
 
         that.ischecked = false;
@@ -608,8 +624,9 @@ export default {
             that.$store.state.portInfo = proVInfo;
             that.outputdata = [];
             that.inputdata = [];
-            let flag=that.copyInput.length==0?false:true;
+            //let flag=that.copyInput.length==0?false:true;
             //that.copyInput = [];
+            let Copyto=[];
             for (let j = 0; j < proVInfo.length; j++) 
             {
               if (proVInfo[j].Dir == "Out") 
@@ -628,14 +645,48 @@ export default {
                   index: proVInfo[j].index,
                   input: proVInfo[j].title
                 });
-                if(!flag)
+                //if(!flag)
                 {
-                  that.copyInput.push({
+                  Copyto.push({
                   index: proVInfo[j].index,
                   PHYName: proVInfo[j].title
                   });
                 }
               }
+            }
+            that.selectMsg.length=0;
+            for(let i=0;i<that.copyInput.length;i++)
+            {
+              if(that.copyInput[i].checked==true)
+              {
+                for(let j=0;j<Copyto.length;j++)
+                {
+                  if(that.copyInput[i].index==Copyto[j].index)
+                  {
+                    console.log("The msg is "+that.copyInput[i].PHYName)
+                    let ht = {
+                      title: that.copyInput[i].PHYName,
+                      index: that.copyInput[i].index
+                    };
+                    that.selectMsg.push(ht);
+                    Copyto[j].checked=true;
+                  }
+                }
+              }
+            }
+            that.copyInput=Copyto;
+            if(that.copyInput.length==0)
+            {
+              that.showCopy=false;
+              that.selectInput=false;
+            }
+            if(that.copyInput.length==that.selectMsg.length)
+            {
+              that.ischecked=true;
+            }
+            else
+            {
+              that.ischecked=false;
             }
             console.log("EDIDIndex "+that.$store.state.EDIDIndex);
             console.log("EDIDPortType "+that.$store.state.EDIDPortType);
@@ -643,7 +694,9 @@ export default {
             {
               let jiport;
               let i=0;
-              jiport=that.$store.state.EDIDPortType%2==0?that.inputdata:that.outputdata;
+              
+              jiport=that.IsOutput==false?that.inputdata:that.outputdata;
+              console.log("that.IsOutput "+that.IsOutput);
               for( i=0;i<jiport.length;i++)
               {
                 if(that.$store.state.EDIDIndex==jiport[i].index)
@@ -651,14 +704,14 @@ export default {
                   break;
                 }
               }
-              
+  
               if(i==jiport.length)
               {
                 that.SetPort();
               }
               else
               {
-                console.log("status "+jiport[i].status);
+                //console.log("status "+jiport[i].status);
                 if(that.$store.state.EDIDPortType==1&&jiport[i].status=="Off")
                 {
                   that.outputindex=i;
@@ -722,9 +775,11 @@ export default {
         }
       };
       let that = this;
+      that.selecting=true;
       this.$axios
         .post("/cgi-bin/ligline.cgi", aoData)
         .then(function(response) {
+          that.selecting=false;
           if (response.data.status == "SUCCESS") {
             that.selecting = false;
             that.trueEdid = true;

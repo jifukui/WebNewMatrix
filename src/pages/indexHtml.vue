@@ -176,18 +176,14 @@ export default {
         this.$axios
           .post("/cgi-bin/ligline.cgi", aoData)
           .then(function(response) {
-            if (response.data.status == "SUCCESS") 
-            {
+            if (response.data.status == "SUCCESS") {
               that.loading = false;
               that.status = true;
-              if (window.myTimeout) 
-              {
+              if (window.myTimeout) {
                 window.clearTimeout(window.myTimeout);
               }
               that.moudelInfo = response.data.echo.result.name;
-            } 
-            else if (response.data.status == "ERROR") 
-            {
+            } else if (response.data.status == "ERROR") {
               that.getMatrixStatus();
             }
           })

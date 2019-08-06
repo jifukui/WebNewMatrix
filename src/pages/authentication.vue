@@ -11,7 +11,7 @@
                 @change="SetSecurityStat">
             </el-switch>
             <div class="clear"></div>
-            <div  status-icon  label-width="130px"  v-show="security">
+            <!-- <div  status-icon  label-width="130px"  v-show="security">
                 <label>Password</label>
                 <el-input class="ipt" type="password" v-model="OldPassword"></el-input>
                 </br>
@@ -21,10 +21,22 @@
                 <label>Confirm Password</label>
                 <el-input type="password" class="ipt" v-model="ReNewPassword" autocomplete="off"></el-input>
                 </br>
-                <el-button  
-                    @click="SetPassword"
-                >SAVE</el-button>
-            </div>
+                <el-button @click="SetPassword">SAVE</el-button>
+            </div> -->
+            <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="130px" class="demo-ruleForm" v-show="security">
+                <el-form-item label="Password" >
+                    <el-input class="distance" type="password" v-model="OldPassword" maxlength="15"></el-input>
+                </el-form-item>
+                <el-form-item label="New Password" >
+                    <el-input class="distance" type="password" v-model="NewPassword" maxlength="15"></el-input>
+                </el-form-item>
+                <el-form-item label="Confirm Password">
+                    <el-input class="distance" type="password" v-model="ReNewPassword" maxlength="15"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="SetPassword">SAVE</el-button>
+                </el-form-item>
+            </el-form>
         </div>
     </div>
 </template>
@@ -35,50 +47,43 @@ export default {
     props: {},
     data() {
         return {
-                    security:this.$store.state.SecurityStatus==0?false:true,
-                    OldPassword:"",
-                    NewPassword:"",
-                    ReNewPassword:"",
-                };
+            security:this.$store.state.SecurityStatus==0?false:true,
+            OldPassword:"",
+            NewPassword:"",
+            ReNewPassword:"",
+        };
     },
     watch: {
-        OldPassword: function (value)
-        {
-            if(value.length>15)
-            {
+        OldPassword: function (value){
+            /*if(value.length>15){
                 this.$message({
                 type: 'info',
                 message: 'The password is limited to a maximum of 15 alphanumeric characters and must not contain spaces'//密码错误
                 });
-            }
+            }*/
         },
-        NewPassword:function (value)
-        {
-            if(value.length>15)
-            {
+        NewPassword:function (value){
+            /*if(value.length>15){
                 this.$message({
                 type: 'info',
                 message: 'The password is limited to a maximum of 15 alphanumeric characters and must not contain spaces'//密码错误
                 });
-            }
+            }*/
         
         },
-        ReNewPassword:function (value)
-        {
-            if(value.length>15)
-            {
+        ReNewPassword:function (value){
+            /*if(value.length>15){
                 this.$message({
                 type: 'info',
                 message: 'The password is limited to a maximum of 15 alphanumeric characters and must not contain spaces'//密码错误
                 });
-            }
+            }*/
         }
 
     },
     computed: {},
     methods: {
-        SetSecurityStat(val)
-        {
+        SetSecurityStat(val){
             this.$prompt('Input Admin password', 'Tips', {
                 showClose: false, //弹框叉号
                 confirmButtonText: 'Confirm',
@@ -129,8 +134,7 @@ export default {
                 this.security=this.$store.state.SecurityStatus==0?false:true;
             });
         },
-        SetPassword()
-        {
+        SetPassword(){
             if(this.NewPassword!=this.ReNewPassword)
             {
                 this.$message({
@@ -150,35 +154,57 @@ export default {
             this.NewPassword="";
             this.ReNewPassword="";
             this.$axios({
-                    method: 'post',   
-                    url:  "/cgi-bin/ligline.cgi",
-                    data:params
-                    }).then(res=> 
+                method: 'post',   
+                url:  "/cgi-bin/ligline.cgi",
+                data:params
+                }).then(res=> 
+                {
+                    console.log(res)
+                    if(res.data.status == 'SUCCESS')
                     {
-                        console.log(res)
-                        if(res.data.status == 'SUCCESS')
-                        {
-                            this.$message({
-                                type: 'info',
-                                message: 'Password Setting Successful'//密码错误
-                            });
-                        }
-                        if(res.data.status == 'ERROR'){
-                            this.$message({
-                                type: 'info',
-                                message: res.data.error//密码错误
-                            });
-                        }
-                    }).catch(() => 
-                    { 
-                
-                    });
+                        this.$message({
+                            type: 'info',
+                            message: 'Password Setting Successful'//密码错误
+                        });
+                    }
+                    if(res.data.status == 'ERROR'){
+                        this.$message({
+                            type: 'info',
+                            message: res.data.error//密码错误
+                        });
+                    }
+                }).catch(() => 
+                { 
+            });
+        },
+        Authentication()
+        {
+            let aoData = {
+            cmd: "GetSecurityStat"
+            };
+            let that=this
+            this.$axios.post("/cgi-bin/ligline.cgi", aoData)
+            .then(function(response) 
+            {
+                if (response.data.status == "SUCCESS") 
+                {
+                    that.$store.state.SecurityStatus=response.data.echo.result.securityStat;
+                }     
+                console.log("Sect statue is "+that.$store.state.SecurityStatus);
+            }).catch(function(error) {
+                console.log(error);
+          });
         }
     },
     created() {
-        name:"Admin"
+        let that=this;
+        name:"Admin",
+        that.Authentication();
     },
-    mounted() {}
+    mounted() {
+         let that=this;
+        that.Authentication();
+    }
 };
 </script>
 
@@ -204,6 +230,9 @@ export default {
     line-height: 40px;
 }
 .ipt {
+    width: 200px;
+}
+.distance {
     width: 200px;
 }
 </style>

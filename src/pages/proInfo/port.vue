@@ -299,24 +299,18 @@ export default {
       this.$axios
         .post("/cgi-bin/ligline.cgi", aoData)
         .then(function(response) {
-          if (response.data.status == "SUCCESS") 
-          {
+          if (response.data.status == "SUCCESS") {
             // that.staticData = [];
             let responseInfo = response.data.echo.result.Info;
             let setInfo = response.data.echo.result.Setting;
-            if (setInfo.length == 0) 
-            {
+            if (setInfo.length == 0) {
               that.isNeedSave = false;
-            } 
-            else 
-            {
+            } else {
               that.isNeedSave = true;
             }
-            if (responseInfo["Port Index"] == that.isActive) 
-            {
+            if (responseInfo["Port Index"] == that.isActive) {
               let staticAoData = [];
-              for (var i in responseInfo) 
-              {
+              for (var i in responseInfo) {
                 let ht = {
                   id: i,
                   value: responseInfo[i]
@@ -335,11 +329,8 @@ export default {
               // that.loading = false;
               // that.portInfoLoadding = false;
             }
-          } 
-          else if (response.data.status == "ERROR") 
-          {
-            that.$alert(response.data.error, "Prompt information", 
-            {
+          } else if (response.data.status == "ERROR") {
+            that.$alert(response.data.error, "Prompt information", {
               confirmButtonText: "OK",
               callback: action => {
                 // that.loading = false;

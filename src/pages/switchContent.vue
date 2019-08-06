@@ -40,19 +40,15 @@ export default {
     methods: {
         selectType: function(data) {
             this.closeLoading(true);
-            if (data == "video") 
-            {
+            if (data == "video") {
                 this.isVorA = true;
                 this.$store.state.switchVideo=true; 
-            } 
-            else if (data == "audio") 
-            {
+            } else if (data == "audio") {
                 this.isVorA = false;
                 this.$store.state.switchVideo=false;
             }
         },
-        closeLoading(data) 
-        {
+        closeLoading(data) {
             //console.log("data is "+data);
             var that = this;
             that.loading = data;

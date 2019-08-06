@@ -72,15 +72,11 @@ export default {
         //   class: "icon-dianshiqiang",
         //   routerLink: "../pages/videoWall"
         // },
+         
         {
           text: "Authentication",
           class: "icon-dianshiqiang",
           routerLink: "../pages/authentication"
-        },
-        {
-          text: "Settings",
-          class: "icon-cogs",
-          routerLink: "../pages/configure"
         },
         {
           text: "EDID",
@@ -88,6 +84,12 @@ export default {
           class: "icon-dianshi-_EDID",
           routerLink: "../pages/edidPage"
         },
+        {
+          text: "Settings",
+          class: "icon-cogs",
+          routerLink: "../pages/configure"
+        },
+       
         {
           text: "Status",
           class: "icon-list2",

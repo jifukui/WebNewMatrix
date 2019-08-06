@@ -25,12 +25,32 @@ test.PortInitAv = function (value, type) {
     // console.log(JSON.stringify(valueAv));
     return valueAv;
 }
-test.findMateData = function (name, val, openType) {
+test.analyticalVersion = function (value) {
+    let val = value;
+    let str = val.toString(2);
+    let data = "";
+    let str1 = str.substr(str.length - 8);
+    let str2 = str.substr(str.length - 12, 4);
+    let str3 = str.substr(0, str.length - 12);
+    data = `${parseInt(str3, 2)}.${parseInt(str2, 2)}.${parseInt(str1, 2)}`
+    return data
+}
+test.findMateData = function (name, val, openType, num) {
     var data = {};
     data.info = {};
+    if (name == 'A10027Version') {
+        val = test.analyticalVersion(val)
+    }
     var AvType = test.config.AV[name];
     if (AvType == null) {
         return false;
+    }
+    if (num == '16') {
+        test.config.AV["R-gain"].sid = 155;
+    } else if (num == '32') {
+        test.config.AV["R-gain"].sid = 155;
+    } else if (num == '64') {
+        test.config.AV["R-gain"].sid = 159;
     }
     data.info.type = AvType.type;
     data.info.id = AvType.title;
@@ -43,18 +63,6 @@ test.findMateData = function (name, val, openType) {
         case "staticList":
             {
                 data.info.oldvalue = val;
-                data.info.value = AvType.data;
-                break;
-            }
-        case "inputOnlySetNum":
-            {
-                data.info.oldvalue = "";
-                data.info.lastervalue = "";
-                if (AvType.sid) {
-                    data.info.sid = AvType.sid;
-                } else {
-
-                }
                 data.info.value = AvType.data;
                 break;
             }
@@ -1595,7 +1603,6 @@ test.config.AV["B-gain"] = {
         max: 63
     }
 }
-
 test.config.AV["ST_0IN_1OUT"] = {
     title: "Analog Audio Port Direction",
     type: "list",
@@ -1662,10 +1669,8 @@ test.config.AV["SeamlessEnable"] = {
         {
             name: "Normal",
             value: 0
-        }, {
-            name: "Clipper",
-            value: 1
-        },{
+        },
+        {
             name: "Seamless",
             value: 2
         }
@@ -1816,6 +1821,12 @@ test.config.AV["VideoAspectRatio_0F"] = {
         name: "Full",
         value: 3
     }]
+}
+test.config.AV["A10027Version"] = {
+    title: "A10-027 Version",
+    type: "static",
+    sid: 159,
+    data: ""
 }
 /**
  * 配置文件

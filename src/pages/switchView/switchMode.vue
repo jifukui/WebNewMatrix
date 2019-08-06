@@ -101,9 +101,6 @@
             </div>
           </div>
         </div>
-        <div class="groupRow2">
-          <!--span class="signalClose" ></span><span>CLOSE</span-->
-        </div>
         <div
           class="tableRow"
           v-for="(items, index) in aoData.slice(e, f)"
@@ -1278,13 +1275,6 @@ export default {
 }
 .hide {
   visibility: hidden;
-}
-.groupRow2{
-  height: 25px;
-  line-height: 25px;
-  position: absolute;
-  left: 20px;
-  top: 220px;
 }
 #matrix_content {
   width: 810px;
