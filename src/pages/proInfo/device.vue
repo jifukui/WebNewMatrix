@@ -515,7 +515,8 @@ export default {
           console.log(error);
         });
     },
-    saveInfo() {
+    saveInfo() 
+    {
       let ipaddr = this.$refs.ipInp.value;
       let ipaddr1 = this.$refs.ipInp3.value;
       let maskaddr = this.$refs.subnetMask.value;
@@ -538,16 +539,18 @@ export default {
         this.$checkInp.fnValidateUdp(udp) == true &&
         this.$checkInp.isEqualIPAddress(ipaddr, ipaddr1, maskaddr, maskaddr1) ==
           false && ipaddr!=gateway && ipaddr1!=gateway1 && ipaddr!=ipaddr1 && ipNum!=ip1Num && tcp!=udp
-      ) {
-        this.$confirm("Are you sure?", "Prompt information", {
+      ) 
+      {
+        /*this.$confirm("Are you sure?", "Prompt information", {
           confirmButtonText: "Ok",
           cancelButtonText: "Cancel",
           type: "warning",
           closeOnClickModal: false
         })
-          .then(() => {
+          .then(() => */{
             let that = this;
             let setInfo = [];
+            let isLinkTo=false;
             if (ipaddr != that.oldIpVal0) {
               let ht = {
                 name: "eth0",
@@ -555,6 +558,7 @@ export default {
                 value: ipaddr
               };
               setInfo.push(ht);
+              isLinkTo=true;
             }
             if (maskaddr != that.oldMaskVal0) {
               let ht = {
@@ -621,16 +625,16 @@ export default {
             if (setInfo.length == 0) {
               return false;
             }
-            let isLinkTo=true;
+            //let isLinkTo=true;
 
             if(setInfo.length<=2){
               if(setInfo.length==1){
                 if(setInfo[0].parameter=="TCP_PORT"||setInfo[0].parameter=="UDP_PORT"){
-                  isLinkTo=false;
+                  //isLinkTo=false;
                 }
               }else{
                 if(setInfo[0].parameter=="TCP_PORT"&&setInfo[1].parameter=="UDP_PORT"){
-                  isLinkTo=false;
+                  //isLinkTo=false;
                 }
               }
             }
@@ -641,23 +645,42 @@ export default {
             this.$axios
               .post("/cgi-bin/ligline.cgi", aoData)
               .then(function(response) {
-                if (response.data.status == "SUCCESS") {
+                if (response.data.status == "SUCCESS") 
+                {
+                  /*
                   that.$alert("Save success", "Prompt information", {
                     confirmButtonText: "OK",
                     callback: action => {
                       that.getDeviceInfo()
-                      if(isLinkTo==true){
-                      let aNum = ipaddr.split(".");
-                      let num = "";
-                      num += parseInt(aNum[0]) + ".";
-                      num += parseInt(aNum[1]) + ".";
-                      num += parseInt(aNum[2]) + ".";
-                      num += parseInt(aNum[3]);
-                      window.location.href = "http://" + num;
+                      if(isLinkTo==true)
+                      {
+                        let aNum = ipaddr.split(".");
+                        let num = "";
+                        num += parseInt(aNum[0]) + ".";
+                        num += parseInt(aNum[1]) + ".";
+                        num += parseInt(aNum[2]) + ".";
+                        num += parseInt(aNum[3]);
+                        window.location.href = "http://" + num;
                       }
                     }
+                  });*/
+                  that.$message({
+                    message: "Save success",
+                    type: "success"
                   });
-                } else if (response.data.status == "ERROR") {
+                  if(isLinkTo==true)
+                  {
+                    let aNum = ipaddr.split(".");
+                    let num = "";
+                    num += parseInt(aNum[0]) + ".";
+                    num += parseInt(aNum[1]) + ".";
+                    num += parseInt(aNum[2]) + ".";
+                    num += parseInt(aNum[3]);
+                    window.location.href = "http://" + num;
+                  }
+                } 
+                else if (response.data.status == "ERROR") 
+                {
                   that.$alert(response.data.error, "Prompt information", {
                     confirmButtonText: "OK",
                     callback: action => {}
@@ -667,14 +690,14 @@ export default {
               .catch(function(error) {
                 console.log(error);
               });
-          })
+          }/*)
           .catch(() => {
             let sendata = {
               resetSure: "取消保存信息"
             };
 
             console.log(sendata);
-          });
+          });*/
       } else {
         this.$alert("Parameter is incorrect!", "Prompt information", {
           confirmButtonText: "OK",

@@ -141,6 +141,7 @@ export default {
                     type: 'info',
                     message: 'You entered different passwords'
                 });
+                return ;
             }
             let params = {
                     cmd: "SetUserPassword",
@@ -191,6 +192,7 @@ export default {
                     that.$store.state.SecurityStatus=response.data.echo.result.securityStat;
                 }     
                 console.log("Sect statue is "+that.$store.state.SecurityStatus);
+                that.security=that.$store.state.SecurityStatus==1?true:false;
             }).catch(function(error) {
                 console.log(error);
           });
@@ -200,10 +202,12 @@ export default {
         let that=this;
         name:"Admin",
         that.Authentication();
+        console.log("created");
     },
     mounted() {
-         let that=this;
-        that.Authentication();
+         //let that=this;
+        //that.Authentication();
+        console.log("mounted");
     }
 };
 </script>

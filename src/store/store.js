@@ -25,6 +25,7 @@ const state = {
     EDIDPortType:1,
     EDIDDefault:false,
     SecurityStatus:0,
+    JiFileSize:0
 }
 
 

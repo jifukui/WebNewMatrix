@@ -716,7 +716,7 @@ export default {
               {
                 proVInfo[j].link_status = "false";
                 proVInfo[j].switchSelect = true;
-                proVInfo[j].title = "out" + proVInfo[j].index;
+                proVInfo[j].title = "OUT" + proVInfo[j].index;
                 sourceGroup.push(proVInfo[j]);
               }
             }
@@ -734,7 +734,7 @@ export default {
             for (let i = 0; i < proVInfo.length; i++) {
               if (proVInfo[i].Dir == "In") {
                 proVInfo[i].link_status = "false";
-                proVInfo[i].title = "In" + proVInfo[i].index;
+                proVInfo[i].title = "IN" + proVInfo[i].index;
                 proVInfo[i].sourceGroup = sourceGroup;
                 sourceGroup1.push(proVInfo[i]);
               }
@@ -868,7 +868,7 @@ export default {
               {
                 proVInfo[j].link_status = "no";
                 proVInfo[j].switchSelect = false;
-                proVInfo[j].title = "out" + proVInfo[j].index;
+                proVInfo[j].title = "OUT" + proVInfo[j].index;
                 if (switchAllA.length != 0) 
                 {
                   // console.log(2222);
@@ -899,7 +899,7 @@ export default {
               if (proVInfo[i].Dir == "In") 
               {
                 proVInfo[i].link_status = "false";
-                proVInfo[i].title = "In" + proVInfo[i].index;
+                proVInfo[i].title = "IN" + proVInfo[i].index;
                 proVInfo[i].sourceGroup = sourceGroup;
                 sourceGroup1.push(proVInfo[i]);
               }

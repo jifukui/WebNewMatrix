@@ -173,7 +173,8 @@ export default {
       outputindex:null,
       EDIDErr:0,
       ERRInfo:"ERROR EDID",
-      IsOutput:true
+      IsOutput:true,
+      CodeState:false
     };
   },
   watch: {
@@ -411,6 +412,7 @@ export default {
 		*/
     // Copy按鈕
     edidCopyClick() {
+      this.CodeState=true;
       let that = this;
       that.selecting = true;
       let copyIndexLength = that.copyIndex.length;
@@ -426,6 +428,7 @@ export default {
       {
         that.indexNumber = 0;
         setTimeout(function() {
+          that.CodeState=false;
           that.selecting = false;
         }, 2000);
       }
@@ -611,6 +614,11 @@ export default {
     },
     getProInfo() 
     {
+      if(this.CodeState)
+      {
+        console.log("Waitting Copy EDID getProInfo");
+        return;
+      }
       let that = this;
       let aoData = {
         cmd: "video_info"

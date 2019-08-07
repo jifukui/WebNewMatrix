@@ -362,13 +362,17 @@ export default {
       document.getElementById("fileCard").click();
     },
     // 上传文件点击确认后
-    selectFile(event) {
+    selectFile(event) 
+    {
       this.file = event.target.files[0];
       let filemaxsize = 1024 * 2;
       let size = this.file.size / 1024;
       let index = this.file.name.lastIndexOf(".");
       let ext = this.file.name.substr(index + 1);
       let extUpperCase = ext.toUpperCase();
+      this.$store.state.JiFileSize=this.file.size;
+      console.log("this file "+this.file.size);
+      console.log("File type is "+extUpperCase);
       // if (size > filemaxsize) {
       //   this.$alert(
       //     "The appendix size should not exceed " + filemaxsize / 1024 + "M！",
@@ -380,14 +384,16 @@ export default {
       //   );
       //   return false;
       // }
-      if (size <= 0) {
+      if (size <= 0) 
+      {
         this.$alert("The appendix size can not be 0M！", "Prompt information", {
           confirmButtonText: "OK",
           callback: action => {}
         });
         return false;
       }
-      if (extUpperCase != "KMPT" && extUpperCase != "KPTW") {
+      if (extUpperCase != "KMPT" && extUpperCase != "KPTW") 
+      {
         this.$alert("Upgrade file type error", "Prompt information", {
           confirmButtonText: "OK",
           callback: action => {}
@@ -403,7 +409,8 @@ export default {
       this.getfileInfo(event);
     },
     // 上传升级文件
-    getfileInfo(event) {
+    getfileInfo(event) 
+    {
       event.preventDefault();
       let that = this;
       that.uploading = true;
@@ -422,13 +429,16 @@ export default {
       this.$axios
         .post("/cgi-bin/upload.cgi", formData, config)
         .then(function(msg) {
-          if (msg.data.status == "SUCCESS") {
+          if (msg.data.status == "SUCCESS") 
+          {
             that.uploadStatus = "success";
             that.fileGrogress = 100;
             that.isUpgrade = true;
             that.isDecompression();
             console.log("good for this ");
-          } else {
+          } 
+          else 
+          {
             console.log("The value is " + msg.data.status);
           }
         })
@@ -440,14 +450,18 @@ export default {
         });
     },
     //开始升级
-    isDecompression() {
+    isDecompression() 
+    {
       this.decompressionFileName = "";
       let index = this.fileName.lastIndexOf(".");
       let extLast = this.fileName.substr(index + 1);
       let extUpperCase = extLast.toUpperCase();
-      if (extUpperCase == "KMPT") {
+      if (extUpperCase == "KMPT") 
+      {
         this.Upgrade(this.fileName);
-      } else if (extUpperCase == "KPTW") {
+      } 
+      else if (extUpperCase == "KPTW") 
+      {
         let that = this;
         let aoData = {
           cmd: "UntarFile",
@@ -456,11 +470,17 @@ export default {
         this.$axios
           .post("/cgi-bin/ligline.cgi", aoData)
           .then(function(response) {
-            if (response.data.status == "SUCCESS") {
+            if (response.data.status == "SUCCESS") 
+            {
               that.decompressionFileName = response.data.echo.result.FileName;
+              that.$store.state.JiFileSize=response.data.echo.result.FileSize;
+              console.log("The File size is "+that.$store.state.JiFileSize);
               that.Upgrade(that.decompressionFileName);
-            } else if (response.data.status == "ERROR") {
-              that.$alert(response.data.error, "Prompt information", {
+            } 
+            else if (response.data.status == "ERROR") 
+            {
+              that.$alert(response.data.error, "Prompt information", 
+              {
                 confirmButtonText: "OK",
                 callback: action => {}
               });
@@ -476,7 +496,8 @@ export default {
 
       console.log(this.fileName);
     },
-    Upgrade(file) {
+    Upgrade(file) 
+    {
       this.selectCardUpgradeArr.length = 0;
       let index = file.lastIndexOf(".");
       let ext = file.charAt(index - 1);
@@ -503,29 +524,43 @@ export default {
         return false;
       }
       let fileNameSlotArr = [];
-      if (fileNameArr[1].indexOf("&") != -1) {
+      if (fileNameArr[1].indexOf("&") != -1) 
+      {
         fileNameSlotArr = fileNameArr[1].split("&");
-      } else {
+      } 
+      else 
+      {
         fileNameSlotArr.push(fileNameArr[1]);
       }
-      if (ext == "N") {
+      if (ext == "N") 
+      {
         let upgradeArr = [];
-        if (fileNameArr[0].indexOf("OUT") != -1) {
-          if (fileNameSlotArr.length == 1) {
-            for (let i = 0; i < this.cardList.length; i++) {
+        if (fileNameArr[0].indexOf("OUT") != -1) 
+        {
+          if (fileNameSlotArr.length == 1) 
+          {
+            for (let i = 0; i < this.cardList.length; i++) 
+            {
               if (
                 this.cardList[i].Direction == "Out" &&
                 this.cardList[i].Model_ID == fileNameSlotArr[0]
-              ) {
+              ) 
+              {
                 upgradeArr.push(this.cardList[i]);
                 this.selectCardUpgradeArr.push(this.cardList[i].index);
               }
             }
-          } else {
-            for (let i = 0; i < this.cardList.length; i++) {
-              if (this.cardList[i].Direction == "Out") {
-                for (let j = 0; j < fileNameSlotArr.length; j++) {
-                  if (this.cardList[i].Model_ID == fileNameSlotArr[j]) {
+          } 
+          else 
+          {
+            for (let i = 0; i < this.cardList.length; i++) 
+            {
+              if (this.cardList[i].Direction == "Out") 
+              {
+                for (let j = 0; j < fileNameSlotArr.length; j++) 
+                {
+                  if (this.cardList[i].Model_ID == fileNameSlotArr[j]) 
+                  {
                     upgradeArr.push(this.cardList[i]);
                     this.selectCardUpgradeArr.push(this.cardList[i].index);
                   }
@@ -533,22 +568,33 @@ export default {
               }
             }
           }
-        } else if (fileNameArr[0].indexOf("IN") != -1) {
-          if (fileNameSlotArr.length == 1) {
-            for (let i = 0; i < this.cardList.length; i++) {
+        } 
+        else if (fileNameArr[0].indexOf("IN") != -1) 
+        {
+          if (fileNameSlotArr.length == 1) 
+          {
+            for (let i = 0; i < this.cardList.length; i++) 
+            {
               if (
                 this.cardList[i].Direction == "In" &&
                 this.cardList[i].Model_ID == fileNameSlotArr[0]
-              ) {
+              ) 
+              {
                 upgradeArr.push(this.cardList[i]);
                 this.selectCardUpgradeArr.push(this.cardList[i].index);
               }
             }
-          } else {
-            for (let i = 0; i < this.cardList.length; i++) {
-              if (this.cardList[i].Direction == "In") {
-                for (let j = 0; j < fileNameSlotArr.length; j++) {
-                  if (this.cardList[i].Model_ID == fileNameSlotArr[j]) {
+          } 
+          else 
+          {
+            for (let i = 0; i < this.cardList.length; i++) 
+            {
+              if (this.cardList[i].Direction == "In") 
+              {
+                for (let j = 0; j < fileNameSlotArr.length; j++) 
+                {
+                  if (this.cardList[i].Model_ID == fileNameSlotArr[j]) 
+                  {
                     upgradeArr.push(this.cardList[i]);
                     this.selectCardUpgradeArr.push(this.cardList[i].index);
                   }
@@ -557,7 +603,8 @@ export default {
             }
           }
         }
-        if (upgradeArr.length == 0) {
+        if (upgradeArr.length == 0) 
+        {
           this.$alert(
             "Documents do not match the module card and cannot be upgraded",
             "Prompt information",
@@ -570,16 +617,23 @@ export default {
         }
         this.dialogFormVisible = true;
         this.upgardeCardArr = upgradeArr;
-      } else {
-        if (fileNameArr[0].indexOf("OUT") != -1) {
-          if (fileNameSlotArr.length == 1) {
-            for (let i = 0; i < this.cardList.length; i++) {
-              if (this.cardList[i].index == ext) {
+      } 
+      else 
+      {
+        if (fileNameArr[0].indexOf("OUT") != -1) 
+        {
+          if (fileNameSlotArr.length == 1) 
+          {
+            for (let i = 0; i < this.cardList.length; i++) 
+            {
+              if (this.cardList[i].index == ext) 
+              {
                 if (
                   this.cardList[i].status == "offline" ||
                   this.cardList[i].Direction == "In" ||
                   this.cardList[i].Model_ID != fileNameSlotArr[0]
-                ) {
+                ) 
+                {
                   this.$alert(
                     "Documents do not match the module card and cannot be upgraded",
                     "Prompt information",
@@ -592,10 +646,15 @@ export default {
                 }
               }
             }
-          } else {
-            for (let i = 0; i < this.cardList.length; i++) {
-              if (this.cardList[i].index == ext) {
-                if (this.cardList[i].status == "offline") {
+          } 
+          else 
+          {
+            for (let i = 0; i < this.cardList.length; i++) 
+            {
+              if (this.cardList[i].index == ext) 
+              {
+                if (this.cardList[i].status == "offline") 
+                {
                   this.$alert(
                     "Documents do not match the module card and cannot be upgraded",
                     "Prompt information",
@@ -605,13 +664,16 @@ export default {
                     }
                   );
                   return false;
-                } else {
+                } 
+                else 
+                {
                   let model_ID = this.cardList[i].Model_ID;
                   let modelId = model_ID.toString();
                   if (
                     this.cardList[i].Direction == "In" ||
                     fileNameSlotArr.indexOf(modelId) == -1
-                  ) {
+                  ) 
+                  {
                     this.$alert(
                       "Documents do not match the module card and cannot be upgraded",
                       "Prompt information",
@@ -626,15 +688,21 @@ export default {
               }
             }
           }
-        } else if (fileNameArr[0].indexOf("IN") != -1) {
-          if (fileNameSlotArr.length == 1) {
-            for (let i = 0; i < this.cardList.length; i++) {
-              if (this.cardList[i].index == ext) {
+        } 
+        else if (fileNameArr[0].indexOf("IN") != -1) 
+        {
+          if (fileNameSlotArr.length == 1) 
+          {
+            for (let i = 0; i < this.cardList.length; i++) 
+            {
+              if (this.cardList[i].index == ext) 
+              {
                 if (
                   this.cardList[i].status == "offline" ||
                   this.cardList[i].Direction == "Out" ||
                   this.cardList[i].Model_ID != fileNameSlotArr[0]
-                ) {
+                ) 
+                {
                   this.$alert(
                     "Documents do not match the module card and cannot be upgraded",
                     "Prompt information",
@@ -647,10 +715,15 @@ export default {
                 }
               }
             }
-          } else {
-            for (let i = 0; i < this.cardList.length; i++) {
-              if (this.cardList[i].index == ext) {
-                if (this.cardList[i].status == "offline") {
+          } 
+          else 
+          {
+            for (let i = 0; i < this.cardList.length; i++) 
+            {
+              if (this.cardList[i].index == ext) 
+              {
+                if (this.cardList[i].status == "offline") 
+                {
                   this.$alert(
                     "Documents do not match the module card and cannot be upgraded",
                     "Prompt information",
@@ -660,13 +733,16 @@ export default {
                     }
                   );
                   return false;
-                } else {
+                } 
+                else 
+                {
                   let model_ID = this.cardList[i].Model_ID;
                   let modelId = model_ID.toString();
                   if (
                     this.cardList[i].Direction == "Out" ||
                     fileNameSlotArr.indexOf(modelId) == -1
-                  ) {
+                  ) 
+                  {
                     this.$alert(
                       "Documents do not match the module card and cannot be upgraded",
                       "Prompt information",
@@ -686,10 +762,12 @@ export default {
       }
     },
     // 确认开始升级
-    selectCardUpgrade() {
-      console.log(this.selectCardUpgradeArr);
+    selectCardUpgrade() 
+    {
+      console.log("this.selectCardUpgradeArr "+this.selectCardUpgradeArr);
 
-      if (this.selectCardUpgradeArr.length == 0) {
+      if (this.selectCardUpgradeArr.length == 0) 
+      {
         this.$alert(
           "Please check the cards you want to upgrade",
           "Prompt information",
@@ -700,22 +778,28 @@ export default {
             }
           }
         );
-      } else {
+      } 
+      else 
+      {
         let fileArr = [];
         fileArr.length = 0;
         let fileName1 = "";
         let index = "";
-        if (this.decompressionFileName != "") {
+        if (this.decompressionFileName != "") 
+        {
           fileArr.push(this.decompressionFileName);
           index = this.decompressionFileName.lastIndexOf(".");
           fileName1 = this.decompressionFileName;
-        } else {
+        } 
+        else 
+        {
           fileArr.push(this.fileName);
           index = this.fileName.lastIndexOf(".");
           fileName1 = this.fileName;
         }
 
-        for (let i = 0; i < this.selectCardUpgradeArr.length; i++) {
+        for (let i = 0; i < this.selectCardUpgradeArr.length; i++) 
+        {
           let fileName = this.replacePos(
             fileName1,
             index - 1,
@@ -728,28 +812,36 @@ export default {
         this.$store.state.upgradeNumber = -1;
         this.$store.state.upgradeLoading = true;
         this.$store.state.upgradeNumbers = fileArr.length - 1;
+        /**升级 */
         this.upgardeFile(fileArr);
       }
     },
     // 点击上传取消
-    cancelUpload(){
+    cancelUpload()
+    {
       this.dialogFormVisible = false;
       this.uploading = false;
       this.uploadedFiles = ""
     },
-    replacePos(strObj, pos, replacetext) {
+    replacePos(strObj, pos, replacetext) 
+    {
       var str =
         strObj.substr(0, pos) +
         replacetext +
         strObj.substring(pos + 1, strObj.length);
       return str;
     },
-    upgardeFile(arr) {
+    upgardeFile(arr) 
+    {
       let isEnd = 0;
-      if (this.upgradeNum < arr.length - 1) {
-        if (this.upgradeNum == arr.length - 2) {
+      if (this.upgradeNum < arr.length - 1) 
+      {
+        if (this.upgradeNum == arr.length - 2) 
+        {
           isEnd = 1;
-        } else {
+        } 
+        else 
+        {
           isEnd = 0;
         }
         this.upgardeCard(
@@ -758,13 +850,16 @@ export default {
           isEnd,
           arr
         );
-      } else {
+      } 
+      else 
+      {
         this.upgradeNum = 0;
         this.$store.state.upgradeNumber = -2;
         console.log("cccc:" + this.$store.state.upgradeNumber);
       }
     },
-    upgardeCard(oldfile, newfile, isEnd, arr) {
+    upgardeCard(oldfile, newfile, isEnd, arr) 
+    {
       let that = this;
       let aoData = {
         cmd: "SetMoreUpgrade",
@@ -777,7 +872,13 @@ export default {
       this.$axios
         .post("/cgi-bin/ligline.cgi", aoData)
         .then(function(response) {
-          if (response.data.status == "SUCCESS") {
+          if (response.data.status == "SUCCESS") 
+          {
+            console.log("card "+that.selectCardUpgradeArr[that.upgradeNum]);
+            that.$message({
+                            type: 'success',
+                            message: "The Card "+that.selectCardUpgradeArr[that.upgradeNum]+" Upgrade Successful"//密码错误
+                        });
             that.upgradeNum = that.upgradeNum + 1;
             console.log("成功:" + that.upgradeNum);
             that.$store.state.upgradeNumber = that.upgradeNum;
@@ -787,8 +888,11 @@ export default {
             // if (isEnd == 1) {
             //   that.$store.state.upgradeLoading = false;
             // }
-          } else if (response.data.status == "ERROR") {
-            that.$alert(response.data.error, "Prompt information", {
+          } 
+          else if (response.data.status == "ERROR") 
+          {
+            that.$alert(response.data.error, "Prompt information", 
+            {
               confirmButtonText: "OK",
               callback: action => {
                 that.$store.state.upgradeLoading = false;
@@ -816,13 +920,18 @@ export default {
       };
       this.$axios
         .post("/cgi-bin/ligline.cgi", aoData)
-        .then(function(response) {
-          if (response.data.status == "SUCCESS") {
+        .then(function(response) 
+        {
+          if (response.data.status == "SUCCESS") 
+          {
             that.$store.state.upgradeNumbers = 1;
             that.$store.state.upgradeNumber = -2;
             console.log("成功升级");
-          } else if (response.data.status == "ERROR") {
-            that.$alert(response.data.error, "Prompt information", {
+          } 
+          else if (response.data.status == "ERROR") 
+          {
+            that.$alert(response.data.error, "Prompt information", 
+            {
               confirmButtonText: "OK",
               callback: action => {
                 that.$store.state.upgradeLoading = false;
@@ -839,32 +948,7 @@ export default {
           });
         });
     },
-    // getUpgradeStatus() {
-    //   let that = this;
-    //   let aoData = {
-    //     cmd: "GetUpgradeStatus"
-    //   };
-    //   this.$axios
-    //     .post("/cgi-bin/ligline.cgi", aoData)
-    //     .then(function(response) {
-    //       if (response.data.status == "SUCCESS") {
-    //         let upgradeStatus = response.data.echo.reset.status;
-    //         if (upgradeStatus == "start") {
-    //           that.$store.state.upgradeLoading = true;
-    //         } else if (upgradeStatus == "end") {
-    //           that.$store.state.upgradeLoading = false;
-    //         }
-    //       } else if (response.data.status == "ERROR") {
-    //         that.$alert(response.data.error, "Prompt information", {
-    //           confirmButtonText: "OK",
-    //           callback: action => {}
-    //         });
-    //       }
-    //     })
-    //     .catch(function(error) {
-    //       console.log(error);
-    //     });
-    // },
+
     saveInfo(index) {
       let that = this;
       let ipaddr = this.$refs.ipInp.value;
@@ -1014,12 +1098,14 @@ export default {
     },
     selectCardInfo(index, status) {
       this.isActive = index;
-      if (status == "online") {
+      if (status == "online") 
+      {
         this.isCard = true;
         let that = this;
         that.loading = true;
         that.cardInfoLoadding = true;
-        let aoData = {
+        let aoData = 
+        {
           cmd: "Card_info",
           index: index
         };
@@ -1122,10 +1208,27 @@ export default {
       this.$axios
         .post("/cgi-bin/ligline.cgi", aoData)
         .then(function(response) {
-          if (response.data.status == "SUCCESS") {
+          if (response.data.status == "SUCCESS") 
+          {
             that.cardList = response.data.echo.result.solt;
-            that.selectCardInfo(1, that.cardList[0].status);
-          } else if (response.data.status == "ERROR") {
+            for(let i=0;i<that.cardList.length;)
+            {
+              if(that.cardList[i].name=="UnKnown")
+              {
+                that.cardList.splice(i,1);
+              }
+              else
+              {
+                i++;
+              }
+            }
+            if(that.cardList.length>0)
+            {
+              that.selectCardInfo(that.cardList[0].index, that.cardList[0].status);
+            }
+          } 
+          else if (response.data.status == "ERROR") 
+          {
             that.$alert(response.data.error, "Prompt information", {
               confirmButtonText: "OK",
               callback: action => {}

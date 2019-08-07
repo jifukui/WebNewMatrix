@@ -84,6 +84,11 @@ router.beforeEach((to, from, next) => {
   {
     window.clearInterval(window.EDIDPortStatus);
   }
+  if(window.jifukuiupgradesetInterval)
+  {
+    console.log("Close");
+    window.clearInterval(window.jifukuiupgradesetInterval);
+  }
   next();
 })
 export default router

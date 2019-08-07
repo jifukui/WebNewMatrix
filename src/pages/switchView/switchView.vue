@@ -459,6 +459,19 @@ export default {
         }
       },
       deep: true
+    },
+    "$store.state.switchAfv":function(){
+      console.log("this.$store.state.switchAfv "+this.$store.state.switchAfv.length);
+      if(this.$store.state.switchAfv.length==this.aoDataOut.length)
+      {
+        this.afvAll = true;
+        this.$store.state.afvAll = true;
+      }
+      else
+      {
+        this.afvAll = false;
+        this.$store.state.afvAll = false;
+      }
     }
   },
   computed: {},
@@ -731,7 +744,8 @@ export default {
       this.showBtn = true;
     },
     selectedAfv(item, index) {
-      if (item.switchAfv == true) {
+      if (item.switchAfv == true) 
+      {
         this.afvAll = false;
         this.$store.state.afvAll = false;
         item.switchAfv = false;
@@ -739,7 +753,9 @@ export default {
           this.$store.state.switchAfv.indexOf(index),
           1
         );
-      } else {
+      } 
+      else 
+      {
         item.switchAfv = true;
         this.$store.state.switchAfv.push(index);
       }
@@ -765,7 +781,7 @@ export default {
                 proVInfo[j].link_status = "false";
                 proVInfo[j].switchSelect = false;
                 proVInfo[j].switchAfv = false;
-                proVInfo[j].title = "out" + proVInfo[j].index;
+                proVInfo[j].title = "OUT" + proVInfo[j].index;
                 if (switchAfv != "") {
                   for (let k = 0; k < switchAfv.length; k++) {
                     if (proVInfo[j].index == switchAfv[k]) {
@@ -798,7 +814,7 @@ export default {
             for (let i = 0; i < proVInfo.length; i++) {
               if (proVInfo[i].Dir == "In") {
                 proVInfo[i].link_status = "false";
-                proVInfo[i].title = "In" + proVInfo[i].index;
+                proVInfo[i].title = "IN" + proVInfo[i].index;
                 proVInfo[i].sourceGroup = sourceGroup;
                 sourceGroup1.push(proVInfo[i]);
               }
@@ -917,7 +933,7 @@ export default {
                 proVInfo[j].link_status = "no";
                 proVInfo[j].switchSelect = false;
                 proVInfo[j].switchAfv = false;
-                proVInfo[j].title = "out" + proVInfo[j].index;
+                proVInfo[j].title = "OUT" + proVInfo[j].index;
                 if (switchAfv != "") {
                   for (let k = 0; k < switchAfv.length; k++) {
                     if (proVInfo[j].index == switchAfv[k]) {
@@ -950,7 +966,7 @@ export default {
             for (let i = 0; i < proVInfo.length; i++) {
               if (proVInfo[i].Dir == "In") {
                 proVInfo[i].link_status = "false";
-                proVInfo[i].title = "In" + proVInfo[i].index;
+                proVInfo[i].title = "IN" + proVInfo[i].index;
                 proVInfo[i].sourceGroup = sourceGroup;
                 sourceGroup1.push(proVInfo[i]);
               }

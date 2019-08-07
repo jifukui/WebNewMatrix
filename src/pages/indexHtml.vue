@@ -93,7 +93,9 @@ export default {
       fileGrogress1: 0,
       uploadStatus: "",
       onegrogress: 0,
-      onegrogressOne: 0
+      onegrogressOne: 0,
+      Sumsize:0,
+      jifukuivalue:0
     };
   },
   components: {
@@ -108,8 +110,18 @@ export default {
     },
     "$store.state.upgradeLoading": function() {
       this.upgradeStatus = this.$store.state.upgradeLoading;
-      if (this.$store.state.upgradeLoading == true) {
+      if (this.$store.state.upgradeLoading == true) 
+      {
         this.getUpgrade();
+      }
+      else
+      {
+        console.log("window.jifukuiupgradesetInterval "+ window.jifukuiupgradesetInterval);
+        if(window.jifukuiupgradesetInterval)
+        {
+          console.log("Close");
+          window.clearInterval(window.jifukuiupgradesetInterval);
+        }
       }
     },
     "$store.state.upgradeDeviceLoading": function() {
@@ -118,16 +130,24 @@ export default {
         this.getDeviceUpgrade();
       }
     },
-    "$store.state.upgradeNumber": {
-      handler(newValue, oldValue) {
-        if (newValue == -2) {
+    "$store.state.upgradeNumber": 
+    {
+      handler(newValue, oldValue) 
+      {
+        this.Sumsize=0;
+        if (newValue == -2) 
+        {
           console.log("aaaa");
           this.fileGrogress = 100;
           this.$store.state.upgradeLoading = false;
           this.upgradeStatus = this.$store.state.upgradeLoading;
-        } else if (newValue == -1) {
+        } 
+        else if (newValue == -1) 
+        {
           console.log("-1-1-1-1");
-        } else {
+        } 
+        else 
+        {
           console.log("bbbb");
           this.goGrogress(this.$store.state.upgradeNumber);
         }
@@ -140,9 +160,37 @@ export default {
     getUpgrade() {
       let that = this;
       let num = that.$store.state.upgradeNumbers;
+      that.Sumsize=0;
       that.onegrogress = parseInt(100 / num);
-      that.onegrogressOne = parseInt(that.onegrogress / 4);
+      that.onegrogressOne = parseInt(0);
       that.fileGrogress = that.onegrogressOne;
+      
+      let val=0;
+      console.log("window.jifukuiupgradesetInterval "+ window.jifukuiupgradesetInterval);
+      
+      
+      window.jifukuiupgradesetInterval = setInterval(function() 
+      {
+        console.log("Set UP "+that.$store.state.upgradeNumber);
+        if(that.Sumsize<that.$store.state.JiFileSize)
+        {
+          let value=(that.Sumsize*99)/(that.$store.state.JiFileSize*that.$store.state.upgradeNumbers);
+          console.log("The value is "+value);
+          //that.jifukuivalue=parseInt(value);
+          that.fileGrogress=parseInt(that.jifukuivalue+value);
+          that.Sumsize+=2000;
+          console.log("that.fileGrogress "+that.fileGrogress);
+          console.log("that.Sumsize "+that.Sumsize);
+          console.log("that.$store.state.upgradeNumbers "+that.$store.state.upgradeNumbers);
+          console.log("The this.onegrogressOne "+that.fileGrogress);
+          console.log("that.$store.state.JiFileSize "+that.$store.state.JiFileSize);
+        }
+        else
+        {
+         
+        }
+      }, 1500);
+      
     },
     getDeviceUpgrade() {
       let that = this;
@@ -153,11 +201,21 @@ export default {
       }, 1500);
     },
     goGrogress(num) {
+      this.Sumsize=0;
       let goGrogressNum = this.onegrogress * num + this.onegrogressOne;
-      if (goGrogressNum <= 100) {
+      this.jifukuivalue=goGrogressNum;
+      if (goGrogressNum <= 100) 
+      {
         this.fileGrogress = goGrogressNum;
-      } else {
-        this.fileGrogress = this.onegrogress * num;
+      } 
+      else 
+      {
+        if(window.jifukuiupgradesetInterval)
+        {
+          window.clearInterval(window.jifukuiupgradesetInterval);
+          console.log("Close");
+        }
+        this.fileGrogress = 100;
       }
     },
     changeNavInfo: function(data) {
