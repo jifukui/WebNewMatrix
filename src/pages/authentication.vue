@@ -116,7 +116,7 @@ export default {
                             //console.log("The value is "+this.$store.state.SecurityStatus);
                             this.security=this.$store.state.SecurityStatus==0?false:true;
                             this.$message({
-                                type: 'info',
+                                type: 'success',
                                 message: 'Set Security Status Successful'//密码错误
                             });
                         }

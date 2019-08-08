@@ -89,8 +89,7 @@
             <!-- IP -->
             <p><input
                 :class="ipCheck==true?'equipment_information_two_input':'equipment_information_two_input1'"
-                @focus="ipCheck1()"
-                @blur="ipBlur()"
+                @keyup="JiEthoIPCheck()"
                 type="text"
                 id=""
                 ref="ipInp"
@@ -99,8 +98,7 @@
             <!-- MASK -->
             <p><input
                 :class="maskCheck==true?'equipment_information_two_input':'equipment_information_two_input1'"
-                @focus="maskCheck1()"
-                @blur="maskBlur()"
+                @keyup="JiEthoMASKCheck()"
                 type="text"
                 id=""
                 ref="subnetMask"
@@ -109,8 +107,7 @@
             <!-- GATE -->
             <p><input
                 :class="gatewayCheck==true?'equipment_information_two_input':'equipment_information_two_input1'"
-                @focus="gatewayCheck1()"
-                @blur="gatewayBlur()"
+                @keyup="JiEthoGatewayCheck()"
                 type="text"
                 id=""
                 ref="gateway"
@@ -119,26 +116,20 @@
             <!-- TCP -->
             <p><input
                 :class="tcpCheck==true?'equipment_information_two_input':'equipment_information_two_input1'"
-                @focus="tcpCheck1()"
-                @blur="tcpBlur()"
+                @keyup="JiEthoTCPCheck()"
                 type="text"
                 id=""
                 ref="tcp"
                 value=""
-                onKeyUp="value=value.replace(/\D/g,'')"
-                onafterpaste="value=value.replace(/\D/g,'')"
               ></p>
             <!-- UDP -->
             <p><input
                 :class="udpCheck==true?'equipment_information_two_input':'equipment_information_two_input1'"
-                @focus="udpCheck1()"
-                @blur="udpBlur()"
+                @keyup="JiEthoUDPCheck()"
                 type="text"
                 id=""
                 ref="udp"
                 value=''
-                onKeyUp="value=value.replace(/\D/g,'')"
-                onafterpaste="value=value.replace(/\D/g,'')"
               ></p>
           </div>
         </div>
@@ -156,8 +147,7 @@
             <!-- IP -->
             <p><input
                 :class="ipCheck2==true?'equipment_information_two_input':'equipment_information_two_input1'"
-                @focus="ipCheck3()"
-                @blur="ipBlur3()"
+                @keyup="JiEthoIP1Check()"
                 type="text"
                 id=""
                 ref="ipInp3"
@@ -166,8 +156,7 @@
             <!-- MASK -->
             <p> <input
                 :class="maskCheck2==true?'equipment_information_two_input':'equipment_information_two_input1'"
-                @focus="maskCheck3()"
-                @blur="maskBlur3()"
+                @keyup="JiEthoMASK1Check()"
                 type="text"
                 id=""
                 ref="subnetMask3"
@@ -176,8 +165,7 @@
             <!-- GATE -->
             <p> <input
                 :class="gatewayCheck2==true?'equipment_information_two_input':'equipment_information_two_input1'"
-                @focus="gatewayCheck3()"
-                @blur="gatewayBlur3()"
+                @keyup="JiEthoGateway1Check()"
                 type="text"
                 id=""
                 ref="gateway3"
@@ -196,6 +184,7 @@
           <div class="right">
             <p class="line40">
               <el-button
+                :disabled= !HaveChange
                 class="btn"
                 type="primary"
                 @click="saveInfo"
@@ -311,56 +300,254 @@ export default {
       oldGateVal1: "",
       oldTcpVal0: "",
       oldUdpVal0: "",
-      isUpgrade: false
+      isUpgrade: false,
+      HaveChange:false,
+      ChangeFlag:0
     };
   },
-  watch: {},
+  watch: {
+    ChangeFlag:function(value)
+    {
+      console.log("The data is "+value)
+      if(value==0)
+      {
+        this.HaveChange=false;
+      }
+      else
+      {
+        this.HaveChange=true;
+      }
+    }
+  },
   computed: {},
   methods: {
-    // ip address 获取焦点和失去焦点
-    ipCheck1() {
-      this.ipCheck = true;
-      this.isIp = true;
+    JiEthoIPCheck()
+    {
+      let value=this.$refs.ipInp.value;
+      console.log("The IP address is "+value);
+      console.log("The Old Value is "+this.oldIpVal0);
+      if(this.oldIpVal0==value)
+      {
+        this.ChangeFlag&=~1;
+        //this.ipCheck = true;
+      }
+      else
+      {
+        this.ChangeFlag|=1;
+        //this.ipCheck = true;
+        /*
+        if(this.$checkInp.fnValidateIPAddress(value)==true)
+        {
+          this.ChangeFlag|=1;
+          this.ipCheck = true;
+        }
+        else
+        {
+          this.ChangeFlag&=~1;
+          this.ipCheck = false;
+          this.$refs.ipInp.value=this.oldIpVal0;
+        }*/
+      }
     },
-    ipCheck3() {
-      this.ipCheck2 = true;
-      this.isIp = true;
+    JiEthoMASKCheck()
+    {
+      let value=this.$refs.subnetMask.value;
+      console.log("The MAKK address is "+value);
+      console.log("The Old Value is "+this.oldMaskVal0);
+      if(this.oldMaskVal0==value)
+      {
+        this.ChangeFlag&=~2;
+        //this.maskCheck = true;
+      }
+      else
+      {
+        this.ChangeFlag|=2;
+        //this.maskCheck = true;
+        /*
+        if(this.$checkInp.fnValidateMask(value)==true)
+        {
+          this.ChangeFlag|=2;
+          this.maskCheck = true;
+        }
+        else
+        {
+          this.ChangeFlag&=~2;
+          this.maskCheck = false;
+          this.$refs.subnetMask.value=this.oldMaskVal0;
+        }*/
+      }
     },
-    ipBlur() {},
-    ipBlur3() {},
-    // Subnet mask 获取焦点和失去焦点
-    maskCheck1() {
-      this.maskCheck = true;
-      this.isMask = true;
+    JiEthoGatewayCheck()
+    {
+      let value=this.$refs.gateway.value;
+      console.log("The Gateway address is "+value);
+      console.log("The Old Value is "+this.oldGateVal0);
+      if(this.oldGateVal0==value)
+      {
+        this.ChangeFlag&=~4;
+        //this.gatewayCheck = true; 
+      }
+      else
+      {
+        this.ChangeFlag|=4;
+        //this.gatewayCheck = true;
+        /*
+        if(this.$checkInp.fnValidateGateway(value)==true)
+        {
+          this.ChangeFlag|=4;
+          this.gatewayCheck = true;
+        }
+        else
+        {
+          this.ChangeFlag&=~4;
+          this.gatewayCheck = false;  
+          this.$refs.gateway.value=this.oldGateVal0;
+        }*/
+      }
     },
-    maskCheck3() {
-      this.maskCheck2 = true;
-      this.isMask = true;
+    JiEthoTCPCheck()
+    {
+      this.$refs.tcp.value=this.$refs.tcp.value.replace(/\D/g,'');
+      let value=this.$refs.tcp.value;
+      console.log("The TCP address is "+value);
+      console.log("The Old Value is "+this.oldTcpVal0);
+      if(this.oldTcpVal0==value)
+      {
+        this.ChangeFlag&=~8;
+        //this.tcpCheck = true;
+      }
+      else
+      {
+        this.ChangeFlag|=8;
+        //this.tcpCheck = true;
+        /*
+        if(this.$checkInp.fnValidateIcp(value)==true)
+        {
+          this.ChangeFlag|=8;
+          this.tcpCheck = true; 
+        }
+        else
+        {
+          this.ChangeFlag&=~8;
+          this.tcpCheck = false;
+          this.$refs.tcp.value=this.oldTcpVal0;
+        }*/
+      }
     },
-    maskBlur() {},
-    maskBlur3() {},
-    // Gateway 获取焦点和失去焦点
-    gatewayCheck1() {
-      this.gatewayCheck = true;
-      this.isGateway = true;
+    JiEthoUDPCheck()
+    {
+      this.$refs.udp.value=this.$refs.udp.value.replace(/\D/g,'');
+      let value=this.$refs.udp.value;
+      console.log("The UDP address is "+value);
+      console.log("The Old Value is "+this.oldUdpVal0);
+      if(this.oldUdpVal0==value)
+      {
+        this.ChangeFlag&=~16;
+        //this.udpCheck = true;
+        
+      }
+      else
+      {
+        this.ChangeFlag|=16;
+        //this.udpCheck = false;
+        /*
+        if(this.$checkInp.fnValidateIPAddress(value)==true)
+        {
+          this.ChangeFlag|=16;
+          this.udpCheck = true;
+        }
+        else
+        {
+          this.ChangeFlag&=~16;
+          this.udpCheck = false;
+          this.$refs.udp.value=this.oldUdpVal0;
+        }
+        */
+      }
     },
-    gatewayCheck3() {
-      this.gatewayCheck2 = true;
-      this.isGateway = true;
+    JiEthoIP1Check()
+    {
+      let value=this.$refs.ipInp3.value;
+      console.log("The IP1 address is "+value);
+      console.log("The Old Value is "+this.oldIpVal1);
+      if(this.oldIpVal1==value)
+      {
+        this.ChangeFlag&=~32;
+        //this.ipCheck2 = true;
+      }
+      else
+      {
+        this.ChangeFlag|=32;
+        //this.ipCheck2 = true;
+        /*
+        if(this.$checkInp.fnValidateIPAddress(value)==true)
+        {
+          this.ChangeFlag|=32;
+          this.ipCheck2 = true;
+        }
+        else
+        {
+          this.ChangeFlag&=~32;
+          this.ipCheck2 = false;
+          this.$refs.ipInp3.value=this.that.oldIpVal1;
+        }*/
+      }
     },
-    gatewayBlur() {},
-    gatewayBlur3() {},
-    // TCP 获取焦点和失去焦点
-    tcpCheck1() {
-      this.tcpCheck = true;
-      this.istcp = true;
+    JiEthoMASK1Check()
+    {
+      let value=this.$refs.subnetMask3.value;
+      console.log("The MASK1 address is "+value);
+      console.log("The Old Value is "+this.oldMaskVal1);
+      if(this.oldMaskVal1==value)
+      {
+        this.ChangeFlag&=~64;
+        //this.maskCheck2 = true;
+      }
+      else
+      {
+        this.ChangeFlag|=64;
+        //this.maskCheck2 = true;
+        /*
+        if(this.$checkInp.fnValidateIPAddress(value)==true)
+        {
+          this.ChangeFlag|=64;
+          this.maskCheck2 = true;
+        }
+        else
+        {
+          this.ChangeFlag&=~64;
+          this.maskCheck2 = false;
+          this.$refs.subnetMask3.value=this.oldMaskVal1;
+        }*/
+      }
     },
-    tcpBlur() {},
-    udpBlur() {},
-    //UDP 获取焦点和 失去焦点
-    udpCheck1() {
-      this.udpCheck = true;
-      this.isudp = true;
+    JiEthoGateway1Check()
+    {
+      let value=this.$refs.gateway3.value;
+      console.log("The Gateway1 address is "+value);
+      console.log("The Old Value is "+this.oldGateVal1);
+      if(this.oldGateVal1==value)
+      {
+        this.ChangeFlag&=~128;
+        //this.gatewayCheck2 = true;
+      }
+      else
+      {
+        this.ChangeFlag|=128;
+        //this.gatewayCheck2 = true;
+        /*
+        if(this.$checkInp.fnValidateIPAddress(value)==true)
+        {
+          this.ChangeFlag|=128;
+          this.gatewayCheck2 = true;
+        }
+        else
+        {
+          this.ChangeFlag&=~128;
+          this.gatewayCheck2 = false;
+          this.$refs.gateway3.value=this.oldGateVal1;
+        }*/
+      }
     },
     //Name 获取焦点和 失去焦点
     nameCheck1() {
@@ -379,17 +566,6 @@ export default {
       let index = this.file.name.lastIndexOf(".");
       let ext = this.file.name.substr(index + 1);
       let extUpperCase = ext.toUpperCase();
-      // if (size > filemaxsize) {
-      //   this.$alert(
-      //     "The appendix size should not exceed " + filemaxsize / 1024 + "M！",
-      //     "Prompt information",
-      //     {
-      //       confirmButtonText: "OK",
-      //       callback: action => {}
-      //     }
-      //   );
-      //   return false;
-      // }
       if (size <= 0) {
         this.$alert("The appendix size can not be 0M！", "Prompt information", {
           confirmButtonText: "OK",
@@ -397,8 +573,10 @@ export default {
         });
         return false;
       }
-      if (extUpperCase != "KPTW") {
-        this.$alert("Upgrade file type error", "Prompt information", {
+      if (extUpperCase != "KPTW") 
+      {
+        this.$alert("Upgrade file type error", "Prompt information", 
+        {
           confirmButtonText: "OK",
           callback: action => {}
         });
@@ -458,19 +636,26 @@ export default {
       };
       this.$axios
         .post("/cgi-bin/ligline.cgi", aoData)
-        .then(function(response) {
-          if (response.data.status == "SUCCESS") {
+        .then(function(response) 
+        {
+          if (response.data.status == "SUCCESS") 
+          {
             let decompressionFileName = response.data.echo.result.FileName;
             that.realUpgrade(decompressionFileName);
-          } else if (response.data.status == "ERROR") {
-            that.$alert(response.data.error, "Prompt information", {
+          } 
+          else if (response.data.status == "ERROR") 
+          {
+            that.$alert(response.data.error, "Prompt information", 
+            {
               confirmButtonText: "OK",
               callback: action => {}
             });
           }
         })
-        .catch(function(error) {
-          that.$alert(error, "Prompt information", {
+        .catch(function(error) 
+        {
+          that.$alert(error, "Prompt information", 
+          {
             confirmButtonText: "OK",
             callback: action => {}
           });
@@ -528,239 +713,168 @@ export default {
       let ipNum = ipaddr.split(".").splice(0,3).join('.');
       let ip1Num = ipaddr1.split(".").splice(0,3).join('.');
       console.log(ipaddr);
+      this.ipCheck=this.$checkInp.fnValidateIPAddress(ipaddr);
+      this.maskCheck=this.$checkInp.fnValidateMask(maskaddr);
+      this.gatewayCheck=this.$checkInp.fnValidateGateway(gateway);
+      this.tcpCheck=this.$checkInp.fnValidateIcp(tcp);
+      this.udpCheck=this.$checkInp.fnValidateUdp(udp);
+      this.ipCheck2=this.$checkInp.fnValidateIPAddress(ipaddr1);
+      this.maskCheck2=this.$checkInp.fnValidateMask(maskaddr1);
+      this.gatewayCheck2=this.$checkInp.fnValidateGateway(gateway1);
       if (
-        this.$checkInp.fnValidateIPAddress(ipaddr) == true &&
-        this.$checkInp.fnValidateIPAddress(ipaddr1) == true &&
-        this.$checkInp.fnValidateMask(maskaddr) == true &&
-        this.$checkInp.fnValidateMask(maskaddr1) == true &&
-        this.$checkInp.fnValidateGateway(gateway) == true &&
-        this.$checkInp.fnValidateGateway(gateway1) &&
-        this.$checkInp.fnValidateIcp(tcp) == true &&
-        this.$checkInp.fnValidateUdp(udp) == true &&
+         this.ipCheck== true &&
+         this.maskCheck== true &&
+         this.gatewayCheck== true &&
+         this.tcpCheck== true &&
+         this.udpCheck== true &&
+         this.ipCheck2==true&&
+         this.maskCheck2== true &&
+         this.gatewayCheck2== true &&
         this.$checkInp.isEqualIPAddress(ipaddr, ipaddr1, maskaddr, maskaddr1) ==
           false && ipaddr!=gateway && ipaddr1!=gateway1 && ipaddr!=ipaddr1 && ipNum!=ip1Num && tcp!=udp
       ) 
       {
-        /*this.$confirm("Are you sure?", "Prompt information", {
-          confirmButtonText: "Ok",
-          cancelButtonText: "Cancel",
-          type: "warning",
-          closeOnClickModal: false
-        })
-          .then(() => */{
-            let that = this;
-            let setInfo = [];
-            let isLinkTo=false;
-            if (ipaddr != that.oldIpVal0) {
-              let ht = {
-                name: "eth0",
-                parameter: "IP",
-                value: ipaddr
-              };
-              setInfo.push(ht);
-              isLinkTo=true;
-            }
-            if (maskaddr != that.oldMaskVal0) {
-              let ht = {
-                name: "eth0",
-                parameter: "MASK",
-                value: maskaddr
-              };
-              setInfo.push(ht);
-            }
-            if (gateway != that.oldGateVal0) {
-              let ht = {
-                name: "eth0",
-                parameter: "GATEWAY",
-                value: gateway
-              };
-              setInfo.push(ht);
-            }
-            // flag
-            // if (tcp != that.oldTcpVal0 && udp != that.oldUdpVal0) {
-            //   this.tcpCheck = false;
-            //   this.udpCheck = false;
-            //   return
-            // }
-            if (tcp != that.oldTcpVal0) {
-              let ht = {
-                name: "eth0",
-                parameter: "TCP_PORT",
-                value: tcp
-              };
-              setInfo.push(ht);
-            }
-            if (udp != that.oldUdpVal0) {
-              let ht = {
-                name: "eth0",
-                parameter: "UDP_PORT",
-                value: udp
-              };
-              setInfo.push(ht);
-            }
-            if (ipaddr1 != that.oldIpVal1) {
-              let ht = {
-                name: "eth1",
-                parameter: "IP",
-                value: ipaddr1
-              };
-              setInfo.push(ht);
-            }
-            if (maskaddr1 != that.oldMaskVal1) {
-              let ht = {
-                name: "eth1",
-                parameter: "MASK",
-                value: maskaddr1
-              };
-              setInfo.push(ht);
-            }
-            if (gateway1 != that.oldGateVal1) {
-              let ht = {
-                name: "eth1",
-                parameter: "GATEWAY",
-                value: gateway1
-              };
-              setInfo.push(ht);
-            }
-            if (setInfo.length == 0) {
-              return false;
-            }
-            //let isLinkTo=true;
-
-            if(setInfo.length<=2){
-              if(setInfo.length==1){
-                if(setInfo[0].parameter=="TCP_PORT"||setInfo[0].parameter=="UDP_PORT"){
-                  //isLinkTo=false;
+        
+        let that = this;
+        let setInfo = [];
+        let isLinkTo=false;
+        if ((that.ChangeFlag&1)==1) 
+        {
+          let ht = {
+            name: "eth0",
+            parameter: "IP",
+            value: ipaddr
+          };
+          setInfo.push(ht);
+        }
+        if ((that.ChangeFlag&2)==2) 
+        {
+          let ht = {
+          name: "eth0",
+          parameter: "MASK",
+          value: maskaddr
+          };
+          setInfo.push(ht);
+        }
+        if ((that.ChangeFlag&4)==4)
+        {
+          let ht = {
+          name: "eth0",
+          parameter: "GATEWAY",
+          value: gateway
+          };
+          setInfo.push(ht);
+        }
+        if ((that.ChangeFlag&8)==8) 
+        {
+          let ht = {
+          name: "eth0",
+          parameter: "TCP_PORT",
+          value: tcp
+          };
+          setInfo.push(ht);
+        }
+        if ((that.ChangeFlag&16)==16) 
+        {
+          let ht = {
+          name: "eth0",
+          parameter: "UDP_PORT",
+          value: udp
+          };
+          setInfo.push(ht);
+        }
+        if ((that.ChangeFlag&32)==32) 
+        {
+          let ht = {
+          name: "eth1",
+          parameter: "IP",
+          value: ipaddr1
+          };
+          setInfo.push(ht);
+        }
+        if ((that.ChangeFlag&64)==64) 
+        {
+          let ht = {
+          name: "eth1",
+          parameter: "MASK",
+          value: maskaddr1
+          };
+          setInfo.push(ht);
+        }
+        if ((that.ChangeFlag&128)==128) 
+        {
+          let ht = {
+            name: "eth1",
+            parameter: "GATEWAY",
+            value: gateway1
+          };
+          setInfo.push(ht);
+        }
+        console.log("send is "+JSON.stringify(setInfo));
+        if (setInfo.length == 0) 
+        {
+          console.log("send is "+JSON.stringify(setInfo));
+          return false;
+        }
+        let aoData = {
+          cmd: "SetDeviceNetwork",
+          Network: setInfo
+        };
+        this.$axios
+          .post("/cgi-bin/ligline.cgi", aoData)
+            .then(function(response) 
+            {
+              if (response.data.status == "SUCCESS") 
+              {
+                that.ChangeFlag=0;
+                that.HaveChange=false;
+                that.$message({
+                  message: "Save success",
+                  type: "success"
+                });
+                if(that.ChangeFlag&1==1)
+                {
+                  let aNum = ipaddr.split(".");
+                  let num = "";
+                  num += parseInt(aNum[0]) + ".";
+                  num += parseInt(aNum[1]) + ".";
+                  num += parseInt(aNum[2]) + ".";
+                  num += parseInt(aNum[3]);
+                  window.location.href = "http://" + num;
                 }
-              }else{
-                if(setInfo[0].parameter=="TCP_PORT"&&setInfo[1].parameter=="UDP_PORT"){
-                  //isLinkTo=false;
+                else
+                {
+                  console.log("The Old ip is "+that.oldIpVal0);
+                  that.oldIpVal0=ipaddr;
+                  that.oldMaskVal0=maskaddr;
+                  that.oldGateVal0=gateway;
+                  that.oldTcpVal0=tcp;
+                  that.oldUdpVal0=udp;
+                  that.oldIpVal1=ipaddr1;
+                  that.oldMaskVal1=maskaddr1;
+                  that.oldGateVal1=gateway1;
                 }
+              } 
+              else if (response.data.status == "ERROR") 
+              {
+                that.$alert(response.data.error, "Prompt information", {
+                  confirmButtonText: "OK",
+                  callback: action => {}
+                });
               }
-            }
-            let aoData = {
-              cmd: "SetDeviceNetwork",
-              Network: setInfo
-            };
-            this.$axios
-              .post("/cgi-bin/ligline.cgi", aoData)
-              .then(function(response) {
-                if (response.data.status == "SUCCESS") 
-                {
-                  /*
-                  that.$alert("Save success", "Prompt information", {
-                    confirmButtonText: "OK",
-                    callback: action => {
-                      that.getDeviceInfo()
-                      if(isLinkTo==true)
-                      {
-                        let aNum = ipaddr.split(".");
-                        let num = "";
-                        num += parseInt(aNum[0]) + ".";
-                        num += parseInt(aNum[1]) + ".";
-                        num += parseInt(aNum[2]) + ".";
-                        num += parseInt(aNum[3]);
-                        window.location.href = "http://" + num;
-                      }
-                    }
-                  });*/
-                  that.$message({
-                    message: "Save success",
-                    type: "success"
-                  });
-                  if(isLinkTo==true)
-                  {
-                    let aNum = ipaddr.split(".");
-                    let num = "";
-                    num += parseInt(aNum[0]) + ".";
-                    num += parseInt(aNum[1]) + ".";
-                    num += parseInt(aNum[2]) + ".";
-                    num += parseInt(aNum[3]);
-                    window.location.href = "http://" + num;
-                  }
-                } 
-                else if (response.data.status == "ERROR") 
-                {
-                  that.$alert(response.data.error, "Prompt information", {
-                    confirmButtonText: "OK",
-                    callback: action => {}
-                  });
-                }
-              })
-              .catch(function(error) {
-                console.log(error);
-              });
-          }/*)
-          .catch(() => {
-            let sendata = {
-              resetSure: "取消保存信息"
-            };
-
-            console.log(sendata);
-          });*/
-      } else {
-        this.$alert("Parameter is incorrect!", "Prompt information", {
+            })
+            .catch(function(error) 
+            {
+              console.log(error);
+            });
+      } 
+      else 
+      {
+        this.$alert("Parameter is incorrect!", "Prompt information", 
+        {
           confirmButtonText: "OK",
           callback: action => {}
         });
-      }
-      if (this.$checkInp.fnValidateIPAddress(ipaddr) == false) {
-        this.ipCheck = false;
-      }
-      if (this.$checkInp.fnValidateIPAddress(ipaddr1) == false) {
-        this.ipCheck2 = false;
-      }
-      if (this.$checkInp.fnValidateMask(maskaddr) == false) {
-        this.maskCheck = false;
-      }
-      if (this.$checkInp.fnValidateMask(maskaddr1) == false) {
-        this.maskCheck2 = false;
-      }
-      if (this.$checkInp.fnValidateGateway(gateway) == false) {
-        this.gatewayCheck = false;
-      }
-      if (this.$checkInp.fnValidateGateway(gateway1) == false) {
-        this.gatewayCheck2 = false;
-      }
-      if (this.$checkInp.fnValidateIcp(tcp) == false) {
-        this.tcpCheck = false;
-      }
-      if (this.$checkInp.fnValidateUdp(udp) == false) {
-        this.udpCheck = false;
-      }
-      if (ipaddr==gateway) {
-        this.ipCheck = false;
-        this.gatewayCheck = false;
-      }
-      if (ipaddr1==gateway1) {
-        this.ipCheck2 = false;
-        this.gatewayCheck2 = false;
-      }
-      if (ipaddr==ipaddr1) {
-        this.ipCheck = false;
-        this.ipCheck2 = false;
-      }
-      //this.ipCheck = !ipNum==ip1Num;
-      //this.ipCheck2 = !ipNum==ip1Num;
-      if (ipNum==ip1Num) {
-        this.ipCheck = false;
-        this.ipCheck2 = false;
-      }
-      if (tcp==udp) {
-        this.tcpCheck = false;
-        this.udpCheck = false;
-      }
-      // if (this.$checkInp.fnValidateName(nameaddr) == false) {
-      //   this.nameCheck = false;
-      // }
-      if (
-        this.$checkInp.isEqualIPAddress(ipaddr, ipaddr1, maskaddr, maskaddr1) ==
-        true
-      ) {
-        this.ipCheck = false;
-        this.ipCheck2 = false;
-        this.maskCheck = false;
-        this.maskCheck2 = false;
       }
     },
     getFile() {
@@ -878,29 +992,24 @@ export default {
       this.$axios
         .post("/cgi-bin/ligline.cgi", aoData)
         .then(function(response) {
-          if (response.data.status == "SUCCESS") {
+          if (response.data.status == "SUCCESS") 
+          {
             that.model = response.data.echo.result.DeviceInfo.BaseInfo.Model;
             that.name = response.data.echo.result.DeviceInfo.BaseInfo.Name;
             that.sn = response.data.echo.result.DeviceInfo.BaseInfo.SN;
-            that.firmwareVersion =
-              response.data.echo.result.DeviceInfo.BaseInfo.FirewareVersion;
-            that.Moreinfo =
-              response.data.echo.result.DeviceInfo.BaseInfo.Moreinfo;
+            that.firmwareVersion =response.data.echo.result.DeviceInfo.BaseInfo.FirewareVersion;
+            that.Moreinfo =response.data.echo.result.DeviceInfo.BaseInfo.Moreinfo;
             that.mac0 = response.data.echo.result.DeviceInfo.Ethernet[0].mac;
             that.mac1 = response.data.echo.result.DeviceInfo.Ethernet[1].mac;
             if (
               response.data.echo.result.DeviceInfo.Ethernet[0].ifname == "eth0"
-            ) {
-              that.$refs.ipInp.value =
-                response.data.echo.result.DeviceInfo.Ethernet[0].ip;
-              that.$refs.subnetMask.value =
-                response.data.echo.result.DeviceInfo.Ethernet[0].mask;
-              that.$refs.gateway.value =
-                response.data.echo.result.DeviceInfo.Ethernet[0].gate;
-              that.$refs.tcp.value =
-                response.data.echo.result.DeviceInfo.Ethernet[0].tcp;
-              that.$refs.udp.value =
-                response.data.echo.result.DeviceInfo.Ethernet[0].udp;
+            ) 
+            {
+              that.$refs.ipInp.value =response.data.echo.result.DeviceInfo.Ethernet[0].ip;
+              that.$refs.subnetMask.value =response.data.echo.result.DeviceInfo.Ethernet[0].mask;
+              that.$refs.gateway.value =response.data.echo.result.DeviceInfo.Ethernet[0].gate;
+              that.$refs.tcp.value =response.data.echo.result.DeviceInfo.Ethernet[0].tcp;
+              that.$refs.udp.value =response.data.echo.result.DeviceInfo.Ethernet[0].udp;
               that.oldIpVal0 = JSON.parse(
                 JSON.stringify(
                   response.data.echo.result.DeviceInfo.Ethernet[0].ip
@@ -929,7 +1038,8 @@ export default {
             }
             if (
               response.data.echo.result.DeviceInfo.Ethernet[1].ifname == "eth1"
-            ) {
+            ) 
+            {
               that.$refs.ipInp3.value =
                 response.data.echo.result.DeviceInfo.Ethernet[1].ip;
               that.$refs.subnetMask3.value =
@@ -952,8 +1062,11 @@ export default {
                 )
               );
             }
-          } else if (response.data.status == "ERROR") {
-            that.$alert(response.data.error, "Prompt information", {
+          } 
+          else if (response.data.status == "ERROR") 
+          {
+            that.$alert(response.data.error, "Prompt information", 
+            {
               confirmButtonText: "OK",
               callback: action => {}
             });

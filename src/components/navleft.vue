@@ -72,10 +72,10 @@ export default {
         //   class: "icon-dianshiqiang",
         //   routerLink: "../pages/videoWall"
         // },
-         
         {
           text: "Authentication",
-          class: "icon-dianshiqiang",
+          // class: "icon-dianshiqiang",
+          class: "icon-mima",
           routerLink: "../pages/authentication"
         },
         {
@@ -89,7 +89,6 @@ export default {
           class: "icon-cogs",
           routerLink: "../pages/configure"
         },
-       
         {
           text: "Status",
           class: "icon-list2",
@@ -106,7 +105,8 @@ export default {
       open: "true",
       temp: "false",
       voltage: "false",
-      fan: "false"
+      fan: "false",
+      ErrNum:0
     };
   },
   methods: {
@@ -130,20 +130,27 @@ export default {
         cmd: "GetAlertStatus"
       };
       this.$axios
-        .post("/cgi-bin/ligline.cgi", aoData, { timeout: 10000 })
+        .post("/cgi-bin/ligline.cgi", aoData)
         .then(function(response) {
           that.temp = response.data.echo.result.temp;
           that.fan = response.data.echo.result.fan;
           that.voltage = response.data.echo.result.voltage;
+          that.ErrNum=0;
+          console.log("error is "+error+" num is "+that.ErrNum);
         })
         .catch(function(error) {
-          console.log(error);
-          that.$alert("Network error", "Prompt information", {
-            confirmButtonText: "OK",
-            callback: action => {
-              window.location.reload();
-            }
-          });
+          console.log("error is "+error+" num is "+that.ErrNum);
+          console.log("error code is "+JSON.stringify(error));
+          that.ErrNum++;
+          if(that.ErrNum==20)
+          {
+            that.$alert("Network error", "Prompt information", {
+              confirmButtonText: "OK",
+              callback: action => {
+                window.location.reload();
+              }
+            });
+          }
         });
     }
   },

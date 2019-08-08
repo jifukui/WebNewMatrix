@@ -157,14 +157,18 @@ checkInp.ipToNumber = function (ip) {
     return num;
 }
 //判断ip是否为同一网段
-checkInp.isEqualIPAddress = function (addr1, addr2, mask, mask1) {
+checkInp.isEqualIPAddress = function (addr1, addr2, mask, mask1) 
+{
     if (
         (checkInp.ipToNumber(addr1) & checkInp.ipToNumber(mask)) ==
         (checkInp.ipToNumber(addr2) & checkInp.ipToNumber(mask1))
-    ) {
+    ) 
+    {
         console.log("在同一个网段");
         return true;
-    } else {
+    } 
+    else 
+    {
         console.log("不在同一个网段");
         return false;
     }

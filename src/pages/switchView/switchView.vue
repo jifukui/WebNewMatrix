@@ -30,12 +30,14 @@
             <div class="afvBtn">
               AFV
               <input
+                title="All"
                 id="afvAllBtn"
                 class="afv_all"
                 type="checkbox"
                 :checked="afvAll == true ? 'checked' : false"
                 @click="allSelect($event)"
-              /><label for="afvAllBtn" class="afv_all">All</label>
+              />
+              <!-- <label for="afvAllBtn" class="afv_all">All</label> -->
             </div>
           </div>
           <div class="outPutInfo outPutInfo_title">
@@ -1752,8 +1754,8 @@ button,
 }
 .afvBtn {
   position: absolute;
-  top: 154px;
-  left: 195px;
+  top: 155px;
+  left: 196px;
 }
 .outPutInfo {
   width: 480px;

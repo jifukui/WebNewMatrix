@@ -42,7 +42,7 @@ export default {
 .box {
     width: 562px;
     height: 415px;
-    padding: 60px;
+    padding-top: 60px;
     /*border: 1px solid #409EFF;*/
     margin: 0 auto;
     overflow: auto;
