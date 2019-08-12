@@ -136,13 +136,13 @@ export default {
           that.fan = response.data.echo.result.fan;
           that.voltage = response.data.echo.result.voltage;
           that.ErrNum=0;
-          console.log("error is "+error+" num is "+that.ErrNum);
+          //console.log("error is "+error+" num is "+that.ErrNum);
         })
         .catch(function(error) {
           console.log("error is "+error+" num is "+that.ErrNum);
-          console.log("error code is "+JSON.stringify(error));
+          //console.log("error code is "+JSON.stringify(error));
           that.ErrNum++;
-          if(that.ErrNum==20)
+          if(that.ErrNum==14)
           {
             that.$alert("Network error", "Prompt information", {
               confirmButtonText: "OK",

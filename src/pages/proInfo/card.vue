@@ -139,6 +139,7 @@
               <div class="left">
                 <p class="line41" v-show="isEthernet">Save Changes:</p>
                 <p class="line41">Factory:</p>
+                <p class="line41">Refresh:</p>
               </div>
               <div class="right">
                 <p class="line41" v-show="isEthernet">
@@ -154,6 +155,11 @@
                     >Factory</el-button
                   >
                 </p>
+                <p class="line41">
+                  <el-button class="btn" type="primary" @click="CardRefresh"
+                    >Refresh</el-button
+                  >
+                </p>
               </div>
             </div>
           </div>
@@ -161,6 +167,17 @@
         <div class="information" v-show="!isCard">
           <span class="title">Information - Slot {{ isActive }}</span>
           <div class="nocard">No Card</div>
+          <div class="box ">
+            <div class="left">
+              <p class="line41">Refresh:</p>
+            </div>
+            <div class="right">
+              <p class="line41">
+                <el-button class="btn" type="primary" @click="CardRefresh"
+                >Refresh</el-button>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
       <div
@@ -169,8 +186,8 @@
         v-show="cardInfoLoadding"
       ></div>
     </div>
-    <div class="upgradeDiv">
-      <div class="information">
+    <div class="upgradeDiv" >
+      <div class="information" v-show="cardList.length>0">
         <span class="title Firmware2">Firmware Upgrade</span>
         <div class="boxUpgrad">
           <div class="firmware">
@@ -1111,44 +1128,64 @@ export default {
         };
         this.$axios
           .post("/cgi-bin/ligline.cgi", aoData)
-          .then(function(response) {
-            if (response.data.status == "SUCCESS") {
+          .then(function(response) 
+          {
+            if (response.data.status == "SUCCESS") 
+            {
               let responseData = response.data.echo.result;
-              if (responseData.Type == "Unknown") {
+              if (responseData.Type == "Unknown") 
+              {
                 that.type = "";
-              } else {
+              } 
+              else 
+              {
                 that.type = responseData.Type;
               }
               that.model = responseData.Model;
               that.modelId = responseData.Model_ID;
-              if (responseData.Direction == "Unknown") {
+              if (responseData.Direction == "Unknown") 
+              {
                 that.direction = "";
-              } else {
+              } 
+              else 
+              {
                 that.direction = responseData.Direction;
               }
               that.firmwareVersion = responseData.Version;
-              if (responseData.Ethernet == null) {
+              if (responseData.Ethernet == null) 
+              {
                 that.isEthernet = false;
-              } else {
+              } 
+              else 
+              {
                 that.isEthernet = true;
-                if (responseData.Ethernet[0].MAC == "Unknown") {
+                if (responseData.Ethernet[0].MAC == "Unknown") 
+                {
                   that.mac = "";
-                } else {
+                } 
+                else 
+                {
                   that.mac = responseData.Ethernet[0].MAC;
                 }
-                if (responseData.Ethernet[0].IP == "Unknown") {
+                if (responseData.Ethernet[0].IP == "Unknown") 
+                {
                   that.$refs.ipInp.value = "";
                   that.ipDisabled = true;
-                } else {
+                } 
+                else 
+                {
                   that.$refs.ipInp.value = responseData.Ethernet[0].IP;
                   that.oldIpVal = JSON.parse(
                     JSON.stringify(responseData.Ethernet[0].IP)
                   );
                 }
-                if (responseData.Ethernet[0].MASK == "Unknown") {
+                if (responseData.Ethernet[0].MASK == "Unknown") 
+                {
                   that.$refs.subnetMask.value = "";
                   that.maskDisabled = true;
-                } else {
+                } 
+                else 
+                {
                   that.$refs.subnetMask.value = responseData.Ethernet[0].MASK;
                   that.oldMaskVal = JSON.parse(
                     JSON.stringify(responseData.Ethernet[0].MASK)
@@ -1157,25 +1194,33 @@ export default {
                 if (responseData.Ethernet[0].GateWay == "Unknown") {
                   that.$refs.gateway.value = "";
                   that.gatewayDisabled = true;
-                } else {
+                } 
+                else 
+                {
                   that.$refs.gateway.value = responseData.Ethernet[0].GateWay;
                   that.oldGatewayVal = JSON.parse(
                     JSON.stringify(responseData.Ethernet[0].GateWay)
                   );
                 }
-                if (responseData.Ethernet[0].TCP == "Unknown") {
+                if (responseData.Ethernet[0].TCP == "Unknown") 
+                {
                   that.$refs.tcp.value = "";
                   that.tcpDisabled = true;
-                } else {
+                } 
+                else 
+                {
                   that.$refs.tcp.value = responseData.Ethernet[0].TCP;
                   that.oldTcpVal = JSON.parse(
                     JSON.stringify(responseData.Ethernet[0].TCP)
                   );
                 }
-                if (responseData.Ethernet[0].UDP == "Unknown") {
+                if (responseData.Ethernet[0].UDP == "Unknown") 
+                {
                   that.$refs.udp.value = "";
                   that.udpDisabled = true;
-                } else {
+                } 
+                else 
+                {
                   that.$refs.udp.value = responseData.Ethernet[0].UDP;
                   that.oldUdpVal = JSON.parse(
                     JSON.stringify(responseData.Ethernet[0].UDP)
@@ -1184,7 +1229,9 @@ export default {
               }
               that.loading = false;
               that.cardInfoLoadding = false;
-            } else if (response.data.status == "ERROR") {
+            } 
+            else if (response.data.status == "ERROR") 
+            {
               that.$alert(response.data.error, "Prompt information", {
                 confirmButtonText: "OK",
                 callback: action => {}
@@ -1194,7 +1241,10 @@ export default {
           .catch(function(error) {
             console.log(error);
           });
-      } else if (status == "offline") {
+      } 
+      else if (status == "offline") 
+      {
+        this.isActive="";
         this.isCard = false;
         this.cardInfoLoadding = false;
       }
@@ -1224,7 +1274,33 @@ export default {
             }
             if(that.cardList.length>0)
             {
-              that.selectCardInfo(that.cardList[0].index, that.cardList[0].status);
+              if(that.isActive==-1||that.isActive=="")
+              {
+                that.selectCardInfo(that.cardList[0].index, that.cardList[0].status);
+              }
+              else 
+              {
+                let i;
+                for(i=0;i<that.cardList.length;i++)
+                {
+                  if(that.cardList[i].index==that.isActive)
+                  {
+                    break;
+                  }
+                }
+                if(i<that.cardList.length)
+                {
+                  that.selectCardInfo(that.cardList[i].index, that.cardList[i].status);
+                }
+                else
+                {
+                  that.selectCardInfo(that.isActive, "offline");
+                }
+              }
+            }
+            else
+            {
+              that.selectCardInfo(0, "offline");   
             }
           } 
           else if (response.data.status == "ERROR") 
@@ -1238,6 +1314,9 @@ export default {
         .catch(function(error) {
           console.log(error);
         });
+    },
+    CardRefresh(){
+      this.getCardList();
     }
   },
   created() {

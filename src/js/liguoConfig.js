@@ -38,23 +38,31 @@ test.analyticalVersion = function (value) {
 test.findMateData = function (name, val, openType, num) {
     var data = {};
     data.info = {};
-    if (name == 'A10027Version') {
+    if (name == 'A10027Version') 
+    {
         val = test.analyticalVersion(val)
     }
     var AvType = test.config.AV[name];
-    if (AvType == null) {
+    if (AvType == null) 
+    {
         return false;
     }
-    if (num == '16') {
+    if (num == '16') 
+    {
         test.config.AV["R-gain"].sid = 155;
-    } else if (num == '32') {
+    } 
+    else if (num == '32') 
+    {
         test.config.AV["R-gain"].sid = 155;
-    } else if (num == '64') {
+    } 
+    else if (num == '64') 
+    {
         test.config.AV["R-gain"].sid = 159;
     }
     data.info.type = AvType.type;
     data.info.id = AvType.title;
-    switch (data.info.type) {
+    switch (data.info.type) 
+    {
         case "static":
             {
                 data.info.value = val;
@@ -1848,16 +1856,20 @@ test.PortAvOK = function (portData, index) {
     var i;
     var data = [];
     console.log("The value is " + JSON.stringify(test.PortInfo.info))
-    for (i = 0; i < portData.length; i++) {
-        if (portData[i].type != "static" || portData[i].type != "staticList") {
+    for (i = 0; i < portData.length; i++) 
+    {
+        if (portData[i].type != "static" || portData[i].type != "staticList") 
+        {
             var value = {};
-            if (portData[i].type == "inputNum") {
+            if (portData[i].type == "inputNum") 
+            {
                 // portData[i].lastervalue = portData[i].lastervalue.replace(/[^a-zA-Z0-9_-]/g, '');
                 if (portData[i].lastervalue == "") {
                     portData[i].lastervalue = portData.info[i].oldvalue;
                 }
             }
-            if (portData[i].oldvalue != portData[i].lastervalue) {
+            if (portData[i].oldvalue != portData[i].lastervalue) 
+            {
                 console.log("have different");
                 let ht = {
                     index: index,

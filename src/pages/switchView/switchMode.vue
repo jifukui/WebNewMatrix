@@ -1034,7 +1034,8 @@ export default {
     },
     selectPortInfo(index) {
       let that = this;
-      if (window.portSetTimeout) {
+      if (window.portSetTimeout) 
+      {
         window.clearInterval(window.portSetTimeout);
       }
       if(index==0)
@@ -1058,14 +1059,19 @@ export default {
             // that.staticData = [];
             let responseInfo = response.data.echo.result.Info;
             let setInfo = response.data.echo.result.Setting;
-            if (setInfo.length == 0) {
+            if (setInfo.length == 0) 
+            {
               that.isNeedSave = false;
-            } else {
+            } 
+            else 
+            {
               that.isNeedSave = true;
             }
-            if (responseInfo["Port Index"] == that.isActive) {
+            if (responseInfo["Port Index"] == that.isActive) 
+            {
               let staticAoData = [];
-              for (var i in responseInfo) {
+              for (var i in responseInfo) 
+              {
                 let ht = {
                   id: i,
                   value: responseInfo[i]

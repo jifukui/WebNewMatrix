@@ -179,6 +179,7 @@
             <p class="line40">Save Changes:</p>
             <p class="line40">Configuration File:</p>
             <p class="line40">Reset:</p>
+            <p class="line40">Refresh:</p>
             <!-- <p class="line40">ISP Mode:</p> -->
           </div>
           <div class="right">
@@ -219,6 +220,13 @@
                 type="primary"
                 @click="factory"
               >Factory</el-button>
+            </p>
+            <p class="line40">
+              <el-button
+                class="btn"
+                type="primary"
+                @click="DeviceRefresh"
+              >Refresh</el-button>
             </p>
             <!-- <p class="line40"><el-button class="btn" type="primary">ISP Mode</el-button></p> -->
           </div>
@@ -702,17 +710,15 @@ export default {
     },
     saveInfo() 
     {
-      let ipaddr = this.$refs.ipInp.value;
-      let ipaddr1 = this.$refs.ipInp3.value;
+      let ipaddr =this.SetIPAddress(this.$refs.ipInp.value) ;
+      let ipaddr1 =this.SetIPAddress(this.$refs.ipInp3.value) ;
       let maskaddr = this.$refs.subnetMask.value;
       let maskaddr1 = this.$refs.subnetMask3.value;
-      let gateway = this.$refs.gateway.value;
-      let gateway1 = this.$refs.gateway3.value;
+      let gateway =this.SetIPAddress(this.$refs.gateway.value) ;
+      let gateway1 =this.SetIPAddress(this.$refs.gateway3.value) ;
       let tcp = this.$refs.tcp.value;
       let udp = this.$refs.udp.value;
-      let ipNum = ipaddr.split(".").splice(0,3).join('.');
-      let ip1Num = ipaddr1.split(".").splice(0,3).join('.');
-      console.log(ipaddr);
+      console.log(ipaddr1);
       this.ipCheck=this.$checkInp.fnValidateIPAddress(ipaddr);
       this.maskCheck=this.$checkInp.fnValidateMask(maskaddr);
       this.gatewayCheck=this.$checkInp.fnValidateGateway(gateway);
@@ -731,7 +737,7 @@ export default {
          this.maskCheck2== true &&
          this.gatewayCheck2== true &&
         this.$checkInp.isEqualIPAddress(ipaddr, ipaddr1, maskaddr, maskaddr1) ==
-          false && ipaddr!=gateway && ipaddr1!=gateway1 && ipaddr!=ipaddr1 && ipNum!=ip1Num && tcp!=udp
+          false && ipaddr!=gateway && ipaddr1!=gateway1 && ipaddr!=ipaddr1  && tcp!=udp
       ) 
       {
         
@@ -834,13 +840,7 @@ export default {
                 });
                 if(that.ChangeFlag&1==1)
                 {
-                  let aNum = ipaddr.split(".");
-                  let num = "";
-                  num += parseInt(aNum[0]) + ".";
-                  num += parseInt(aNum[1]) + ".";
-                  num += parseInt(aNum[2]) + ".";
-                  num += parseInt(aNum[3]);
-                  window.location.href = "http://" + num;
+                  window.location.href = "http://" +ipaddr;
                 }
                 else
                 {
@@ -1005,9 +1005,9 @@ export default {
               response.data.echo.result.DeviceInfo.Ethernet[0].ifname == "eth0"
             ) 
             {
-              that.$refs.ipInp.value =response.data.echo.result.DeviceInfo.Ethernet[0].ip;
+              that.$refs.ipInp.value =that.SetIPAddress(response.data.echo.result.DeviceInfo.Ethernet[0].ip) ;
               that.$refs.subnetMask.value =response.data.echo.result.DeviceInfo.Ethernet[0].mask;
-              that.$refs.gateway.value =response.data.echo.result.DeviceInfo.Ethernet[0].gate;
+              that.$refs.gateway.value =that.SetIPAddress(response.data.echo.result.DeviceInfo.Ethernet[0].gate);
               that.$refs.tcp.value =response.data.echo.result.DeviceInfo.Ethernet[0].tcp;
               that.$refs.udp.value =response.data.echo.result.DeviceInfo.Ethernet[0].udp;
               that.oldIpVal0 = JSON.parse(
@@ -1040,12 +1040,10 @@ export default {
               response.data.echo.result.DeviceInfo.Ethernet[1].ifname == "eth1"
             ) 
             {
-              that.$refs.ipInp3.value =
-                response.data.echo.result.DeviceInfo.Ethernet[1].ip;
+              that.$refs.ipInp3.value =that.SetIPAddress(response.data.echo.result.DeviceInfo.Ethernet[1].ip);
               that.$refs.subnetMask3.value =
                 response.data.echo.result.DeviceInfo.Ethernet[1].mask;
-              that.$refs.gateway3.value =
-                response.data.echo.result.DeviceInfo.Ethernet[1].gate;
+              that.$refs.gateway3.value =that.SetIPAddress(response.data.echo.result.DeviceInfo.Ethernet[1].gate);
               that.oldIpVal1 = JSON.parse(
                 JSON.stringify(
                   response.data.echo.result.DeviceInfo.Ethernet[1].ip
@@ -1076,7 +1074,22 @@ export default {
           console.log(error);
         });
     },
-    ChooseFile() {}
+    ChooseFile() {},
+    SetIPAddress(value)
+    {
+      let data=value.split(".");
+      let val=new Array();
+      for(let i=0;i<data.length;i++)
+      {
+        val[i]=parseInt(data[i])
+      }
+      return val.join(".")
+    },
+    DeviceRefresh()
+    {
+      this.ChangeFlag=0;
+      this.getDeviceInfo();
+    }
   },
   created() {},
   mounted() {

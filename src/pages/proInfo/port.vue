@@ -46,11 +46,12 @@
               </td>
               <td width="35%" v-if="item.type === 'list'">{{ item.id }}:</td>
               <td width="65%" v-if="item.type === 'list'">
-                <select v-model="item.lastervalue">
+                <select v-model="item.lastervalue" @change="listchange(item,index)">
                   <option
                     v-for="(item, index) in item.value"
                     :key="index"
                     :value="item.value"
+                    
                     >{{ item.name }}</option
                   >
                 </select>
@@ -61,9 +62,7 @@
                   <el-slider
                     :min="item.value.min"
                     :max="item.value.max"
-                    show-input
-                    :show-input-controls="false"
-                    @change="change(item)"
+                    @change="sliderchange(item)"
                     v-model="item.lastervalue"
                     input-size="mini"
                   ></el-slider>
@@ -117,7 +116,22 @@
             <tr v-show="isNeedSave">
               <td width="35%" style="font-size:16px;">Save Changes:</td>
               <td width="65%">
-                <el-button class="btn" type="primary" @click="saveBtn(isActive)">Save Changes</el-button>
+                <el-button 
+                  class="btn" 
+                  type="primary" 
+                  @click="saveBtn(isActive)" 
+                  :disabled= !HaveChange
+                  >Save Changes</el-button>
+              </td>
+            </tr>
+            <tr>
+              <td width="35%" style="font-size:16px;">Refresh:</td>
+              <td width="65%">
+                <el-button 
+                  class="btn" 
+                  type="primary" 
+                  @click="PortRefresh" 
+                  >Refresh</el-button>
               </td>
             </tr>
           </table>
@@ -147,12 +161,27 @@ export default {
       setData: "",
       setData2: "",
       // loading: true,
-      isNeedSave: true
+      isNeedSave: false,
       // portInfoLoadding: true,
       // saveLoading: false,
+      HaveChange:false,
+      ChangeFlag:0
     };
   },
-  watch: {},
+  watch: {
+    ChangeFlag:function(value)
+    {
+      console.log("The data is "+value)
+      if(value==0)
+      {
+        this.HaveChange=false;
+      }
+      else
+      {
+        this.HaveChange=true;
+      }
+    }
+  },
   computed: {},
   methods: {
     inpNum(item, min, max) {
@@ -188,7 +217,7 @@ export default {
         return false;
       }
     },
-    change(item) {
+    sliderchange(item) {
       console.log("===============", Math.floor(item.lastervalue));
       return (item.lastervalue = Math.floor(item.lastervalue));
     },
@@ -247,6 +276,13 @@ export default {
           console.log(sendata);
         });
     },
+    listchange(item,index){
+      console.log("list have change ");
+      console.log("index is "+index);
+      console.log("item is "+JSON.stringify(item))
+      console.log("oldvalue is "+item.oldvalue);
+      console.log("laster value is "+item.lastervalue);
+    },
     getPortList(index) {
       let that = this;
       let aoData = {
@@ -255,22 +291,39 @@ export default {
       this.$axios
         .post("/cgi-bin/ligline.cgi", aoData)
         .then(function(response) {
-          if (response.data.status == "SUCCESS") {
+          if (response.data.status == "SUCCESS") 
+          {
             that.portList = response.data.echo.result.Port;
             that.$store.state.portInfo = that.portList;
-            for (let j = 0; j < that.portList.length; j++) {
-              if (that.portList[j].Dir == "Out") {
-                that.portList[j].title = "out" + that.portList[j].index;
-              } else {
-                that.portList[j].title = "in" + that.portList[j].index;
+            for (let j = 0; j < that.portList.length; j++) 
+            {
+              if (that.portList[j].Dir == "Out") 
+              {
+                that.portList[j].title = "OUT" + that.portList[j].index;
+              } 
+              else 
+              {
+                that.portList[j].title = "IN" + that.portList[j].index;
               }
             }
-            if (index) {
+            if (index) 
+            {
               that.selectPortInfo(index);
-            } else {
-              that.selectPortInfo(that.portList[0].index);
+            } 
+            else 
+            {
+              if(that.portList.length>0)
+              {
+                that.selectPortInfo(that.portList[0].index);
+              }
+              else
+              {
+                that.selectPortInfo(-1);
+              }
             }
-          } else if (response.data.status == "ERROR") {
+          } 
+          else if (response.data.status == "ERROR") 
+          {
             that.$alert(response.data.error, "Prompt information", {
               confirmButtonText: "OK",
               callback: action => {}
@@ -281,7 +334,8 @@ export default {
           console.log(error);
         });
     },
-    selectPortInfo(index) {
+    selectPortInfo(index) 
+    {
       let that = this;
       if (window.portSetTimeout) {
         window.clearInterval(window.portSetTimeout);
@@ -289,6 +343,11 @@ export default {
       // that.loading = true;
       // that.portInfoLoadding = true;
       // that.staticData = [];
+      if(index==-1)
+      {
+        that.isActive="";
+        return ;
+      }
       that.isActive = index;
       let aoData = {
         cmd: "GetPortInfo",
@@ -299,19 +358,26 @@ export default {
       this.$axios
         .post("/cgi-bin/ligline.cgi", aoData)
         .then(function(response) {
-          if (response.data.status == "SUCCESS") {
+          if (response.data.status == "SUCCESS") 
+          {
             // that.staticData = [];
             let responseInfo = response.data.echo.result.Info;
             let setInfo = response.data.echo.result.Setting;
-            if (setInfo.length == 0) {
+            if (setInfo.length == 0) 
+            {
               that.isNeedSave = false;
-            } else {
+            } 
+            else 
+            {
               that.isNeedSave = true;
             }
-            if (responseInfo["Port Index"] == that.isActive) {
+            if (responseInfo["Port Index"] == that.isActive) 
+            {
               let staticAoData = [];
-              for (var i in responseInfo) {
-                let ht = {
+              for (var i in responseInfo) 
+              {
+                let ht = 
+                {
                   id: i,
                   value: responseInfo[i]
                 };
@@ -329,8 +395,11 @@ export default {
               // that.loading = false;
               // that.portInfoLoadding = false;
             }
-          } else if (response.data.status == "ERROR") {
-            that.$alert(response.data.error, "Prompt information", {
+          } 
+          else if (response.data.status == "ERROR") 
+          {
+            that.$alert(response.data.error, "Prompt information", 
+            {
               confirmButtonText: "OK",
               callback: action => {
                 // that.loading = false;
@@ -388,15 +457,53 @@ export default {
         .catch(function(error) {
           console.log(error);
         });
+    },
+    PortRefresh(){
+      let that=this;
+      that.ChangeFlag=0;
+      if(that.portList.length>0)
+      {
+        if(that.isActive==-1||that.isActive=="")
+        {
+          that.getPortList();
+        }
+        else
+        {
+          let i;
+          for(i=0;i<that.portList.length;i++)
+          {
+            if(that.portList[i].index==that.isActive)
+            {
+              break;
+            }
+          }
+          if(i<that.portList.length)
+          {
+            that.getPortList(that.isActive);
+          }
+          else
+          {
+            that.getPortList();
+          }
+        }
+      }
+      else
+      {
+        return ;
+      }
     }
   },
   created() {
     this.portList = this.$store.state.portInfo;
     if (this.portList.length != 0) {
-      for (let j = 0; j < this.portList.length; j++) {
-        if (this.portList[j].Dir == "Out") {
+      for (let j = 0; j < this.portList.length; j++) 
+      {
+        if (this.portList[j].Dir == "Out") 
+        {
           this.portList[j].title = "out" + this.portList[j].index;
-        } else {
+        } 
+        else 
+        {
           this.portList[j].title = "in" + this.portList[j].index;
         }
       }

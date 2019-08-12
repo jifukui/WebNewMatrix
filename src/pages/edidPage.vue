@@ -28,7 +28,7 @@
           <button
             class="set_content_one_default"
             :disabled="selecting"
-            :style="style_bg==true?'background: #ededed; color: #000;':'background: #409EFF;'"
+            :style="style_bg==true?'background: #4d4d4d; ':'background: #409EFF;'"
             @click="defaultClick"
           >DEFAULT</button>
           <input
@@ -40,7 +40,7 @@
           >
           <button
             class="set_content_one_file"
-            :style="edidFile==true?'background:#409EFF;color:#fff':'background:#ededed'"
+            :style="edidFile==true?'background:#409EFF;':'background:#4d4d4d'"
             @click="GetEDID"
           >File<br>BROWSE</button>
         </div>
@@ -251,7 +251,7 @@ export default {
       if(this.outputindex!=null&&this.outputdata[this.outputindex].status=="Off"&&this.$store.state.EDIDPortType==1)
       {
         console.log("The Outport no load");
-        this.ERRInfo="out"+this.$store.state.EDIDIndex+" no load";
+        this.ERRInfo="OUT"+this.$store.state.EDIDIndex+" no load";
         this.trueEdid=false;
         
 
@@ -451,7 +451,7 @@ export default {
           if (response.data.status == "SUCCESS") 
           {
             that.$message({
-              message: "In" + index + " copy success",
+              message: "IN" + index + " copy success",
               type: "success"
             });
             that.indexNumber++;
@@ -459,7 +459,7 @@ export default {
           } 
           else if (response.data.status == "ERROR") 
           {
-            that.$confirm("In" + index + " copy error", "Prompt information", 
+            that.$confirm("IN" + index + " copy error", "Prompt information", 
               {
                 confirmButtonText: "Next",
                 cancelButtonText: "Again",
@@ -639,7 +639,7 @@ export default {
             {
               if (proVInfo[j].Dir == "Out") 
               {
-                proVInfo[j].title = "out" + proVInfo[j].index;
+                proVInfo[j].title = "OUT" + proVInfo[j].index;
                 that.outputdata.push({
                   index: proVInfo[j].index,
                   output: proVInfo[j].title,
@@ -648,7 +648,7 @@ export default {
               } 
               else 
               {
-                proVInfo[j].title = "in" + proVInfo[j].index;
+                proVInfo[j].title = "IN" + proVInfo[j].index;
                 that.inputdata.push({
                   index: proVInfo[j].index,
                   input: proVInfo[j].title
@@ -723,18 +723,18 @@ export default {
                 if(that.$store.state.EDIDPortType==1&&jiport[i].status=="Off")
                 {
                   that.outputindex=i;
-                  that.outClcick(that.$store.state.EDIDIndex,"out"+that.$store.state.EDIDIndex);
+                  that.outClcick(that.$store.state.EDIDIndex,"OUT"+that.$store.state.EDIDIndex);
                 }
                 else
                 {
                   that.outputindex=null;
                   if(that.$store.state.EDIDPortType==0)
                   {
-                    that.inClcick(that.$store.state.EDIDIndex,"in"+that.$store.state.EDIDIndex);
+                    that.inClcick(that.$store.state.EDIDIndex,"IN"+that.$store.state.EDIDIndex);
                   }
                   else if(that.$store.state.EDIDPortType==1)
                   {
-                    that.outClcick(that.$store.state.EDIDIndex,"out"+that.$store.state.EDIDIndex);
+                    that.outClcick(that.$store.state.EDIDIndex,"OUT"+that.$store.state.EDIDIndex);
                   }
                 }
               }
@@ -826,7 +826,7 @@ export default {
       for (let j = 0; j < proVInfo.length; j++) {
         if (proVInfo[j].Dir == "Out") 
         {
-          proVInfo[j].title = "out" + proVInfo[j].index;
+          proVInfo[j].title = "OUT" + proVInfo[j].index;
           this.outputdata.push({
             index: proVInfo[j].index,
             output: proVInfo[j].title,
@@ -835,7 +835,7 @@ export default {
         } 
         else 
         {
-          proVInfo[j].title = "in" + proVInfo[j].index;
+          proVInfo[j].title = "IN" + proVInfo[j].index;
           this.inputdata.push({
             index: proVInfo[j].index,
             input: proVInfo[j].title
@@ -938,7 +938,7 @@ export default {
 .set_content_one_file {
   width: 200px;
   line-height: 20px;
-  color: #000;
+  color: #fff;
   text-align: center;
   margin: 0 auto;
   border: 0;

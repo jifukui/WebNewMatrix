@@ -11,18 +11,6 @@
                 @change="SetSecurityStat">
             </el-switch>
             <div class="clear"></div>
-            <!-- <div  status-icon  label-width="130px"  v-show="security">
-                <label>Password</label>
-                <el-input class="ipt" type="password" v-model="OldPassword"></el-input>
-                </br>
-                <label>New Password</label>
-                <el-input type="password" class="ipt" v-model="NewPassword" autocomplete="off"></el-input>
-                </br>
-                <label>Confirm Password</label>
-                <el-input type="password" class="ipt" v-model="ReNewPassword" autocomplete="off"></el-input>
-                </br>
-                <el-button @click="SetPassword">SAVE</el-button>
-            </div> -->
             <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="130px" class="demo-ruleForm" v-show="security">
                 <el-form-item label="Password" >
                     <el-input class="distance" type="password" v-model="OldPassword" maxlength="15"></el-input>
