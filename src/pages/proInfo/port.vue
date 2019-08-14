@@ -51,22 +51,29 @@
                     v-for="(item, index) in item.value"
                     :key="index"
                     :value="item.value"
-                    
                     >{{ item.name }}</option
                   >
                 </select>
               </td>
               <td width="35%" v-if="item.type === 'slider'">{{ item.id }}:</td>
               <td width="65%" v-if="item.type === 'slider'">
-                <div class="block">
+                <div class="block fl" style="width:85%">
                   <el-slider
-                    :min="item.value.min"
-                    :max="item.value.max"
-                    @change="sliderchange(item)"
-                    v-model="item.lastervalue"
-                    input-size="mini"
+                  style="width:90%"
+                  :min="item.value.min"
+                  :max="item.value.max"
+                  @change="sliderchange(item,index)"
+                  v-model="item.lastervalue"
+                  input-size="mini"
                   ></el-slider>
                 </div>
+                <input
+                  style="width:12%"
+                  v-model="item.lastervalue"
+                  type="text"
+                  @keyup="silderInputInput(item,index)"
+                  @change="silderInputChange(item,index)"
+                />
               </td>
               <td width="35%" v-if="item.type === 'switch'">{{ item.id }}:</td>
               <td width="65%" v-if="item.type === 'switch'">
@@ -84,7 +91,7 @@
                   type="text"
                   v-text="item.oldvalue"
                   v-model="item.lastervalue"
-                  @blur="inpNum(item, item.value.min, item.value.max)"
+                  @keyup="inpNum(item, index)"
                 />
               </td>
               <td width="35%" v-if="item.type === 'inputNum'">{{ item.id }}:</td>
@@ -93,7 +100,7 @@
                   type="text"
                   v-text="item.oldvalue"
                   v-model="item.lastervalue"
-                  @blur="inpNum(item,item.value.min,item.value.max)"
+                  @keyup="inpNum(item,index)"
                 />
               </td>
               <td width="35%" v-if="item.type === 'buttonR'">{{ item.id }}:</td>
@@ -165,26 +172,37 @@ export default {
       // portInfoLoadding: true,
       // saveLoading: false,
       HaveChange:false,
-      ChangeFlag:0
+      ChangeFlag:[]
     };
   },
   watch: {
     ChangeFlag:function(value)
     {
-      console.log("The data is "+value)
-      if(value==0)
+      let that =this;
+      console.log("The data is "+JSON.stringify(value));
+      let i=0;
+      for(i;i<value.length;i++)
       {
-        this.HaveChange=false;
+        if(value[i]!=0)
+        {
+          break;
+        }
+      }
+      if(i<value.length)
+      {
+        that.HaveChange=true;
       }
       else
       {
-        this.HaveChange=true;
+        that.HaveChange=false;
       }
     }
   },
-  computed: {},
+  computed: {
+    
+  },
   methods: {
-    inpNum(item, min, max) {
+    inpNum(item, index) {
       console.log(item.lastervalue);
       console.log(min);
       console.log(max);
@@ -217,9 +235,19 @@ export default {
         return false;
       }
     },
-    sliderchange(item) {
-      console.log("===============", Math.floor(item.lastervalue));
-      return (item.lastervalue = Math.floor(item.lastervalue));
+    sliderchange(item,index) {
+      //console.log("===============", Math.floor(item.lastervalue));
+      let that=this;
+      item.lastervalue = Math.floor(item.lastervalue);
+      if(item.lastervalue==item.oldvalue)
+      {
+        that.ChangeFlagData(index,false);
+      }
+      else
+      {
+        that.ChangeFlagData(index,true);
+      }
+      console.log("silder data is "+JSON.stringify(item));
     },
     clickBtn(index, info) {
       let confirmValue = "";
@@ -277,11 +305,15 @@ export default {
         });
     },
     listchange(item,index){
-      console.log("list have change ");
-      console.log("index is "+index);
-      console.log("item is "+JSON.stringify(item))
-      console.log("oldvalue is "+item.oldvalue);
-      console.log("laster value is "+item.lastervalue);
+      let that=this;
+      if(item.oldvalue==item.lastervalue)
+      {
+        that.ChangeFlagData(index,false);
+      }
+      else
+      {
+        that.ChangeFlagData(index,true);
+      }
     },
     getPortList(index) {
       let that = this;
@@ -370,6 +402,14 @@ export default {
             else 
             {
               that.isNeedSave = true;
+              let ji=0;
+              let i=0;
+              i=parseInt(setInfo.length/32);
+              console.log("Set Data length is "+setInfo.length);
+              for(ji;ji<i;ji++)
+              {
+                that.ChangeFlagData[ji]=0;
+              }
             }
             if (responseInfo["Port Index"] == that.isActive) 
             {
@@ -412,14 +452,31 @@ export default {
         });
     },
     saveBtn(index) {
+      let that=this;
       var data = {};
-      let that = this;
+      let val={}
       data.cmd = "SetPortInfo";
       data.PortInfo = [];
-      data.PortInfo = this.$conf.PortAvOK(
+      val=this.$conf.PortAvOK(
         this.$conf.PortInfoAv.info, 
         index
       );
+
+      /*data.PortInfo = this.$conf.PortAvOK(
+        this.$conf.PortInfoAv.info, 
+        index
+      );*/
+      if(!val.status)
+      {
+        that.$message(
+          {
+            message: val.ErrorText,
+            type: "warning"
+          }
+        );
+        return false;
+      }
+      data.PortInfo=val.data;
       if (data.PortInfo.length == 0) {
         that.$alert(
           "Please set relevant parameters before saving.",
@@ -431,21 +488,20 @@ export default {
         );
         return false;
       }
+      that.ChangeFlag=new Array();
       console.log("The data is " + JSON.stringify(data));
       this.$axios
         .post("/cgi-bin/ligline.cgi", data)
         .then(function(response) {
+          that.$conf.PortInfoAv.info=JSON.parse(JSON.stringify(that.$conf.BasePortInfo.info));
+          that.setData=that.$conf.PortInfoAv.info;
           if (response.data.status == "SUCCESS") {
-            that.$alert("Save success", "Prompt information", {
-              confirmButtonText: "OK",
-              callback: action => {
-                // that.loading = true;
-                window.portSetTimeout = setTimeout(function() {
-                  that.getPortList(that.isActive);
-                }, 2000);
-              }
+            that.$message({
+              message: "Save success",
+              type: "success"
             });
-          } else if (response.data.status == "ERROR") {
+          } else if (response.data.status == "ERROR") 
+          {
             that.$alert(response.data.error, "Prompt information", {
               confirmButtonText: "OK",
               callback: action => {
@@ -460,7 +516,7 @@ export default {
     },
     PortRefresh(){
       let that=this;
-      that.ChangeFlag=0;
+      that.ChangeFlag=new Array();
       if(that.portList.length>0)
       {
         if(that.isActive==-1||that.isActive=="")
@@ -491,6 +547,59 @@ export default {
       {
         return ;
       }
+    },
+    silderInputChange(item,index)
+    {
+      let that=this;
+      console.log("have change "+item.id);
+      let data;
+      data=parseInt(item.lastervalue);
+      if(item.lastervalue==item.oldvalue)
+      {
+        that.ChangeFlagData(index,false);
+      }
+      else
+      {
+        that.ChangeFlagData(index,true);
+      }
+      if(data<item.value.min||data>item.value.max)
+      {
+
+      }
+      else
+      {
+        item.lastervalue=data;
+      }
+      console.log("data is "+JSON.stringify(item));
+    },
+    silderInputInput(item,index)
+    {
+      let that=this;
+      item.lastervalue=item.lastervalue.replace(/\D/g,'');
+      if(item.lastervalue==item.oldvalue)
+      {
+        that.ChangeFlagData(index,false);
+      }
+      else
+      {
+        that.ChangeFlagData(index,true);
+      }
+    },
+    ChangeFlagData(index,flag)
+    {
+      let that=this;
+      let i=parseInt(index/32);
+      let n=index%32;
+      let data=JSON.parse(JSON.stringify(that.ChangeFlag));
+      if(flag)
+      {
+        data[i]|=(1<<n);
+      }
+      else
+      {
+        data[i]&=(~(1<<n));
+      }
+      that.ChangeFlag=data;
     }
   },
   created() {
@@ -500,11 +609,11 @@ export default {
       {
         if (this.portList[j].Dir == "Out") 
         {
-          this.portList[j].title = "out" + this.portList[j].index;
+          this.portList[j].title = "OUT" + this.portList[j].index;
         } 
         else 
         {
-          this.portList[j].title = "in" + this.portList[j].index;
+          this.portList[j].title = "IN" + this.portList[j].index;
         }
       }
       this.selectPortInfo(this.portList[0].index);

@@ -205,6 +205,7 @@
               <el-button 
                 class="btn" 
                 type="primary" 
+                :disabled="uploadedFiles!=''"
                 @click="uplaodFile()">
                 Browse
               </el-button>
@@ -1113,12 +1114,15 @@ export default {
           console.log(sendata);
         });
     },
-    selectCardInfo(index, status) {
-      this.isActive = index;
+    selectCardInfo(index, status) 
+    {
+      console.log("Card info");
+      let that = this;
+      that.isActive = index;
       if (status == "online") 
       {
-        this.isCard = true;
-        let that = this;
+        that.isCard = true;  
+        that.$store.state.PageLoading=true;
         that.loading = true;
         that.cardInfoLoadding = true;
         let aoData = 
@@ -1227,8 +1231,11 @@ export default {
                   );
                 }
               }
+              that.$store.state.PageLoading=false;
               that.loading = false;
               that.cardInfoLoadding = false;
+              that.$store.state.PageLoading=false;
+              
             } 
             else if (response.data.status == "ERROR") 
             {
@@ -1244,10 +1251,12 @@ export default {
       } 
       else if (status == "offline") 
       {
-        this.isActive="";
-        this.isCard = false;
-        this.cardInfoLoadding = false;
+        that.isActive="";
+        that.isCard = false;
+        that.cardInfoLoadding = false;
+        that.$store.state.PageLoading=false;
       }
+      
     },
     //获取cardList
     getCardList() {
@@ -1320,6 +1329,7 @@ export default {
     }
   },
   created() {
+    this.$store.state.PageLoading=true;
     this.getCardList();
   },
   mounted() {}

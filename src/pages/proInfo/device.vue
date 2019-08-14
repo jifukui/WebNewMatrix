@@ -35,6 +35,7 @@
               <el-button
                 class="btn"
                 type="primary"
+                :disabled="fileName!=''" 
                 @click="uplaodFile()"
               >Browse</el-button>
             </p>

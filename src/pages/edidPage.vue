@@ -28,7 +28,7 @@
           <button
             class="set_content_one_default"
             :disabled="selecting"
-            :style="style_bg==true?'background: #4d4d4d; ':'background: #409EFF;'"
+            :style="style_bg==true?'background: #fff;':'background: #409EFF; color: #fff;'"
             @click="defaultClick"
           >DEFAULT</button>
           <input
@@ -40,7 +40,7 @@
           >
           <button
             class="set_content_one_file"
-            :style="edidFile==true?'background:#409EFF;':'background:#4d4d4d'"
+            :style="edidFile==true?'background:#409EFF; color: #fff;':'background:#fff'"
             @click="GetEDID"
           >File<br>BROWSE</button>
         </div>
@@ -412,6 +412,7 @@ export default {
 		*/
     // Copy按鈕
     edidCopyClick() {
+      this.$store.state.PageLoading=true;
       this.CodeState=true;
       let that = this;
       that.selecting = true;
@@ -430,6 +431,7 @@ export default {
         setTimeout(function() {
           that.CodeState=false;
           that.selecting = false;
+          that.$store.state.PageLoading=false;
         }, 2000);
       }
     },
@@ -924,29 +926,29 @@ export default {
   line-height: 30px;
   text-align: center;
   margin: 5px auto;
-  background: #3080b5;
-  /* border-radius: 5px; */
-  border: 0;
-  color: #fff;
   display: table;
   font-size: 14px;
   cursor: pointer;
+  background: #fff;
+  color: #333;
+  border-radius: 5px;
+  border: 1px solid #888;
 }
 .set_content_one_default:hover {
-  background: #4e96c6;
+  background: #ccc;
 }
 .set_content_one_file {
   width: 200px;
   line-height: 20px;
-  color: #fff;
   text-align: center;
   margin: 0 auto;
-  border: 0;
-  background: #ededed;
-  /* border-radius: 5px; */
   display: table;
   font-size: 14px;
   cursor: pointer;
+  background: #fff;
+  color: #333;
+  border-radius: 5px;
+  border: 1px solid #888;
 }
 .set_content_two {
   /*margin: 0 10px;*/
@@ -989,58 +991,57 @@ export default {
   display: table;
 }
 .s_c_o_b_block {
-  width: 180px;
-  /* height: 45px; */
+  width: 170px;
   margin: 5px auto;
-  /* border-radius: 5px; */
   padding-left: 10px;
-  color: #fff;
   line-height: 45px;
   display: table;
-  background: #4d4d4d;
   font-size: 14px;
   cursor: pointer;
-  border: 0;
+  background: #fff;
+  color: #333;
+  border-radius: 5px;
+  border: 1px solid #888;
 }
 .s_c_o_b_block:hover {
-  background: #727272;
+  background: #ccc;
 }
 .active {
-  width: 180px;
-  /* height: 45px; */
+  width: 170px;
   margin: 5px auto;
-  /* border-radius: 5px; */
   padding-left: 10px;
   color: #fff;
   line-height: 45px;
   display: table;
   background: #409eff;
   font-size: 14px;
-  border: 0;
   cursor: pointer;
+  border-radius: 5px;
+  border: 1px solid #888;
 }
 .active:hover {
   background: #66b1ff;
 }
 .set_content_three_input {
-  width: 180px;
+  width: 170px;
   height: 45px;
-  /* border-radius: 5px; */
-  margin: 5px auto;
+  margin: 5px 19px;
   padding-left: 10px;
-  color: #fff;
   line-height: 45px;
-  background: #4d4d4d;
   cursor: pointer;
   overflow: hidden;
+  background: #fff;
+  color: #333;
+  border-radius: 5px;
+  border: 1px solid #888;
 }
 .set_content_three_input:hover {
-  background: #727272;
+  background: #ccc;
 }
 .s_c_t_input {
-  width: 180px;
+  width: 170px;
   height: 45px;
-  margin: 5px auto;
+  margin: 5px 19px;
   padding-left: 10px;
   color: #fff;
   line-height: 45px;

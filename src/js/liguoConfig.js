@@ -8,6 +8,9 @@ test.PortInfoAv = {
 }
 test.PortInfo = {
 }
+test.BasePortInfo={
+
+}
 test.PortInitAv = function (value, type) {
     var valueAv = test.PortInfoAv = {};
     valueAv.info = [];
@@ -15,14 +18,17 @@ test.PortInitAv = function (value, type) {
         let ht = "";
         ht = test.findMateData(value[i].Name, value[i].Value, type);
         console.log(ht)
-        if (ht == false) {
+        if (ht == false) 
+        {
             continue;
         }
-        if (ht.info != "") {
+        if (ht.info != "") 
+        {
             valueAv.info.push(JSON.parse(JSON.stringify(ht.info)))
         }
     }
     // console.log(JSON.stringify(valueAv));
+    test.BasePortInfo=JSON.parse(JSON.stringify(valueAv));
     return valueAv;
 }
 test.analyticalVersion = function (value) {
@@ -38,31 +44,23 @@ test.analyticalVersion = function (value) {
 test.findMateData = function (name, val, openType, num) {
     var data = {};
     data.info = {};
-    if (name == 'A10027Version') 
-    {
+    if (name == 'A10027Version') {
         val = test.analyticalVersion(val)
     }
     var AvType = test.config.AV[name];
-    if (AvType == null) 
-    {
+    if (AvType == null) {
         return false;
     }
-    if (num == '16') 
-    {
+    if (num == '16') {
         test.config.AV["R-gain"].sid = 155;
-    } 
-    else if (num == '32') 
-    {
+    } else if (num == '32') {
         test.config.AV["R-gain"].sid = 155;
-    } 
-    else if (num == '64') 
-    {
+    } else if (num == '64') {
         test.config.AV["R-gain"].sid = 159;
     }
     data.info.type = AvType.type;
     data.info.id = AvType.title;
-    switch (data.info.type) 
-    {
+    switch (data.info.type) {
         case "static":
             {
                 data.info.value = val;
@@ -225,8 +223,8 @@ test.config.AV["OutHDCPVersion"] = {
     sid: 8,
     data: [
         {
-            name: "HDCP OFF",
-            value: 0
+            name: "Follow Signal",
+            value: 2
         }, {
             name: "HDCP 1.4",
             value: 3
@@ -1404,6 +1402,10 @@ test.config.AV["ExtAudioASource"] = {
     type: "list",
     sid: 105,
     data: [
+    		{
+            name: "Audio Matrix",
+            value: 0
+        },
         {
             name: "HDMI",
             value: 1
@@ -1422,13 +1424,18 @@ test.config.AV["HDMIOutAudioSelect"] = {
         {
             name: "Auto",
             value: 0
-        }, {
+        }, 
+        {
             name: "HDMI",
             value: 1
         },
         {
             name: "Analog Audio",
             value: 2
+        },
+        {
+            name: "Audio Matrix",
+            value: 3
         }
     ]
 }
@@ -1770,6 +1777,10 @@ test.config.AV["HDMIOutAudioSelect_12"] = {
     sid: 106,
     data: [
         {
+            name: "Auto",
+            value: 0
+        }, 
+        {
             name: "HDMI",
             value: 1
         },
@@ -1784,6 +1795,10 @@ test.config.AV["HDMIOutAudioSelect_13"] = {
     type: "list",
     sid: 106,
     data: [
+        {
+            name: "Auto",
+            value: 0
+        }, 
         {
             name: "HDMI",
             value: 1
@@ -1854,8 +1869,11 @@ test.config.AV["A10027Version"] = {
  */
 test.PortAvOK = function (portData, index) {
     var i;
-    var data = [];
-    console.log("The value is " + JSON.stringify(test.PortInfo.info))
+    var data = {};
+    data.status=true;
+    data.ErrorText="";
+    data.data=[];
+    console.log("The value is " + JSON.stringify(portData))
     for (i = 0; i < portData.length; i++) 
     {
         if (portData[i].type != "static" || portData[i].type != "staticList") 
@@ -1864,8 +1882,20 @@ test.PortAvOK = function (portData, index) {
             if (portData[i].type == "inputNum") 
             {
                 // portData[i].lastervalue = portData[i].lastervalue.replace(/[^a-zA-Z0-9_-]/g, '');
-                if (portData[i].lastervalue == "") {
+                if (portData[i].lastervalue == "") 
+                {
                     portData[i].lastervalue = portData.info[i].oldvalue;
+                }
+            }
+            else if(portData[i].type == "slider")
+            {
+                console.log("Have this "+JSON.stringify(portData[i]));
+                if(portData[i].lastervalue<portData[i].value.min||portData[i].lastervalue>portData[i].value.max)
+                {
+                    let error=portData[i].id+" Data Error"
+                    console.log(error );
+                    data.ErrorText=error;
+                    break;
                 }
             }
             if (portData[i].oldvalue != portData[i].lastervalue) 
@@ -1876,11 +1906,18 @@ test.PortAvOK = function (portData, index) {
                     sid: portData[i].sid,
                     value: portData[i].lastervalue
                 }
-                data.push(ht)
+                test.BasePortInfo.info[i].oldvalue=portData[i].lastervalue;
+                test.BasePortInfo.info[i].lastervalue=portData[i].lastervalue;
+                data.data.push(ht)
             }
         }
     }
+    if(i<portData.length)
+    {
+        data.status=false;
+    }
     console.log(JSON.stringify(data));
+    console.log(JSON.stringify(test.BasePortInfo.info));
     return data;
 }
 test.PortCancel = function () {

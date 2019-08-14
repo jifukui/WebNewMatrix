@@ -243,8 +243,8 @@
                   >
                 </td>
                 <td width="35%" v-if="item.type === 'list'">{{ item.id }}:</td>
-                <td width="65%" v-if="item.type === 'list'">
-                  <select v-model="item.lastervalue">
+                <td width="65%" v-if="item.type === 'list'" >
+                  <select v-model="item.lastervalue" @change="listchange(item,index)">
                     <option
                       v-for="(item, index) in item.value"
                       :key="index"
@@ -255,17 +255,23 @@
                 </td>
                 <td width="35%" v-if="item.type === 'slider'">{{ item.id }}:</td>
                 <td width="65%" v-if="item.type === 'slider'">
-                  <div class="block">
+                  <div class="block fl" style="width:85%">
                     <el-slider
+                      style="width:90%"
                       :min="item.value.min"
                       :max="item.value.max"
-                      show-input
-                      :show-input-controls="false"
-                      @change="change(item)"
+                      @change="sliderchange(item,index)"
                       v-model="item.lastervalue"
                       input-size="mini"
                     ></el-slider>
                   </div>
+                  <input
+                    style="width:12%"
+                    v-model="item.lastervalue"
+                    type="text"
+                    @keyup="silderInputInput(item,index)"
+                    @change="silderInputChange(item,index)"
+                  />
                 </td>
                 <td width="35%" v-if="item.type === 'switch'">{{ item.id }}:</td>
                 <td width="65%" v-if="item.type === 'switch'">
@@ -311,6 +317,16 @@
                   </el-button>
                 </td>
               </tr>
+              <tr>
+                <td width="35%" style="font-size:16px;">Refresh:</td>
+                <td width="65%">
+                  <el-button 
+                    class="btn" 
+                    type="primary" 
+                    @click="PortRefresh" 
+                    >Refresh</el-button>
+                </td>
+              </tr>
             </table>
           </div>
           <div>
@@ -318,6 +334,7 @@
               class="isOk"
               type="primary"
               value="OK"
+              :disabled= !HaveChange
               @click="saveBtn(isActive)">
               Save
             </el-button>
@@ -389,7 +406,9 @@ export default {
       setData: "",
       setData2: "",
       // loading: true,
-      isNeedSave: true
+      isNeedSave: true,
+      HaveChange:false,
+      ChangeFlag:[]
       // portInfoLoadding: true,
       // saveLoading: false,
     };
@@ -441,6 +460,27 @@ export default {
         }
       },
       deep: true
+    },
+    ChangeFlag:function(value)
+    {
+      let that =this;
+      console.log("The data is "+JSON.stringify(value));
+      let i=0;
+      for(i;i<value.length;i++)
+      {
+        if(value[i]!=0)
+        {
+          break;
+        }
+      }
+      if(i<value.length)
+      {
+        that.HaveChange=true;
+      }
+      else
+      {
+        that.HaveChange=false;
+      }
     }
   },
   computed: {},
@@ -551,6 +591,7 @@ export default {
       let aoOut = [];
       let routingData = [];
       let that = this;
+      that.$store.state.PageLoading=true;
       for (let i = 0; i < this.aoDataOut.length; i++) {
         if (this.aoDataOut[i].switchSelect == true) {
           aoOut.push(this.aoDataOut[i].index);
@@ -574,7 +615,9 @@ export default {
         .then(function(response) {
           if (response.data.status == "SUCCESS") {
             that.getProInfo1();
+            that.$store.state.PageLoading=false;
           } else if (response.data.status == "ERROR") {
+            that.$store.state.PageLoading=false;
           }
         })
         .catch(function(error) {
@@ -1006,22 +1049,39 @@ export default {
       this.$axios
         .post("/cgi-bin/ligline.cgi", aoData)
         .then(function(response) {
-          if (response.data.status == "SUCCESS") {
+          if (response.data.status == "SUCCESS") 
+          {
             that.portList = response.data.echo.result.Port;
             that.$store.state.portInfo = that.portList;
-            for (let j = 0; j < that.portList.length; j++) {
-              if (that.portList[j].Dir == "Out") {
-                that.portList[j].title = "out" + that.portList[j].index;
-              } else {
-                that.portList[j].title = "in" + that.portList[j].index;
+            for (let j = 0; j < that.portList.length; j++) 
+            {
+              if (that.portList[j].Dir == "Out") 
+              {
+                that.portList[j].title = "OUT" + that.portList[j].index;
+              } 
+              else 
+              {
+                that.portList[j].title = "IN" + that.portList[j].index;
               }
             }
-            // if (index) {
-            //   that.selectPortInfo(index);
-            // } else {
-            //   that.selectPortInfo(that.portList[0].index);
-            // }
-          } else if (response.data.status == "ERROR") {
+            if (index) 
+            {
+              that.selectPortInfo(index);
+            } 
+            else 
+            {
+              if(that.portList.length>0)
+              {
+                that.selectPortInfo(that.portList[0].index);
+              }
+              else
+              {
+                that.selectPortInfo(-1);
+              }
+            }
+          } 
+          else if (response.data.status == "ERROR") 
+          {
             that.$alert(response.data.error, "Prompt information", {
               confirmButtonText: "OK",
               callback: action => {}
@@ -1034,17 +1094,17 @@ export default {
     },
     selectPortInfo(index) {
       let that = this;
-      if (window.portSetTimeout) 
-      {
+      if (window.portSetTimeout) {
         window.clearInterval(window.portSetTimeout);
-      }
-      if(index==0)
-      {
-        return ;
       }
       // that.loading = true;
       // that.portInfoLoadding = true;
       // that.staticData = [];
+      if(index==-1)
+      {
+        that.isActive="";
+        return ;
+      }
       that.isActive = index;
       let aoData = {
         cmd: "GetPortInfo",
@@ -1055,7 +1115,8 @@ export default {
       this.$axios
         .post("/cgi-bin/ligline.cgi", aoData)
         .then(function(response) {
-          if (response.data.status == "SUCCESS") {
+          if (response.data.status == "SUCCESS") 
+          {
             // that.staticData = [];
             let responseInfo = response.data.echo.result.Info;
             let setInfo = response.data.echo.result.Setting;
@@ -1066,19 +1127,30 @@ export default {
             else 
             {
               that.isNeedSave = true;
+              let ji=0;
+              let i=0;
+              i=parseInt(setInfo.length/32);
+              console.log("Set Data length is "+setInfo.length);
+              for(ji;ji<i;ji++)
+              {
+                that.ChangeFlagData[ji]=0;
+              }
             }
             if (responseInfo["Port Index"] == that.isActive) 
             {
               let staticAoData = [];
               for (var i in responseInfo) 
               {
-                let ht = {
+                let ht = 
+                {
                   id: i,
                   value: responseInfo[i]
                 };
                 staticAoData.push(ht);
               }
+              //console.log("staticAoData "+staticAoData);
               that.staticData = staticAoData;
+              //console.log("that.staticData"+that.staticData);
               let value = [];
               let setData = [];
               value = that.$conf.PortInitAv(setInfo, responseInfo.Direction);
@@ -1088,8 +1160,11 @@ export default {
               // that.loading = false;
               // that.portInfoLoadding = false;
             }
-          } else if (response.data.status == "ERROR") {
-            that.$alert(response.data.error, "Prompt information", {
+          } 
+          else if (response.data.status == "ERROR") 
+          {
+            that.$alert(response.data.error, "Prompt information", 
+            {
               confirmButtonText: "OK",
               callback: action => {
                 // that.loading = false;
@@ -1124,9 +1199,30 @@ export default {
         return false;
       }
     },
-    change(item) {
-      console.log("===============", Math.floor(item.lastervalue));
-      return (item.lastervalue = Math.floor(item.lastervalue));
+    sliderchange(item,index) {
+      //console.log("===============", Math.floor(item.lastervalue));
+      let that=this;
+      item.lastervalue = Math.floor(item.lastervalue);
+      if(item.lastervalue==item.oldvalue)
+      {
+        that.ChangeFlagData(index,false);
+      }
+      else
+      {
+        that.ChangeFlagData(index,true);
+      }
+      console.log("silder data is "+JSON.stringify(item));
+    },
+    listchange(item,index){
+      let that=this;
+      if(item.oldvalue==item.lastervalue)
+      {
+        that.ChangeFlagData(index,false);
+      }
+      else
+      {
+        that.ChangeFlagData(index,true);
+      }
     },
     clickBtn(index, info) {
       let confirmValue = "";
@@ -1185,14 +1281,31 @@ export default {
     },
     // 确定提交按钮
     saveBtn(index) {
+      let that=this;
       var data = {};
-      let that = this;
+      let val={}
       data.cmd = "SetPortInfo";
       data.PortInfo = [];
-      data.PortInfo = this.$conf.PortAvOK(
+      val=this.$conf.PortAvOK(
         this.$conf.PortInfoAv.info, 
         index
       );
+
+      /*data.PortInfo = this.$conf.PortAvOK(
+        this.$conf.PortInfoAv.info, 
+        index
+      );*/
+      if(!val.status)
+      {
+        that.$message(
+          {
+            message: val.ErrorText,
+            type: "warning"
+          }
+        );
+        return false;
+      }
+      data.PortInfo=val.data;
       if (data.PortInfo.length == 0) {
         that.$alert(
           "Please set relevant parameters before saving.",
@@ -1203,27 +1316,19 @@ export default {
           }
         );
         return false;
-        that.$emit("closePage", false);
-        that.$conf.PortCancel();
-        this.openSetInfo = false;
       }
+      that.ChangeFlag=new Array();
       console.log("The data is " + JSON.stringify(data));
       this.$axios
         .post("/cgi-bin/ligline.cgi", data)
         .then(function(response) {
           if (response.data.status == "SUCCESS") {
-            that.$alert("Save success", "Prompt information", {
-              confirmButtonText: "OK",
-              callback: action => {
-                // that.loading = true;
-                window.portSetTimeout = setTimeout(function() {
-                  that.getPortList(that.isActive);
-                }, 2000);
-              }
+            that.$conf.PortInfoAv.info=JSON.parse(JSON.stringify(that.$conf.BasePortInfo.info));
+            that.setData=that.$conf.PortInfoAv.info;
+            that.$message({
+              message: "Save success",
+              type: "success"
             });
-            that.$emit("closePage", false);
-            that.$conf.PortCancel();
-            this.openSetInfo = false;
           } else if (response.data.status == "ERROR") {
             that.$alert(response.data.error, "Prompt information", {
               confirmButtonText: "OK",
@@ -1237,14 +1342,102 @@ export default {
           console.log(error);
         });
     },
+    PortRefresh(){
+      let that=this;
+      that.ChangeFlag=new Array();
+      if(that.portList.length>0)
+      {
+        if(that.isActive==-1||that.isActive=="")
+        {
+          that.getPortList();
+        }
+        else
+        {
+          let i;
+          for(i=0;i<that.portList.length;i++)
+          {
+            if(that.portList[i].index==that.isActive)
+            {
+              break;
+            }
+          }
+          if(i<that.portList.length)
+          {
+            that.getPortList(that.isActive);
+          }
+          else
+          {
+            that.getPortList();
+          }
+        }
+      }
+      else
+      {
+        return ;
+      }
+    },
     // 关闭提交按钮
     CancelBtn() {
       this.$emit("closePage", false);
       this.$conf.PortCancel();
       this.openSetInfo = false;
+    },
+    silderInputChange(item,index)
+    {
+      let that=this;
+      console.log("have change "+item.id);
+      let data;
+      data=parseInt(item.lastervalue);
+      if(item.lastervalue==item.oldvalue)
+      {
+        that.ChangeFlagData(index,false);
+      }
+      else
+      {
+        that.ChangeFlagData(index,true);
+      }
+      if(data<item.value.min||data>item.value.max)
+      {
+
+      }
+      else
+      {
+        item.lastervalue=data;
+      }
+      console.log("data is "+JSON.stringify(item));
+    },
+    silderInputInput(item,index)
+    {
+      let that=this;
+      item.lastervalue=item.lastervalue.replace(/\D/g,'');
+      if(item.lastervalue==item.oldvalue)
+      {
+        that.ChangeFlagData(index,false);
+      }
+      else
+      {
+        that.ChangeFlagData(index,true);
+      }
+    },
+    ChangeFlagData(index,flag)
+    {
+      let that=this;
+      let i=parseInt(index/32);
+      let n=index%32;
+      let data=JSON.parse(JSON.stringify(that.ChangeFlag));
+      if(flag)
+      {
+        data[i]|=(1<<n);
+      }
+      else
+      {
+        data[i]&=(~(1<<n));
+      }
+      that.ChangeFlag=data;
     }
   },
   created() {
+    this.portList = this.$store.state.portInfo;
     this.getProInfo();
   },
   mounted() {
@@ -1254,6 +1447,7 @@ export default {
       if (that.ckeckVal) 
       {
         that.getProInfo1();
+        that.portList = that.$store.state.portInfo;
         window.allSwitchASetInterval = setInterval(function() {
           that.getProInfo1();
         }, 3000);
@@ -1261,6 +1455,7 @@ export default {
       else 
       {
         that.getProInfo();
+        that.portList = that.$store.state.portInfo;
         window.myInterval1 = setInterval(function() {
           that.getProInfo();
         }, 3000);
