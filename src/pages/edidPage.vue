@@ -173,7 +173,7 @@ export default {
       outputindex:null,
       EDIDErr:0,
       ERRInfo:"ERROR EDID",
-      IsOutput:true,
+      IsOutput:this.$store.state.EDIDIsOutput,
       CodeState:false
     };
   },
@@ -212,6 +212,7 @@ export default {
     // OUT选择按钮
     outClcick(index, output) {
       this.IsOutput=true;
+      this.$store.state.EDIDIsOutput=true;
       console.log("index is "+index+" output is"+output);
       //this.selecting = true;
       this.output = output;
@@ -274,6 +275,7 @@ export default {
     // IN选择按钮
     inClcick(index, output) {
       this.IsOutput=false;
+      this.$store.state.EDIDIsOutput=false;
       console.log("Input ");
       //this.selecting = true;
       this.output = output;
@@ -347,6 +349,7 @@ export default {
       let file = document.getElementById("EDIDFile").files[0];
       let re = /.bin$/i;
       let SafariFlag = navigator.userAgent.search("Safari");
+      that.EDIDErr=0;
       if (typeof FileReader == "undefined") {
         SafariFlag = true;
       } else {
@@ -698,15 +701,12 @@ export default {
             {
               that.ischecked=false;
             }
-            console.log("EDIDIndex "+that.$store.state.EDIDIndex);
-            console.log("EDIDPortType "+that.$store.state.EDIDPortType);
             if(that.$store.state.EDIDIndex!=null)
             {
               let jiport;
               let i=0;
               
               jiport=that.IsOutput==false?that.inputdata:that.outputdata;
-              console.log("that.IsOutput "+that.IsOutput);
               for( i=0;i<jiport.length;i++)
               {
                 if(that.$store.state.EDIDIndex==jiport[i].index)
@@ -714,9 +714,10 @@ export default {
                   break;
                 }
               }
-  
+              console.log("end for "+i)
               if(i==jiport.length)
               {
+                console.log("not find");
                 that.SetPort();
               }
               else
@@ -730,13 +731,14 @@ export default {
                 else
                 {
                   that.outputindex=null;
-                  if(that.$store.state.EDIDPortType==0)
-                  {
-                    that.inClcick(that.$store.state.EDIDIndex,"IN"+that.$store.state.EDIDIndex);
-                  }
-                  else if(that.$store.state.EDIDPortType==1)
+                  if(that.IsOutput)
                   {
                     that.outClcick(that.$store.state.EDIDIndex,"OUT"+that.$store.state.EDIDIndex);
+                    
+                  }
+                  else
+                  {
+                    that.inClcick(that.$store.state.EDIDIndex,"IN"+that.$store.state.EDIDIndex);
                   }
                 }
               }

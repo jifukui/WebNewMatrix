@@ -21,14 +21,12 @@
           <table class="box">
             <tr
               v-for="(item, index) in staticData"
-              :key="index"
               class="staticTr">
               <td width="35%">{{ item.id }}:</td>
               <td width="65%">{{ item.value }}</td>
             </tr>
             <tr 
-              v-for="(item, index) in setData" 
-              :key="index" 
+              v-for="(item, index) in setData"  
               class="staticTr">
               <td width="35%" v-if="item.type === 'static'">{{ item.id }}:</td>
               <td width="65%" v-if="item.type === 'static'">
@@ -131,7 +129,7 @@
                   >Save Changes</el-button>
               </td>
             </tr>
-            <tr>
+            <tr v-show="isNeedSave">
               <td width="35%" style="font-size:16px;">Refresh:</td>
               <td width="65%">
                 <el-button 
@@ -236,7 +234,7 @@ export default {
       }
     },
     sliderchange(item,index) {
-      //console.log("===============", Math.floor(item.lastervalue));
+      console.log("===============", Math.floor(item.lastervalue));
       let that=this;
       item.lastervalue = Math.floor(item.lastervalue);
       if(item.lastervalue==item.oldvalue)
@@ -278,13 +276,19 @@ export default {
             ]
           };
           console.log("The data is " + JSON.stringify(data));
+          that.$store.state.PageLoading=true;
           this.$axios
             .post("/cgi-bin/ligline.cgi", data)
             .then(function(response) {
               if (response.data.status == "SUCCESS") {
                 that.$alert("Save success", "Prompt information", {
                   confirmButtonText: "OK",
-                  callback: action => {}
+                  callback: action => {
+                    setTimeout(() => {
+                      that.PortRefresh();
+                      that.$store.state.PageLoading=false;
+                    }, 2000);
+                  }
                 });
               } else if (response.data.status == "ERROR") {
                 that.$alert(response.data.error, "Prompt information", {
@@ -305,6 +309,7 @@ export default {
         });
     },
     listchange(item,index){
+      console.log("list change ");
       let that=this;
       if(item.oldvalue==item.lastervalue)
       {
@@ -368,8 +373,10 @@ export default {
     },
     selectPortInfo(index) 
     {
+      console.log("jifukui ");
       let that = this;
-      if (window.portSetTimeout) {
+      if (window.portSetTimeout) 
+      {
         window.clearInterval(window.portSetTimeout);
       }
       // that.loading = true;
@@ -414,24 +421,30 @@ export default {
             if (responseInfo["Port Index"] == that.isActive) 
             {
               let staticAoData = [];
-              for (var i in responseInfo) 
+              let ht={};
+              //let i="Port Index";
+              let i;
+              for ( i in responseInfo) 
               {
-                let ht = 
+                ht = 
                 {
                   id: i,
                   value: responseInfo[i]
                 };
                 staticAoData.push(ht);
               }
-              //console.log("staticAoData "+staticAoData);
+              console.log("staticAoData "+JSON.stringify(staticAoData));
               that.staticData = staticAoData;
-              //console.log("that.staticData"+that.staticData);
               let value = [];
               let setData = [];
+              //console.log("start change data");
               value = that.$conf.PortInitAv(setInfo, responseInfo.Direction);
+              //console.log("data is "+JSON.stringify(value));
               setData = that.$conf.PortInfoAv.info;
+              //console.log("set data is "+JSON.stringify(setData));
               that.value = value;
               that.setData = setData;
+              //console.log("End of All");
               // that.loading = false;
               // that.portInfoLoadding = false;
             }
@@ -490,9 +503,11 @@ export default {
       }
       that.ChangeFlag=new Array();
       console.log("The data is " + JSON.stringify(data));
+      that.$store.state.PageLoading=true;
       this.$axios
         .post("/cgi-bin/ligline.cgi", data)
         .then(function(response) {
+          that.$store.state.PageLoading=false;
           that.$conf.PortInfoAv.info=JSON.parse(JSON.stringify(that.$conf.BasePortInfo.info));
           that.setData=that.$conf.PortInfoAv.info;
           if (response.data.status == "SUCCESS") {
@@ -502,7 +517,7 @@ export default {
             });
           } else if (response.data.status == "ERROR") 
           {
-            that.$alert(response.data.error, "Prompt information", {
+            that.$alert("Setting Failed", "Prompt information", {
               confirmButtonText: "OK",
               callback: action => {
                 that.getPortList(that.isActive);
@@ -562,9 +577,9 @@ export default {
       {
         that.ChangeFlagData(index,true);
       }
-      if(data<item.value.min||data>item.value.max)
+      if(isNaN(data)||data<item.value.min||data>item.value.max)
       {
-
+        console.log("data error");
       }
       else
       {
@@ -620,6 +635,7 @@ export default {
     }
   },
   mounted() {
+    this.$store.state.ConfigureLabelName="third";
     this.portList = this.$store.state.portInfo;
     if (this.portList.length == 0) {
       this.getPortList();

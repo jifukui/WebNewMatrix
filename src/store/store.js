@@ -26,7 +26,9 @@ const state = {
     EDIDDefault:false,
     SecurityStatus:0,
     JiFileSize:0,
-    PageLoading:false
+    PageLoading:false,
+    EDIDIsOutput:true,
+    ConfigureLabelName:"first"
 }
 
 

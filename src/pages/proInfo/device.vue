@@ -833,15 +833,16 @@ export default {
             {
               if (response.data.status == "SUCCESS") 
               {
-                that.ChangeFlag=0;
-                that.HaveChange=false;
                 that.$message({
                   message: "Save success",
                   type: "success"
                 });
-                if(that.ChangeFlag&1==1)
+                if((that.ChangeFlag&1)==1)
                 {
+                  console.log("chanage ip 11"+ipaddr)
                   window.location.href = "http://" +ipaddr;
+                  that.ChangeFlag=1;
+                  that.HaveChange=false;
                 }
                 else
                 {
@@ -854,6 +855,8 @@ export default {
                   that.oldIpVal1=ipaddr1;
                   that.oldMaskVal1=maskaddr1;
                   that.oldGateVal1=gateway1;
+                  that.ChangeFlag=0;
+                  that.HaveChange=false;
                 }
               } 
               else if (response.data.status == "ERROR") 
@@ -862,12 +865,25 @@ export default {
                   confirmButtonText: "OK",
                   callback: action => {}
                 });
+                that.ChangeFlag=0;
+                that.HaveChange=false;
               }
             })
             .catch(function(error) 
             {
               console.log(error);
+              that.ChangeFlag=0;
+              that.HaveChange=false;
             });
+        if((that.ChangeFlag&1)==1)
+        {
+          console.log("chanage ip "+ipaddr);
+          window.location.href = "http://" +ipaddr;
+        }
+        else
+        {
+          console.log("Have nochangfe")
+        }
       } 
       else 
       {
@@ -1094,6 +1110,7 @@ export default {
   },
   created() {},
   mounted() {
+    this.$store.state.ConfigureLabelName="first";
     this.getDeviceInfo();
   }
 };

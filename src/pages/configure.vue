@@ -35,14 +35,17 @@ export default {
     },
     data() {
         return {
-            activeName: "first"
+            activeName: this.$store.state.ConfigureLabelName
         };
     },
     methods: {
         handleClick(tab, event) {
             // console.log(tab, event);
         }
-    }
+    },
+    mounted() {
+    console.log("I have called");
+  }
 };
 </script>
 <style>

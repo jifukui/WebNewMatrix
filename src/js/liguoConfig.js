@@ -17,7 +17,7 @@ test.PortInitAv = function (value, type) {
     for (let i = 0; i < value.length; i++) {
         let ht = "";
         ht = test.findMateData(value[i].Name, value[i].Value, type);
-        console.log(ht)
+        //console.log(ht)
         if (ht == false) 
         {
             continue;
@@ -74,14 +74,21 @@ test.findMateData = function (name, val, openType, num) {
             }
         default:
             {
-                data.info.oldvalue = val;
-                data.info.lastervalue = val;
-                if (AvType.sid) {
+                if (AvType.sid) 
+                {
                     data.info.sid = AvType.sid;
-                } else {
+                } 
+                else 
+                {
 
                 }
                 data.info.value = AvType.data;
+                if(val<data.info.value.min||val>data.info.value.max)
+                {
+                    val=data.info.value.min;
+                }
+                data.info.oldvalue = val;
+                data.info.lastervalue = val;
             }
     }
     return data;
@@ -1889,7 +1896,14 @@ test.PortAvOK = function (portData, index) {
             }
             else if(portData[i].type == "slider")
             {
+                if (portData[i].lastervalue == "") 
+                {
+                    portData[i].lastervalue = portData[i].oldvalue;
+                }
                 console.log("Have this "+JSON.stringify(portData[i]));
+                console.log("!portData[i].lastervalue "+!portData[i].lastervalue);
+                console.log("portData[i].lastervalue<portData[i].value.min "+portData[i].lastervalue<portData[i].value.min);
+                console.log("portData[i].lastervalue>portData[i].value.max "+portData[i].lastervalue>portData[i].value.max);
                 if(portData[i].lastervalue<portData[i].value.min||portData[i].lastervalue>portData[i].value.max)
                 {
                     let error=portData[i].id+" Data Error"

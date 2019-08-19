@@ -6,7 +6,7 @@
       v-if="status && !restartStatus && !upgradeStatus && !upgradeDeviceStatus"
       v-loading="pageload"
       element-loading-spinner="el-icon-loading"
-      element-loading-text="Please Waitting ……"
+      element-loading-text="Please Waiting ……"
       element-loading-background="rgba(203,203,203,0.8)"
       style="width: 100%"
     >
@@ -166,6 +166,10 @@ export default {
       console.log("Value is "+value)
       this.pageload=value;
       
+    },
+    "$store.state.ConfigureLabelName":function(value)
+    {
+      console.log("Now my name  is "+value)
     }
   },
   computed: {},

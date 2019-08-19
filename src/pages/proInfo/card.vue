@@ -1332,7 +1332,9 @@ export default {
     this.$store.state.PageLoading=true;
     this.getCardList();
   },
-  mounted() {}
+  mounted() {
+    this.$store.state.ConfigureLabelName="second";
+  }
 };
 </script>
 <style>
