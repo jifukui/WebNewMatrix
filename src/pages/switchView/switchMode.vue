@@ -1094,6 +1094,7 @@ export default {
         });
     },
     selectPortInfo(index) {
+      this.ChangeFlag=new Array();
       let that = this;
       if (window.portSetTimeout) {
         window.clearInterval(window.portSetTimeout);
@@ -1324,7 +1325,9 @@ export default {
           "Prompt information",
           {
             confirmButtonText: "OK",
-            callback: action => {}
+            callback: action => {
+              that.ChangeFlag=new Array();
+            }
           }
         );
         return false;
@@ -1393,6 +1396,7 @@ export default {
     },
     // 关闭提交按钮
     CancelBtn() {
+      this.ChangeFlag=new Array();
       this.$emit("closePage", false);
       this.$conf.PortCancel();
       this.openSetInfo = false;

@@ -362,10 +362,10 @@ export default {
         });
         return false;
       }
-      if (re.test(file.name)) {
+      if (re.test(file.name)) 
+      {
         var reader;
         reader = new FileReader();
-        that.Uploading = file.name;
         reader.readAsArrayBuffer(file);
         reader.onprogress = function() {
           reader.onload = function() {
@@ -386,9 +386,32 @@ export default {
               edidText += byteStr;
             }
             that.EDIDinfo = edidText;
-            that.EDIDHandle(edidText);
-            that.$store.state.EDIDIndex=null;
-            that.type = 3;
+            let ji=that.EDIDHandle(edidText);
+            console.log("The ji is "+ji);
+            if(ji)
+            {
+              console.log("this ji");
+              that.Uploading = file.name;
+              that.output = "";
+              that.DefaultTxt = "";
+              that.style_bg = true;
+              that.edidFile = true;
+              that.isActive = -1;
+              that.$refs.uploadExcelId.value = null;
+              that.$store.state.EDIDIndex=null;
+              that.type = 3;
+            }
+            else
+            {
+              if(that.Uploading!="")
+              {
+                that.Uploading = file.name;
+              }
+              else
+              {
+                that.Uploading = "";
+              }
+            }
             console.log("File type is "+that.type);
           };
           reader.onerror = function() {
@@ -396,19 +419,15 @@ export default {
             }
           };
         };
-      } else {
+      } 
+      else 
+      {
         that.$alert("File type error", "Prompt information", {
           confirmButtonText: "OK",
           callback: action => {}
         });
         
       }
-      this.output = "";
-      this.DefaultTxt = "";
-      this.style_bg = true;
-      this.edidFile = true;
-      this.isActive = -1;
-      this.$refs.uploadExcelId.value = null;
     },
     /*
 			--- 中部 --- 
@@ -590,7 +609,9 @@ export default {
         {
           that.$alert("ERROR EDID: "+that.$EDID.EDIDERR(), "Prompt information", {
           confirmButtonText: "OK",
-          callback: action => {}
+          callback: action => {
+            return false;
+          }
           });
         }
         that.ERRInfo="ERROR EDID";
@@ -615,6 +636,7 @@ export default {
         that.size = that.$EDID.getNativeResolution();
         that.audio = that.$EDID.getAudioChannels();
         that.Model = that.$EDID.getLength();
+        return true;
       }
     },
     getProInfo() 
@@ -1036,6 +1058,7 @@ export default {
   color: #333;
   border-radius: 5px;
   border: 1px solid #888;
+  font-size:14px;
 }
 .set_content_three_input:hover {
   background: #ccc;

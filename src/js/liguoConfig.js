@@ -1404,6 +1404,21 @@ test.config.AV["ExtAudioADir"] = {
         }
     ]
 }
+test.config.AV["ExtAudioASource_1"] = {
+    title: "Analog Audio Port Source",
+    type: "list",
+    sid: 105,
+    data: [
+    		{
+            name: "Audio Matrix",
+            value: 0
+        },
+        {
+            name: "HDMI",
+            value: 1
+        }
+    ]
+}
 test.config.AV["ExtAudioASource"] = {
     title: "Analog Audio Port Source",
     type: "list",
@@ -1778,6 +1793,21 @@ test.config.AV["ClipperEn"] = {
         value: 1
     }]
 }
+test.config.AV["HDMIOutAudioSelect_2"] = {
+    title: "HDMI Audio Source",
+    type: "list",
+    sid: 106,
+    data: [
+        {
+            name: "HDMI",
+            value: 1
+        },
+        {
+            name: "Analog Audio",
+            value: 2
+        }
+    ]
+}
 test.config.AV["HDMIOutAudioSelect_12"] = {
     title: "HDMI Audio Source",
     type: "list",
@@ -1794,6 +1824,21 @@ test.config.AV["HDMIOutAudioSelect_12"] = {
         {
             name: "Analog Audio",
             value: 2
+        }
+    ]
+}
+test.config.AV["HDMIOutAudioSelect_3"] = {
+    title: "HDMI Audio Source",
+    type: "list",
+    sid: 106,
+    data: [
+        {
+            name: "HDMI",
+            value: 1
+        },
+        {
+            name: "Audio Matrix",
+            value: 3
         }
     ]
 }
@@ -1889,21 +1934,19 @@ test.PortAvOK = function (portData, index) {
             if (portData[i].type == "inputNum") 
             {
                 // portData[i].lastervalue = portData[i].lastervalue.replace(/[^a-zA-Z0-9_-]/g, '');
-                if (portData[i].lastervalue == "") 
+                if (portData[i].lastervalue === "") 
                 {
                     portData[i].lastervalue = portData.info[i].oldvalue;
                 }
             }
             else if(portData[i].type == "slider")
             {
-                if (portData[i].lastervalue == "") 
+                console.log("The lastervalue is "+portData[i].lastervalue);
+                if (portData[i].lastervalue === "") 
                 {
+                    console.log("the "+portData[i].id +"is null ");
                     portData[i].lastervalue = portData[i].oldvalue;
                 }
-                console.log("Have this "+JSON.stringify(portData[i]));
-                console.log("!portData[i].lastervalue "+!portData[i].lastervalue);
-                console.log("portData[i].lastervalue<portData[i].value.min "+portData[i].lastervalue<portData[i].value.min);
-                console.log("portData[i].lastervalue>portData[i].value.max "+portData[i].lastervalue>portData[i].value.max);
                 if(portData[i].lastervalue<portData[i].value.min||portData[i].lastervalue>portData[i].value.max)
                 {
                     let error=portData[i].id+" Data Error"

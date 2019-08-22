@@ -374,6 +374,7 @@ export default {
     selectPortInfo(index) 
     {
       console.log("jifukui ");
+      this.ChangeFlag=new Array();
       let that = this;
       if (window.portSetTimeout) 
       {
@@ -496,7 +497,9 @@ export default {
           "Prompt information",
           {
             confirmButtonText: "OK",
-            callback: action => {}
+            callback: action => {
+              that.ChangeFlag=new Array();
+            }
           }
         );
         return false;

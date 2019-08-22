@@ -1234,14 +1234,17 @@ export default {
               that.$store.state.PageLoading=false;
               that.loading = false;
               that.cardInfoLoadding = false;
-              that.$store.state.PageLoading=false;
               
             } 
             else if (response.data.status == "ERROR") 
             {
               that.$alert(response.data.error, "Prompt information", {
                 confirmButtonText: "OK",
-                callback: action => {}
+                callback: action => {
+                  that.$store.state.PageLoading=false;
+                  that.loading = false;
+                  that.cardInfoLoadding = false;
+                }
               });
             }
           })
