@@ -4,6 +4,7 @@
         <div class="container_fluid">
             <span class="titleKramer">Kramer&nbsp;&nbsp;</span><span>{{headerInfo}}</span> Flexible I/O Digital Matrix Switcher
         </div>
+        <div class="userName" >{{userName}}</div>
     </div>
 </template>
 
@@ -12,8 +13,15 @@ export default {
     props: ["headerInfo"],
     data() {
         return {
-            userName: ""
+            userName: this.$store.state.UserName
         };
+    },
+    watch:
+    {
+        "$store.state.UserName":function (value) {
+            console.log("User name change ");
+            this.userName=value;
+        }
     },
     methods: {},
     mounted() {}
@@ -31,5 +39,12 @@ export default {
 }
 .titleKramer{
     color: #ddd;
+}
+.userName{
+    position:absolute;
+    right:10px;
+    color:#fff;
+    font-family: "Arial";
+    font-size:16px;
 }
 </style>

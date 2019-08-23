@@ -28,7 +28,8 @@ const state = {
     JiFileSize:0,
     PageLoading:false,
     EDIDIsOutput:true,
-    ConfigureLabelName:"first"
+    ConfigureLabelName:"first",
+    UserName:"User"
 }
 
 

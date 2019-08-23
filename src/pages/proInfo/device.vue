@@ -671,6 +671,7 @@ export default {
         });
     },
     realUpgrade(fileName) {
+      let that=this;
       let file=fileName.split('_')
       if(file[0]!=this.model){
         this.$alert(
@@ -678,12 +679,14 @@ export default {
             "Prompt information",
             {
               confirmButtonText: "OK",
-              callback: action => {}
+              callback: action => {
+                that.fileName="";
+                that.uploading=false;
+              }
             }
           );
           return false;
       }
-      let that = this;
       that.$store.state.upgradeDeviceLoading = true;
       window.upgradeSettimeout = setTimeout(function() {
         window.location.reload();

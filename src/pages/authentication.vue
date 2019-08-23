@@ -77,6 +77,7 @@ export default {
                 confirmButtonText: 'Confirm',
                 cancelButtonText: 'Cancel',
                 inputType:'password',
+                closeOnClickModal:false
             }).then(({ value }) => 
             { 
                 console.log("value is "+value);

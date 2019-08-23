@@ -1388,6 +1388,7 @@ export default {
 p {
   font-size: 14px;
   line-height: 30px;
+  text-align:left;
 }
 .box {
   width: 340px;

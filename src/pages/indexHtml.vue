@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Header class="header" :headerInfo="moudelInfo"></Header>
+    <Header class="header" :headerInfo="moudelInfo" :UserName="UserName"></Header>
     <div
       class="main_section"
       v-if="status && !restartStatus && !upgradeStatus && !upgradeDeviceStatus"
@@ -101,7 +101,8 @@ export default {
       onegrogressOne: 0,
       Sumsize:0,
       jifukuivalue:0,
-      pageload:false
+      pageload:false,
+      UserName:this.$store.state.SecurityStatus==0?"User":"Admin"
     };
   },
   components: {
@@ -170,6 +171,11 @@ export default {
     "$store.state.ConfigureLabelName":function(value)
     {
       console.log("Now my name  is "+value)
+    },
+    "$store.state.SecurityStatus":function(value)
+    {
+      console.log("The SecurityStatus has change "+value);
+      this.$store.state.UserName=value==0?"User":"Admin"
     }
   },
   computed: {},
