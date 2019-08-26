@@ -287,7 +287,7 @@ export default {
                     setTimeout(() => {
                       that.PortRefresh();
                       that.$store.state.PageLoading=false;
-                    }, 2000);
+                    }, 3000);
                   }
                 });
               } else if (response.data.status == "ERROR") {

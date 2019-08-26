@@ -406,7 +406,9 @@ export default {
       {
         this.$alert("The appendix size can not be 0M！", "Prompt information", {
           confirmButtonText: "OK",
-          callback: action => {}
+          callback: action => {
+            this.uploadedFiles="";
+          }
         });
         return false;
       }
@@ -414,13 +416,14 @@ export default {
       {
         this.$alert("Upgrade file type error", "Prompt information", {
           confirmButtonText: "OK",
-          callback: action => {}
+          callback: action => {
+            this.uploadedFiles="";
+          }
         });
         return false;
       }
       this.fileName = this.file.name;
       this.isFile = true;
-      this.uploading = false;
       this.uploading = false;
       this.uploadStatus = "";
       this.fileGrogress = 0;
@@ -500,14 +503,20 @@ export default {
               that.$alert(response.data.error, "Prompt information", 
               {
                 confirmButtonText: "OK",
-                callback: action => {}
+                callback: action => {
+                  that.uploadedFiles="";
+                  that.uploading=false;
+                }
               });
             }
           })
           .catch(function(error) {
             that.$alert(error, "Prompt information", {
               confirmButtonText: "OK",
-              callback: action => {}
+              callback: action => {
+                that.uploadedFiles="";
+                that.uploading=false;
+              }
             });
           });
       }
@@ -535,9 +544,11 @@ export default {
           "Prompt information",
           {
             confirmButtonText: "OK",
-            callback: action => {},
+            callback: action => {
+              this.uploadedFiles="";
+              this.uploading=false;
+            },
           },
-          this.uploadedFiles = ""
         );
         return false;
       }
@@ -1081,6 +1092,7 @@ export default {
         }
       )
         .then(() => {
+          that.$store.state.PageLoading=true;
           let aoData = {
             cmd: "SetCardFactory",
             CardInfo: {
@@ -1094,16 +1106,26 @@ export default {
               if (response.data.status == "SUCCESS") {
                 that.$alert("Factory success", "Prompt information", {
                   confirmButtonText: "OK",
-                  callback: action => {}
+                  callback: action => {
+                    setTimeout(() => {
+                      that.CardRefresh();
+                      setTimeout(() => {
+                        that.$store.state.PageLoading=false;
+                      }, 2000);
+                    }, 5000);
+                  }
                 });
               } else if (response.data.status == "ERROR") {
                 that.$alert(response.data.error, "Prompt information", {
                   confirmButtonText: "OK",
-                  callback: action => {}
+                  callback: action => {
+                    that.$store.state.PageLoading=false;
+                  }
                 });
               }
             })
             .catch(function(error) {
+              that.$store.state.PageLoading=false;
               console.log(error);
             });
         })
@@ -1254,7 +1276,14 @@ export default {
       } 
       else if (status == "offline") 
       {
-        that.isActive="";
+        if(index==0)
+        {
+          that.isActive="";
+        }
+        else
+        {
+          that.isActive=index;
+        }
         that.isCard = false;
         that.cardInfoLoadding = false;
         that.$store.state.PageLoading=false;
@@ -1273,6 +1302,7 @@ export default {
           if (response.data.status == "SUCCESS") 
           {
             that.cardList = response.data.echo.result.solt;
+            console.log("card list "+that.cardList.length)
             for(let i=0;i<that.cardList.length;)
             {
               if(that.cardList[i].name=="UnKnown")
@@ -1288,6 +1318,7 @@ export default {
             {
               if(that.isActive==-1||that.isActive=="")
               {
+                console.log("bad");
                 that.selectCardInfo(that.cardList[0].index, that.cardList[0].status);
               }
               else 
@@ -1302,16 +1333,19 @@ export default {
                 }
                 if(i<that.cardList.length)
                 {
+                  console.log("ok")
                   that.selectCardInfo(that.cardList[i].index, that.cardList[i].status);
                 }
                 else
                 {
+                  console.log("no load");
                   that.selectCardInfo(that.isActive, "offline");
                 }
               }
             }
             else
             {
+              console.log("no card");
               that.selectCardInfo(0, "offline");   
             }
           } 

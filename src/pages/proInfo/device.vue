@@ -625,14 +625,21 @@ export default {
             that.isUpgrade = true;
             that.Upgrade();
             console.log("good for this ");
-          } else {
+          } 
+          else 
+          {
+            that.fileName="";
+            that.uploading=false;
             console.log("The value is " + msg.data.status);
           }
         })
         .catch(function(error) {
           that.$alert(error.data.error, "Prompt information", {
             confirmButtonText: "OK",
-            callback: action => {}
+            callback: action => {
+              that.fileName="";
+              that.uploading=false;
+            }
           });
         });
     },
@@ -657,7 +664,10 @@ export default {
             that.$alert(response.data.error, "Prompt information", 
             {
               confirmButtonText: "OK",
-              callback: action => {}
+              callback: action => {
+                that.fileName="";
+                that.uploading=false;
+              }
             });
           }
         })
