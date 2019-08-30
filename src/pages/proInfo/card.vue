@@ -525,7 +525,9 @@ export default {
     },
     Upgrade(file) 
     {
-      this.selectCardUpgradeArr.length = 0;
+      let that =this;
+      console.log("The card list is "+JSON.stringify(this.cardList));
+      this.selectCardUpgradeArr=[];
       let index = file.lastIndexOf(".");
       let ext = file.charAt(index - 1);
       let filename = file.substring(0, index);
@@ -635,11 +637,14 @@ export default {
         if (upgradeArr.length == 0) 
         {
           this.$alert(
-            "Documents do not match the module card and cannot be upgraded",
+            "Documents do not match the module card and cannot be upgraded 1",
             "Prompt information",
             {
               confirmButtonText: "OK",
-              callback: action => {}
+              callback: action => {
+                that.uploadedFiles="";
+                that.uploading=false;
+              }
             }
           );
           return false;
@@ -664,11 +669,14 @@ export default {
                 ) 
                 {
                   this.$alert(
-                    "Documents do not match the module card and cannot be upgraded",
+                    "Documents do not match the module card and cannot be upgraded 2",
                     "Prompt information",
                     {
                       confirmButtonText: "OK",
-                      callback: action => {}
+                      callback: action => {
+                        that.uploadedFiles="";
+                        that.uploading=false;
+                      }
                     }
                   );
                   return false;
@@ -685,11 +693,14 @@ export default {
                 if (this.cardList[i].status == "offline") 
                 {
                   this.$alert(
-                    "Documents do not match the module card and cannot be upgraded",
+                    "Documents do not match the module card and cannot be upgraded 3",
                     "Prompt information",
                     {
                       confirmButtonText: "OK",
-                      callback: action => {}
+                      callback: action => {
+                        that.uploadedFiles="";
+                        that.uploading=false;
+                      }
                     }
                   );
                   return false;
@@ -704,11 +715,14 @@ export default {
                   ) 
                   {
                     this.$alert(
-                      "Documents do not match the module card and cannot be upgraded",
+                      "Documents do not match the module card and cannot be upgraded 4",
                       "Prompt information",
                       {
                         confirmButtonText: "OK",
-                        callback: action => {}
+                        callback: action => {
+                          that.uploadedFiles="";
+                          that.uploading=false;
+                        }
                       }
                     );
                     return false;
@@ -733,11 +747,14 @@ export default {
                 ) 
                 {
                   this.$alert(
-                    "Documents do not match the module card and cannot be upgraded",
+                    "Documents do not match the module card and cannot be upgraded 5",
                     "Prompt information",
                     {
                       confirmButtonText: "OK",
-                      callback: action => {}
+                      callback: action => {
+                        that.uploadedFiles="";
+                        that.uploading=false;
+                      }
                     }
                   );
                   return false;
@@ -754,11 +771,14 @@ export default {
                 if (this.cardList[i].status == "offline") 
                 {
                   this.$alert(
-                    "Documents do not match the module card and cannot be upgraded",
+                    "Documents do not match the module card and cannot be upgraded 6",
                     "Prompt information",
                     {
                       confirmButtonText: "OK",
-                      callback: action => {}
+                      callback: action => {
+                        that.uploadedFiles="";
+                        that.uploading=false;
+                      }
                     }
                   );
                   return false;
@@ -773,11 +793,14 @@ export default {
                   ) 
                   {
                     this.$alert(
-                      "Documents do not match the module card and cannot be upgraded",
+                      "Documents do not match the module card and cannot be upgraded 7",
                       "Prompt information",
                       {
                         confirmButtonText: "OK",
-                        callback: action => {}
+                        callback: action => {
+                          that.uploadedFiles="";
+                          that.uploading=false;
+                        }
                       }
                     );
                     return false;
@@ -920,22 +943,23 @@ export default {
           } 
           else if (response.data.status == "ERROR") 
           {
-            that.$alert(response.data.error, "Prompt information", 
-            {
-              confirmButtonText: "OK",
-              callback: action => {
-                that.$store.state.upgradeLoading = false;
-              }
-            });
+            that.$message({
+                message: "The Card "+that.selectCardUpgradeArr[that.upgradeNum]+" Upgrade Failed",
+                type: "warning"
+              });
+            that.upgradeNum = that.upgradeNum + 1; 
+            that.$store.state.upgradeNumber = that.upgradeNum; 
+            that.upgardeFile(arr);
           }
         })
         .catch(function(error) {
-          that.$alert(error, "Prompt information", {
-            confirmButtonText: "OK",
-            callback: action => {
-              that.$store.state.upgradeLoading = false;
-            }
-          });
+          that.$message({
+                message: "The Card "+that.selectCardUpgradeArr[that.upgradeNum]+" Upgrade Failed",
+                type: "warning"
+              });
+            that.upgradeNum = that.upgradeNum + 1; 
+            that.$store.state.upgradeNumber = that.upgradeNum; 
+            that.upgardeFile(arr);
         });
     },
     upgardeCardOne(file) {
@@ -959,22 +983,21 @@ export default {
           } 
           else if (response.data.status == "ERROR") 
           {
-            that.$alert(response.data.error, "Prompt information", 
-            {
-              confirmButtonText: "OK",
-              callback: action => {
-                that.$store.state.upgradeLoading = false;
-              }
-            });
+            that.$message({
+                message: response.data.status,
+                type: "warning"
+              });
+            that.$store.state.upgradeNumbers = 1;
+            that.$store.state.upgradeNumber = -2;
           }
         })
         .catch(function(error) {
-          that.$alert(error, "Prompt information", {
-            confirmButtonText: "OK",
-            callback: action => {
-              that.$store.state.upgradeLoading = false;
-            }
-          });
+          that.$message({
+                message: response.data.status,
+                type: "warning"
+              });
+            that.$store.state.upgradeNumbers = 1;
+            that.$store.state.upgradeNumber = -2;
         });
     },
 

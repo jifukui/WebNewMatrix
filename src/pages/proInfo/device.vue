@@ -709,7 +709,9 @@ export default {
         .post("/cgi-bin/ligline.cgi", aoData)
         .then(function(response) {
           if (response.data.status == "SUCCESS") {
-          } else if (response.data.status == "ERROR") {
+          } 
+          else if (response.data.status == "ERROR") 
+          {
             that.$alert(response.data.error, "Prompt information", {
               confirmButtonText: "OK",
               callback: action => {

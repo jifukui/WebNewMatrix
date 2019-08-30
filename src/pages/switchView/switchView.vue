@@ -1446,12 +1446,43 @@ export default {
           that.$store.state.PageLoading=false;
           that.$conf.PortInfoAv.info=JSON.parse(JSON.stringify(that.$conf.BasePortInfo.info));
           that.setData=that.$conf.PortInfoAv.info;
-          if (response.data.status == "SUCCESS") {
-            that.$message({
-              message: "Save success",
-              type: "success"
-            });
-          } else if (response.data.status == "ERROR") {
+          if (response.data.status == "SUCCESS") 
+          {
+            if(response.data.error)
+            {
+              let i=0,n=0;
+              let errortitle=[];
+              let errorstr="";
+              let errorvalue=response.data.error.split(",");
+              for(i=0;i<errorvalue.length;i++)
+              {
+                for(n=0;n<that.$conf.PortInfoAv.info.length;n++)
+                {
+                  if(that.$conf.PortInfoAv.info[n].sid==errorvalue[i])
+                  {
+                    errortitle.push(that.$conf.PortInfoAv.info[n].id);
+                  }
+                }
+              }
+              errorstr=errortitle.join(",");
+              errorstr+=" Setting Failed";
+              that.$alert(errorstr, "Prompt information", {
+              confirmButtonText: "OK",
+              callback: action => {
+                that.getPortList(that.isActive);
+              }
+              });
+            }
+            else
+            {
+                that.$message({
+                message: "Save success",
+                type: "success"
+              });
+            }  
+          }  
+          else if (response.data.status == "ERROR") 
+          {
             that.$alert("Setting Failed", "Prompt information", {
               confirmButtonText: "OK",
               callback: action => {
