@@ -637,7 +637,7 @@ export default {
         if (upgradeArr.length == 0) 
         {
           this.$alert(
-            "Documents do not match the module card and cannot be upgraded 1",
+            "Documents do not match the module card and cannot be upgraded",
             "Prompt information",
             {
               confirmButtonText: "OK",
@@ -669,7 +669,7 @@ export default {
                 ) 
                 {
                   this.$alert(
-                    "Documents do not match the module card and cannot be upgraded 2",
+                    "Documents do not match the module card and cannot be upgraded",
                     "Prompt information",
                     {
                       confirmButtonText: "OK",
@@ -693,7 +693,7 @@ export default {
                 if (this.cardList[i].status == "offline") 
                 {
                   this.$alert(
-                    "Documents do not match the module card and cannot be upgraded 3",
+                    "Documents do not match the module card and cannot be upgraded",
                     "Prompt information",
                     {
                       confirmButtonText: "OK",
@@ -715,7 +715,7 @@ export default {
                   ) 
                   {
                     this.$alert(
-                      "Documents do not match the module card and cannot be upgraded 4",
+                      "Documents do not match the module card and cannot be upgraded",
                       "Prompt information",
                       {
                         confirmButtonText: "OK",
@@ -747,7 +747,7 @@ export default {
                 ) 
                 {
                   this.$alert(
-                    "Documents do not match the module card and cannot be upgraded 5",
+                    "Documents do not match the module card and cannot be upgraded",
                     "Prompt information",
                     {
                       confirmButtonText: "OK",
@@ -771,7 +771,7 @@ export default {
                 if (this.cardList[i].status == "offline") 
                 {
                   this.$alert(
-                    "Documents do not match the module card and cannot be upgraded 6",
+                    "Documents do not match the module card and cannot be upgraded",
                     "Prompt information",
                     {
                       confirmButtonText: "OK",
@@ -793,7 +793,7 @@ export default {
                   ) 
                   {
                     this.$alert(
-                      "Documents do not match the module card and cannot be upgraded 7",
+                      "Documents do not match the module card and cannot be upgraded",
                       "Prompt information",
                       {
                         confirmButtonText: "OK",
@@ -861,8 +861,11 @@ export default {
           fileArr.push(fileName);
         }
         console.log(fileArr);
+        /**当前升级的文件 */
         this.$store.state.upgradeNumber = -1;
+        /**升级状态 */
         this.$store.state.upgradeLoading = true;
+        /**升级文件的文件数 */
         this.$store.state.upgradeNumbers = fileArr.length - 1;
         /**升级 */
         this.upgardeFile(fileArr);
@@ -1049,18 +1052,32 @@ export default {
             this.$axios
               .post("/cgi-bin/ligline.cgi", aoData)
               .then(function(response) {
-                if (response.data.status == "SUCCESS") {
+                if (response.data.status == "SUCCESS") 
+                {
+                  that.$message({
+                  message: "Save success",
+                  type: "success"
+                  });
+                  setTimeout(() => {
+                    that.selectCardInfo(that.isActive, "online");
+                  }, 500);
+                  /*
                   that.$alert("Save success", "Prompt information", {
                     confirmButtonText: "OK",
                     callback: action => {
                       that.selectCardInfo(that.isActive, "online");
                     }
+                  });*/
+                } else if (response.data.status == "ERROR") 
+                {
+                  that.$message({
+                  message: response.data.error,
+                  type: "warning"
                   });
-                } else if (response.data.status == "ERROR") {
-                  that.$alert(response.data.error, "Prompt information", {
+                  /*that.$alert(response.data.error, "Prompt information", {
                     confirmButtonText: "OK",
                     callback: action => {}
-                  });
+                  });*/
                 }
               })
               .catch(function(error) {
@@ -1073,11 +1090,17 @@ export default {
             };
             console.log(sendata);
           });
-      } else {
-        this.$alert("Parameter is incorrect!", "Prompt information", {
+      } 
+      else 
+      {
+        that.$message({
+        message: "Parameter is incorrect!",
+        type: "warning"
+        });
+        /*this.$alert("Parameter is incorrect!", "Prompt information", {
           confirmButtonText: "OK",
           callback: action => {}
-        });
+        });*/
         if (this.$checkInp.fnValidateIPAddress(ipaddr) == false) {
           this.ipCheck = false;
         }
@@ -1283,6 +1306,16 @@ export default {
             } 
             else if (response.data.status == "ERROR") 
             {
+              that.$message({
+              message: "Parameter is incorrect!",
+              type: "warning"
+              });
+              setTimeout(() => {
+                that.$store.state.PageLoading=false;
+                that.loading = false;
+                that.cardInfoLoadding = false;
+              }, 500);
+              /*
               that.$alert(response.data.error, "Prompt information", {
                 confirmButtonText: "OK",
                 callback: action => {
@@ -1290,7 +1323,7 @@ export default {
                   that.loading = false;
                   that.cardInfoLoadding = false;
                 }
-              });
+              });*/
             }
           })
           .catch(function(error) {

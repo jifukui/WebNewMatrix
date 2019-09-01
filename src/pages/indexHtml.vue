@@ -119,6 +119,7 @@ export default {
       this.upgradeStatus = this.$store.state.upgradeLoading;
       if (this.$store.state.upgradeLoading == true) 
       {
+        /**开始升级 */
         this.getUpgrade();
       }
       else
@@ -139,6 +140,7 @@ export default {
     },
     "$store.state.upgradeNumber": 
     {
+      /**当前升级的端口发生变化 */
       handler(newValue, oldValue) 
       {
         this.Sumsize=0;
@@ -187,10 +189,11 @@ export default {
       that.onegrogress = parseInt(100 / num);
       that.onegrogressOne = parseInt(0);
       that.fileGrogress = that.onegrogressOne;
-      
+      that.jifukuivalue=0;
+      console.log("that.$store.state.JiFileSize "+that.$store.state.JiFileSize);
       let val=0;
       console.log("window.jifukuiupgradesetInterval "+ window.jifukuiupgradesetInterval);
-      
+      console.log("that.$store.state.upgradeNumbers "+that.$store.state.upgradeNumbers);
       
       window.jifukuiupgradesetInterval = setInterval(function() 
       {
@@ -202,11 +205,11 @@ export default {
           //that.jifukuivalue=parseInt(value);
           that.fileGrogress=parseInt(that.jifukuivalue+value);
           that.Sumsize+=2000;
-          console.log("that.fileGrogress "+that.fileGrogress);
-          console.log("that.Sumsize "+that.Sumsize);
-          console.log("that.$store.state.upgradeNumbers "+that.$store.state.upgradeNumbers);
-          console.log("The this.onegrogressOne "+that.fileGrogress);
-          console.log("that.$store.state.JiFileSize "+that.$store.state.JiFileSize);
+          //console.log("that.fileGrogress "+that.fileGrogress);
+          //console.log("that.Sumsize "+that.Sumsize);
+          //console.log("that.$store.state.upgradeNumbers "+that.$store.state.upgradeNumbers);
+          //console.log("The this.onegrogressOne "+that.fileGrogress);
+          //console.log("that.$store.state.JiFileSize "+that.$store.state.JiFileSize);
         }
         else
         {
@@ -226,6 +229,7 @@ export default {
     goGrogress(num) {
       this.Sumsize=0;
       let goGrogressNum = this.onegrogress * num + this.onegrogressOne;
+      /**当前升级的阶段 */
       this.jifukuivalue=goGrogressNum;
       if (goGrogressNum <= 100) 
       {
