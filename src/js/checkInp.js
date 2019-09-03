@@ -126,14 +126,14 @@ checkInp.fnValidateGateway = function (gateWayInp) {
     }
 }
 checkInp.fnValidateIcp = function (tcpInput) {
-    if (tcpInput > 65534 || tcpInput < 2000) {
+    if (tcpInput > 65535 || tcpInput < 2000) {
         return false;
     } else {
         return true;
     }
 }
 checkInp.fnValidateUdp = function (udpInput) {
-    if (udpInput > 65534 || udpInput < 2000) {
+    if (udpInput > 65535 || udpInput < 2000) {
         return false;
     } else {
         return true;

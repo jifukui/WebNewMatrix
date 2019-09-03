@@ -1232,11 +1232,19 @@ export default {
     },
     clickBtn(index, info) {
       let confirmValue = "";
-      if (info == 1) {
+      let successstr="";
+      let errorstr="";
+      if (info == 1) 
+      {
         confirmValue = "RESET port to repower ? <br/>Press OK to confirm";
-      } else if (info == 2) {
-        confirmValue =
-          "RESET port to factory default ? <br/>Press OK to confirm";
+        successstr="Device setup has been successfully finished";
+        errorstr="Device setup failed";
+      } 
+      else if (info == 2) 
+      {
+        confirmValue ="RESET port to factory default ? <br/>Press OK to confirm";
+        successstr="Device factory reset has been successfully finished";
+        errorstr="Device factory reset failed";
       }
       let that = this;
       that
@@ -1264,7 +1272,7 @@ export default {
             .post("/cgi-bin/ligline.cgi", data)
             .then(function(response) {
               if (response.data.status == "SUCCESS") {
-                that.$alert("Save success", "Prompt information", {
+                that.$alert(successstr, "Prompt information", {
                   confirmButtonText: "OK",
                   callback: action => {
                     setTimeout(() => {
@@ -1275,7 +1283,7 @@ export default {
                   }
                 });
               } else if (response.data.status == "ERROR") {
-                that.$alert(response.data.error, "Prompt information", {
+                that.$alert(errorstr, "Prompt information", {
                   confirmButtonText: "OK",
                   callback: action => {}
                 });

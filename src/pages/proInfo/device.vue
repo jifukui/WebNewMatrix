@@ -117,6 +117,7 @@
             <!-- TCP -->
             <p><input
                 :class="tcpCheck==true?'equipment_information_two_input':'equipment_information_two_input1'"
+                title="2000~65535"
                 @keyup="JiEthoTCPCheck()"
                 type="text"
                 id=""
@@ -126,6 +127,7 @@
             <!-- UDP -->
             <p><input
                 :class="udpCheck==true?'equipment_information_two_input':'equipment_information_two_input1'"
+                title="2000~65535"
                 @keyup="JiEthoUDPCheck()"
                 type="text"
                 id=""
