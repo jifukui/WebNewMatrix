@@ -167,8 +167,7 @@ export default {
     {
       console.log("Hvae change load");
       console.log("Value is "+value)
-      this.pageload=value;
-      
+      this.pageload=value; 
     },
     "$store.state.ConfigureLabelName":function(value)
     {

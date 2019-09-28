@@ -142,12 +142,6 @@
           </table>
         </div>
       </div>
-      <!-- <div
-        style="width:570px"
-        v-loading="loading"
-        v-show="portInfoLoadding"
-      >
-      </div> -->
     </div>
   </div>
 </template>
@@ -386,9 +380,6 @@ export default {
       {
         window.clearInterval(window.portSetTimeout);
       }
-      // that.loading = true;
-      // that.portInfoLoadding = true;
-      // that.staticData = [];
       if(index==-1)
       {
         that.isActive="";
@@ -401,9 +392,8 @@ export default {
           index: index
         }
       };
-      this.$axios
-        .post("/cgi-bin/ligline.cgi", aoData)
-        .then(function(response) {
+      this.$axios.post("/cgi-bin/ligline.cgi", aoData).then(function(response) 
+      {
           if (response.data.status == "SUCCESS") 
           {
             // that.staticData = [];
@@ -444,16 +434,11 @@ export default {
               that.staticData = staticAoData;
               let value = [];
               let setData = [];
-              //console.log("start change data");
               value = that.$conf.PortInitAv(setInfo, responseInfo.Direction);
-              //console.log("data is "+JSON.stringify(value));
               setData = that.$conf.PortInfoAv.info;
-              //console.log("set data is "+JSON.stringify(setData));
               that.value = value;
               that.setData = setData;
-              //console.log("End of All");
-              // that.loading = false;
-              // that.portInfoLoadding = false;
+             
             }
           } 
           else if (response.data.status == "ERROR") 
@@ -466,8 +451,7 @@ export default {
               }
             });
           }
-        })
-        .catch(function(error) {
+        }).catch(function(error) {
           console.log(error);
         });
     },
@@ -481,11 +465,6 @@ export default {
         this.$conf.PortInfoAv.info, 
         index
       );
-
-      /*data.PortInfo = this.$conf.PortAvOK(
-        this.$conf.PortInfoAv.info, 
-        index
-      );*/
       if(!val.status)
       {
         that.$message(

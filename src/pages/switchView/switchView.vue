@@ -168,7 +168,7 @@
               v-else-if="isSelectAll"
               class="link_status"
               :class="{ checked: items.checked }"
-              :title="aoData[index].title+'>ALL'"
+              :title="items.title+'>ALL'"
               @click="selectedSwitchAll(items, items.index)"
               @mouseenter="showPortLink(index)"
               @mouseleave="hidePortLink(index)"
@@ -189,7 +189,7 @@
                 <div
                   v-if="interitems.link_status == 'no'"
                   class="link_status_no"
-                  :title="aoData[index].title+'>'+aoDataOut[interindex].title"
+                  :title="items.title+'>'+interitems.title"
                   @mouseenter="showPortLink(index, interindex)"
                   @mouseleave="hidePortLink(index, interindex)"
                 ></div>
@@ -197,7 +197,7 @@
                   v-else-if="interitems.link_status == 'true'"
                   class="link_status"
                   :class="{ checked: true }"
-                  :title="aoData[index].title+'>'+aoDataOut[interindex].title"
+                  :title="items.title+'>'+interitems.title"
                   @mouseenter="showPortLink(index, interindex)"
                   @mouseleave="hidePortLink(index, interindex)"
                 ></div>
@@ -205,7 +205,7 @@
                   v-else
                   class="link_status"
                   :class="{ checked: interitems.checked }"
-                  :title="aoData[index].title+'>'+aoDataOut[interindex].title"
+                  :title="items.title+'>'+interitems.title"
                   @click="
                     selectedSwitch(interitems, items.index, interitems.index)
                   "
@@ -1695,7 +1695,9 @@ export default {
 }
 .output {
   text-align: center;
+  -webkit-transform: translate(0, 100%) rotate(-90deg);
   transform: translate(0, 100%) rotate(-90deg);
+  -webkit-transform-origin: 0 0;
   transform-origin: 0 0;
   font-size: 20px;
   line-height: 50px;

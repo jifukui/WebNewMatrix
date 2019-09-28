@@ -39,13 +39,6 @@
                 @click="uplaodFile()"
               >Browse</el-button>
             </p>
-            <!-- 选中文件的文件名称 -->
-            <!-- <p>
-              <span style="white-space:normal;word-wrap: break-word;">
-                <p style="margin:0">{{fileName}}</p>
-              </span>
-            </p> -->
-            <!-- 进度条 -->
             <p>
               <el-progress
                 :percentage="fileGrogress"
@@ -53,24 +46,6 @@
                 :status="uploadStatus"
               ></el-progress>
             </p>
-            <!-- 开始上传按钮 -->
-            <!-- <p class="line40">
-              <el-button
-                class="btn"
-                type="primary"
-                @click="getfileInfo($event)"
-                :disabled="isFile==true?false:true"
-              >Upload</el-button>
-            </p> -->
-            <!-- 更新程序按钮 -->
-            <!-- <p class="line40">
-              <el-button
-                class="btn"
-                type="primary"
-                @click="Upgrade()"
-                :disabled="isUpgrade==true?false:true"
-              >Start Upgrade</el-button>
-            </p> -->
           </div>
         </div>
         <!-- Ethernet 0 -->
@@ -340,24 +315,10 @@ export default {
       if(this.oldIpVal0==value)
       {
         this.ChangeFlag&=~1;
-        //this.ipCheck = true;
       }
       else
       {
         this.ChangeFlag|=1;
-        //this.ipCheck = true;
-        /*
-        if(this.$checkInp.fnValidateIPAddress(value)==true)
-        {
-          this.ChangeFlag|=1;
-          this.ipCheck = true;
-        }
-        else
-        {
-          this.ChangeFlag&=~1;
-          this.ipCheck = false;
-          this.$refs.ipInp.value=this.oldIpVal0;
-        }*/
       }
     },
     JiEthoMASKCheck()
@@ -368,24 +329,10 @@ export default {
       if(this.oldMaskVal0==value)
       {
         this.ChangeFlag&=~2;
-        //this.maskCheck = true;
       }
       else
       {
         this.ChangeFlag|=2;
-        //this.maskCheck = true;
-        /*
-        if(this.$checkInp.fnValidateMask(value)==true)
-        {
-          this.ChangeFlag|=2;
-          this.maskCheck = true;
-        }
-        else
-        {
-          this.ChangeFlag&=~2;
-          this.maskCheck = false;
-          this.$refs.subnetMask.value=this.oldMaskVal0;
-        }*/
       }
     },
     JiEthoGatewayCheck()
@@ -401,19 +348,6 @@ export default {
       else
       {
         this.ChangeFlag|=4;
-        //this.gatewayCheck = true;
-        /*
-        if(this.$checkInp.fnValidateGateway(value)==true)
-        {
-          this.ChangeFlag|=4;
-          this.gatewayCheck = true;
-        }
-        else
-        {
-          this.ChangeFlag&=~4;
-          this.gatewayCheck = false;  
-          this.$refs.gateway.value=this.oldGateVal0;
-        }*/
       }
     },
     JiEthoTCPCheck()
@@ -425,24 +359,10 @@ export default {
       if(this.oldTcpVal0==value)
       {
         this.ChangeFlag&=~8;
-        //this.tcpCheck = true;
       }
       else
       {
         this.ChangeFlag|=8;
-        //this.tcpCheck = true;
-        /*
-        if(this.$checkInp.fnValidateIcp(value)==true)
-        {
-          this.ChangeFlag|=8;
-          this.tcpCheck = true; 
-        }
-        else
-        {
-          this.ChangeFlag&=~8;
-          this.tcpCheck = false;
-          this.$refs.tcp.value=this.oldTcpVal0;
-        }*/
       }
     },
     JiEthoUDPCheck()
@@ -454,26 +374,10 @@ export default {
       if(this.oldUdpVal0==value)
       {
         this.ChangeFlag&=~16;
-        //this.udpCheck = true;
-        
       }
       else
       {
         this.ChangeFlag|=16;
-        //this.udpCheck = false;
-        /*
-        if(this.$checkInp.fnValidateIPAddress(value)==true)
-        {
-          this.ChangeFlag|=16;
-          this.udpCheck = true;
-        }
-        else
-        {
-          this.ChangeFlag&=~16;
-          this.udpCheck = false;
-          this.$refs.udp.value=this.oldUdpVal0;
-        }
-        */
       }
     },
     JiEthoIP1Check()
@@ -484,24 +388,10 @@ export default {
       if(this.oldIpVal1==value)
       {
         this.ChangeFlag&=~32;
-        //this.ipCheck2 = true;
       }
       else
       {
         this.ChangeFlag|=32;
-        //this.ipCheck2 = true;
-        /*
-        if(this.$checkInp.fnValidateIPAddress(value)==true)
-        {
-          this.ChangeFlag|=32;
-          this.ipCheck2 = true;
-        }
-        else
-        {
-          this.ChangeFlag&=~32;
-          this.ipCheck2 = false;
-          this.$refs.ipInp3.value=this.that.oldIpVal1;
-        }*/
       }
     },
     JiEthoMASK1Check()
@@ -512,24 +402,10 @@ export default {
       if(this.oldMaskVal1==value)
       {
         this.ChangeFlag&=~64;
-        //this.maskCheck2 = true;
       }
       else
       {
         this.ChangeFlag|=64;
-        //this.maskCheck2 = true;
-        /*
-        if(this.$checkInp.fnValidateIPAddress(value)==true)
-        {
-          this.ChangeFlag|=64;
-          this.maskCheck2 = true;
-        }
-        else
-        {
-          this.ChangeFlag&=~64;
-          this.maskCheck2 = false;
-          this.$refs.subnetMask3.value=this.oldMaskVal1;
-        }*/
       }
     },
     JiEthoGateway1Check()
@@ -540,24 +416,10 @@ export default {
       if(this.oldGateVal1==value)
       {
         this.ChangeFlag&=~128;
-        //this.gatewayCheck2 = true;
       }
       else
       {
         this.ChangeFlag|=128;
-        //this.gatewayCheck2 = true;
-        /*
-        if(this.$checkInp.fnValidateIPAddress(value)==true)
-        {
-          this.ChangeFlag|=128;
-          this.gatewayCheck2 = true;
-        }
-        else
-        {
-          this.ChangeFlag&=~128;
-          this.gatewayCheck2 = false;
-          this.$refs.gateway3.value=this.oldGateVal1;
-        }*/
       }
     },
     //Name 获取焦点和 失去焦点
@@ -761,7 +623,6 @@ export default {
         
         let that = this;
         let setInfo = [];
-        let isLinkTo=false;
         if ((that.ChangeFlag&1)==1) 
         {
           let ht = {
@@ -942,33 +803,34 @@ export default {
           closeOnClickModal: false,
           dangerouslyUseHTMLString: true
         }
-      )
-        .then(() => {
-          let that = this;
-          let ip_addr = document.location.hostname;
-          let aoData = {
-            cmd: "SetDeviceReset"
-          };
-          this.$axios
-            .post("/cgi-bin/ligline.cgi", aoData)
-            .then(function(response) {
-              if (response.data.status == "SUCCESS") {
-                that.$store.state.resetLoading = true;
-                window.mysettimeout = setTimeout(function() {
-                  window.location.href = "http://" + ip_addr;
-                }, 80000);
-              } else if (response.data.status == "ERROR") {
-                that.$alert(response.data.error, "Prompt information", {
-                  confirmButtonText: "OK",
-                  callback: action => {}
-                });
-              }
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        })
-        .catch(() => {
+      ).then(() => {
+        let that = this;
+        let ip_addr = document.location.hostname;
+        let aoData = {
+          cmd: "SetDeviceReset"
+        };
+        this.$axios
+          .post("/cgi-bin/ligline.cgi", aoData)
+          .then(function(response) 
+          {
+            if (response.data.status == "SUCCESS") 
+            {
+              that.$store.state.resetLoading = true;
+              window.mysettimeout = setTimeout(function() {
+                window.location.href = "http://" + ip_addr;
+              }, 80000);
+            } 
+            else if (response.data.status == "ERROR") 
+            {
+              that.$alert(response.data.error, "Prompt information", {
+                confirmButtonText: "OK",
+                callback: action => {}
+              });
+            }
+          }).catch(function(error) {
+            console.log(error);
+          });
+        }).catch(() => {
           let sendata = {
             resetSure: "取消重置信息"
           };

@@ -210,13 +210,6 @@
                 Browse
               </el-button>
             </p>
-            <!-- 文件名称 -->
-            <!-- <p>
-              <span style="white-space:normal;word-wrap: break-word;">
-                <p style="margin:0">{{ fileName }}</p>
-              </span>
-            </p> -->
-            <!-- 上传进度条 -->
             <p>
               <el-progress
                 :percentage="fileGrogress"
@@ -224,26 +217,6 @@
                 :status="uploadStatus"
               ></el-progress>
             </p>
-            <!-- 开始上传 -->
-            <!-- <p class="line40">
-              <el-button
-                class="btn"
-                type="primary"
-                @click="getfileInfo($event)"
-                :disabled="isFile == true ? false : true"
-                >Upload</el-button
-              >
-            </p> -->
-            <!-- 开始升级 -->
-            <!-- <p class="line40">
-              <el-button
-                class="btn"
-                type="primary"
-                @click="isDecompression()"
-                :disabled="isUpgrade == true ? false : true"
-                >Start Upgrade</el-button
-              >
-            </p> -->
           </div>
         </div>
       </div>
@@ -270,7 +243,6 @@
         />
       </div>
       <div slot="footer" class="dialog-footer">
-        <!-- <el-button @click="dialogFormVisible = false">Cancel</el-button> -->
         <el-button @click="cancelUpload">Cancel</el-button>
         <el-button type="primary" @click="selectCardUpgrade">Ok</el-button>
       </div>
@@ -391,17 +363,6 @@ export default {
       this.$store.state.JiFileSize=this.file.size;
       console.log("this file "+this.file.size);
       console.log("File type is "+extUpperCase);
-      // if (size > filemaxsize) {
-      //   this.$alert(
-      //     "The appendix size should not exceed " + filemaxsize / 1024 + "M！",
-      //     "Prompt information",
-      //     {
-      //       confirmButtonText: "OK",
-      //       callback: action => {}
-      //     }
-      //   );
-      //   return false;
-      // }
       if (size <= 0) 
       {
         this.$alert("The appendix size can not be 0M！", "Prompt information", {
