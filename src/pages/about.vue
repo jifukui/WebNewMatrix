@@ -4,15 +4,15 @@
             <div class="logo"></div>
             <div class="content">
                 <p class="font30 coBlue">WEB VERSION 1.0.10</p>
-                <p class="font18">KRAMER ELECTRONICS LTD.</p>
-                <p>3 Am Veolamo st.Jerusalem, 9546303</p>
-                <p>Tel: +972-73-265-0200</p>
-                <p>Fax: +972-2-653-5369</p>
-                <p>Email: <a class="coBlue" href="mailto:info@kramerav.com">info@kramerav.com</a></p>
-                <p>Web: <a class="coBlue" target="value" href="http://www.KramerAV.com/">www.KramerAV.com</a></p>
+                <p class="font18">Beijing Liguo Electronic Technology Co.</p>
+                <p>NO.87 Changqingyuan Road Haidian Dist. Beijing P.R China</p>
+                <p>Tel: 010-68423587</p>
+                <p>Fax: 010-88413317</p>
+                <p>Email: <a class="coBlue" href="mailto:Info@liguodz.com">Info@liguodz.com</a></p>
+                <p>Web: <a class="coBlue" target="value" href="http://www.liguo.com.cn/">www.liguo.com.cn</a></p>
             </div>
             <div class="clear"></div>
-            <p class="font15">© 2019 - Kramer Electronics LTD. all rights reserved.</p>
+            <p class="font15">© 2019 - Beijing Liguo Electronic Technology Co. all rights reserved.</p>
         </div>
     </div>
 </template>
@@ -50,7 +50,7 @@ export default {
 .logo {
     width: 140px;
     height: 140px;
-    background: url(../../static/img/sprite.png) 0 -62px;
+    background: url(../../static/img/logo-About.png) ;
     float: left;
 }
 .content {

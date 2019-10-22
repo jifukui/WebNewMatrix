@@ -2,7 +2,7 @@
     <div>
         <div class='user_img'></div>
         <div class="container_fluid">
-            <span class="titleKramer">Kramer&nbsp;&nbsp;</span><span>{{headerInfo}}</span> Flexible I/O Digital Matrix Switcher
+            <span class="titleKramer">Beijing Liguo Electronic  &nbsp;&nbsp;</span><span> {{headerInfo}}</span> Flexible I/O Digital Matrix Switcher
         </div>
         <div class="userName" >{{userName}}</div>
     </div>
