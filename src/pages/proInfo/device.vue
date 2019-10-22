@@ -768,7 +768,9 @@ export default {
         this.$alert("Parameter is incorrect!", "Prompt information", 
         {
           confirmButtonText: "OK",
-          callback: action => {}
+          callback: action => {
+            //that.ChangeFlag=0;
+          }
         });
       }
     },
