@@ -5,6 +5,9 @@
 </template>
 
 <script>
+  window.console.log=function(params) {
+    return ;
+  }
 export default {
     name: "App",
     
