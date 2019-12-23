@@ -179,7 +179,7 @@
                 class="btn"
                 type="primary"
                 @click="downLoad"
-              >Get</el-button>
+              >Save</el-button>
               <el-button
                 class="btn"
                 type="primary"

@@ -6,7 +6,7 @@
       v-if="status && !restartStatus && !upgradeStatus && !upgradeDeviceStatus"
       v-loading="pageload"
       element-loading-spinner="el-icon-loading"
-      element-loading-text="Please Waiting ……"
+      element-loading-text="Please Wait ..."
       element-loading-background="rgba(203,203,203,0.8)"
       style="width: 100%"
     >
